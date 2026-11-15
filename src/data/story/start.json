@@ -1,0 +1,7 @@
+{
+  "$comment": "Where a new game begins and what the child carries.",
+  "map": "chute-bottom",
+  "spawn": "start",
+  "items": ["left-mitten", "lint-candy"],
+  "introScript": "intro.fall"
+}

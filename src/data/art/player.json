@@ -1,0 +1,313 @@
+{
+ "size": [
+  16,
+  24
+ ],
+ "origin": [
+  8,
+  23
+ ],
+ "palette": {
+  "k": "#1a1420",
+  "h": "#3b2a2a",
+  "H": "#5a4038",
+  "s": "#f0c8a0",
+  "S": "#c99474",
+  "r": "#e08a7a",
+  "c": "#d9a441",
+  "C": "#a8732a",
+  "d": "#6e4a1f",
+  "w": "#f7e7b8",
+  "m": "#3fa7a0",
+  "M": "#2a716c",
+  "b": "#c8414b",
+  "B": "#8a2a33",
+  "n": "#f0c8a0",
+  "N": "#c99474"
+ },
+ "parts": {
+  "front-plant-l": {
+   "at": [
+    3,
+    22
+   ],
+   "rows": [
+    "kbBk",
+    "kkkk"
+   ]
+  },
+  "front-plant-r": {
+   "at": [
+    9,
+    22
+   ],
+   "rows": [
+    "kbBk",
+    "kkkk"
+   ]
+  },
+  "side-stride": {
+   "at": [
+    0,
+    21
+   ],
+   "rows": [
+    "...kbbk...kbbk..",
+    "...kbBk...kbBk..",
+    "...kkkk...kkkk.."
+   ]
+  },
+  "side-erase-feet": {
+   "at": [
+    0,
+    21
+   ],
+   "rows": [
+    "                ",
+    "                ",
+    "                "
+   ]
+  },
+  "side-pass": {
+   "at": [
+    0,
+    21
+   ],
+   "rows": [
+    "....kbbkkbbk....",
+    "....kbBkkbBk....",
+    "....kkkkkkkk...."
+   ]
+  },
+  "hand-swing-front": {
+   "at": [
+    6,
+    17
+   ],
+   "rows": [
+    "kN"
+   ]
+  }
+ },
+ "frames": {
+  "down-0": [
+   "................",
+   "....kkkkkkkk....",
+   "...khhhhhhhhk...",
+   "..khhHHhhhhhhk..",
+   "..khHhhhhhhhhk..",
+   "..khhhhhhhhhhk..",
+   "..khhhhhhhhhhk..",
+   "..khssshhssshk..",
+   "..kssssssssssk..",
+   "..kssksssskssk..",
+   "..kssksssskssk..",
+   "..krsssSSsssrk..",
+   "...kSssssssSk...",
+   "...kdccccccdk...",
+   "..kccCccccCcck..",
+   ".kccCccwcccCcck.",
+   ".kcCccccccccCck.",
+   ".kcCcccwccccCck.",
+   ".ksCccccccccCmk.",
+   ".kSCccccccccCMk.",
+   "..kCccccccccCk..",
+   "..kddddddddddk..",
+   "...kbbk..kbbk...",
+   "...kkkk..kkkk..."
+  ],
+  "down-1": {
+   "from": "down-0",
+   "shift": [
+    0,
+    -1
+   ],
+   "parts": [
+    "front-plant-l"
+   ]
+  },
+  "down-2": {
+   "from": "down-0",
+   "shift": [
+    0,
+    -1
+   ],
+   "parts": [
+    "front-plant-r"
+   ]
+  },
+  "up-0": [
+   "................",
+   "....kkkkkkkk....",
+   "...khhhhhhhhk...",
+   "..khhHHhhhhhhk..",
+   "..khHhhhhhhhhk..",
+   "..khhhhhhhhhhk..",
+   "..khhhhhhHhhhk..",
+   "..khhhhhhhhhhk..",
+   "..khhhhhhhhhhk..",
+   "..khhHhhhhhhhk..",
+   "..khhhhhhhhhhk..",
+   "..kkhhhhhhhhkk..",
+   "...kShhhhhhSk...",
+   "...kdCCCCCCdk...",
+   "..kcdCCCCCCdck..",
+   ".kcccddddddccck.",
+   ".kcCccccccccCck.",
+   ".kcCccccccccCck.",
+   ".kmCccccccccCsk.",
+   ".kMCccccccccCSk.",
+   "..kCccccccccCk..",
+   "..kddddddddddk..",
+   "...kbbk..kbbk...",
+   "...kkkk..kkkk..."
+  ],
+  "up-1": {
+   "from": "up-0",
+   "shift": [
+    0,
+    -1
+   ],
+   "parts": [
+    "front-plant-l"
+   ]
+  },
+  "up-2": {
+   "from": "up-0",
+   "shift": [
+    0,
+    -1
+   ],
+   "parts": [
+    "front-plant-r"
+   ]
+  },
+  "right-0": [
+   "................",
+   ".....kkkkkkk....",
+   "....khhhhhhhk...",
+   "...khhHHhhhhhk..",
+   "...khHhhhhhhhk..",
+   "...khhhhhhhhhk..",
+   "...khhhhhhhhhk..",
+   "...khhhhhssssk..",
+   "...khhhhsssssk..",
+   "...khhhhsssksk..",
+   "...khhhhsssksk..",
+   "...khhhsrsssSk..",
+   "....khhSsssSk...",
+   "....kdcccccdk...",
+   "...kccccccCCk...",
+   "...kcccwccCCk...",
+   "...kcCCccccCk...",
+   "...kcCnnccCCk...",
+   "...kcCNNccCCk...",
+   "...kCcccccCCk...",
+   "...kddddddddk...",
+   "....kbbk.kbbk...",
+   "....kbBk.kbBk...",
+   "....kkkk.kkkk..."
+  ],
+  "right-1": {
+   "from": "right-0",
+   "parts": [
+    "side-erase-feet",
+    "side-stride"
+   ]
+  },
+  "right-2": {
+   "from": "right-0",
+   "shift": [
+    0,
+    -1
+   ],
+   "parts": [
+    "side-erase-feet",
+    "side-pass"
+   ]
+  },
+  "left-0": {
+   "mirror": "right-0",
+   "palette": {
+    "n": "#3fa7a0",
+    "N": "#2a716c"
+   }
+  },
+  "left-1": {
+   "mirror": "right-1",
+   "palette": {
+    "n": "#3fa7a0",
+    "N": "#2a716c"
+   }
+  },
+  "left-2": {
+   "mirror": "right-2",
+   "palette": {
+    "n": "#3fa7a0",
+    "N": "#2a716c"
+   }
+  }
+ },
+ "animations": {
+  "idle-down": {
+   "frames": [
+    "down-0"
+   ],
+   "rate": 1
+  },
+  "idle-up": {
+   "frames": [
+    "up-0"
+   ],
+   "rate": 1
+  },
+  "idle-left": {
+   "frames": [
+    "left-0"
+   ],
+   "rate": 1
+  },
+  "idle-right": {
+   "frames": [
+    "right-0"
+   ],
+   "rate": 1
+  },
+  "walk-down": {
+   "frames": [
+    "down-1",
+    "down-0",
+    "down-2",
+    "down-0"
+   ],
+   "rate": 7
+  },
+  "walk-up": {
+   "frames": [
+    "up-1",
+    "up-0",
+    "up-2",
+    "up-0"
+   ],
+   "rate": 7
+  },
+  "walk-right": {
+   "frames": [
+    "right-1",
+    "right-0",
+    "right-2",
+    "right-0"
+   ],
+   "rate": 7
+  },
+  "walk-left": {
+   "frames": [
+    "left-1",
+    "left-0",
+    "left-2",
+    "left-0"
+   ],
+   "rate": 7
+  }
+ }
+}

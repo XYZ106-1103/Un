@@ -1,0 +1,146 @@
+{
+ "id": "umbrella-path",
+ "name": "우산꽂이 숲 입구",
+ "music": "sorting",
+ "tileset": "tiles.basement",
+ "legend": {
+  "#": {
+   "tile": "wall-top",
+   "solid": true
+  },
+  "=": {
+   "tile": "wall-face",
+   "solid": true
+  },
+  "|": {
+   "tile": "wall-pipe",
+   "solid": true
+  },
+  ".": {
+   "tile": "floor-a"
+  },
+  ",": {
+   "tile": "floor-b"
+  },
+  ";": {
+   "tile": "floor-lint"
+  },
+  "%": {
+   "tile": "floor-crack"
+  },
+  "u": {
+   "tile": "floor-a",
+   "deco": "umbrella-red",
+   "solid": true
+  },
+  "b": {
+   "tile": "floor-b",
+   "deco": "umbrella-blue",
+   "solid": true
+  },
+  "g": {
+   "tile": "floor-a",
+   "deco": "umbrella-gold",
+   "solid": true
+  },
+  "T": {
+   "tile": "floor-a",
+   "deco": "umbrella-stand",
+   "solid": true
+  },
+  "S": {
+   "tile": "floor-a",
+   "deco": "sign",
+   "solid": true
+  },
+  "E": {
+   "tile": "door"
+  },
+  "~": {
+   "tile": "floor-crack"
+  }
+ },
+ "layout": [
+  "##################################",
+  "#=============|==================#",
+  "#..u.....b.....u.......b.....u...#",
+  "E..........;..........,.........S#",
+  "E....;..............;............#",
+  "#..b......u....T.....g~....b.....#",
+  "#..........,..........;..........#",
+  "#.....g........b..........u......#",
+  "##################################"
+ ],
+ "spawns": {
+  "from-sorting": {
+   "x": 1,
+   "y": 3,
+   "facing": "right"
+  }
+ },
+ "objects": [
+  {
+   "id": "umbrella",
+   "x": 9,
+   "y": 2,
+   "script": "path.umbrella"
+  },
+  {
+   "id": "stand",
+   "x": 15,
+   "y": 5,
+   "script": "path.stand"
+  },
+  {
+   "id": "puddle",
+   "x": 22,
+   "y": 5,
+   "script": "path.puddle"
+  },
+  {
+   "id": "end-sign",
+   "x": 32,
+   "y": 3,
+   "script": "path.end"
+  }
+ ],
+ "triggers": [
+  {
+   "id": "ambush",
+   "x": 6,
+   "y": 2,
+   "w": 1,
+   "h": 6,
+   "script": "path.ambush",
+   "once": true
+  }
+ ],
+ "exits": [
+  {
+   "x": 0,
+   "y": 3,
+   "h": 2,
+   "to": "sorting-room",
+   "spawn": "from-path"
+  }
+ ],
+ "encounters": {
+  "steps": 26,
+  "groups": [
+   [
+    "earbuds"
+   ],
+   [
+    "receipt"
+   ],
+   [
+    "earbuds",
+    "receipt"
+   ]
+  ],
+  "if": "flag:trigger:umbrella-path.ambush"
+ },
+ "ambience": {
+  "dust": true
+ }
+}

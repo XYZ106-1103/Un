@@ -15,7 +15,12 @@ for (const status of order) {
   const list = groups[status];
   console.log(`\n${status.toUpperCase()} (${list.length})`);
   for (const a of list) {
-    const size = a.size ? `${a.size[0]}x${a.size[1]}${a.frames ? ` x${a.frames}f` : ''}` : `${a.rows?.[0]?.length}x${a.rows?.length}`;
+    let size;
+    if (a.kind === 'pixelart') {
+      const doc = JSON.parse(readFileSync(new URL(`../src/data/art/${a.source}`, import.meta.url), 'utf-8'));
+      size = `${doc.size[0]}x${doc.size[1]} x${Object.keys(doc.frames).length}f`;
+    } else if (a.size) size = `${a.size[0]}x${a.size[1]}${a.frames ? ` x${a.frames}f` : ''}`;
+    else size = `${a.rows?.[0]?.length}x${a.rows?.length}`;
     console.log(`  ${a.key.padEnd(18)} ${a.kind.padEnd(12)} ${String(size).padEnd(12)} ${a.usage}`);
   }
 }

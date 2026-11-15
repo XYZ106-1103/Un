@@ -9,7 +9,8 @@
 
 import type Phaser from 'phaser';
 import { PALETTE, toCss } from '@/game/Constants';
-import type { AssetEntry, ImageEntry, PixelsEntry, SpritesheetEntry } from './AssetManifest';
+import type { AssetEntry, ImageEntry, PixelArtEntry, PixelsEntry, SpritesheetEntry } from './AssetManifest';
+import { resolvePixelArt } from './PixelArt';
 
 const MAGENTA = toCss(PALETTE.placeholder);
 const MAGENTA_DARK = '#5a0f5a';
@@ -38,6 +39,47 @@ export function createPixelsTexture(textures: Phaser.Textures.TextureManager, en
     });
   });
   textures.addCanvas(entry.key, canvas);
+}
+
+/**
+ * Rasterises a pixel-art document into one canvas texture with named frames laid out
+ * in a row. Frame names are the document's frame keys.
+ */
+export function createPixelArtTexture(textures: Phaser.Textures.TextureManager, entry: PixelArtEntry): void {
+  const [w, h] = entry.doc.size;
+  const frames = resolvePixelArt(entry.doc, entry.source);
+  const { canvas, ctx } = makeCanvas(w * frames.length, h);
+  const image = ctx.createImageData(w * frames.length, h);
+  frames.forEach((frame, index) => {
+    frame.pixels.forEach((color, i) => {
+      if (color === null) return;
+      const x = index * w + (i % w);
+      const y = Math.floor(i / w);
+      const o = (y * w * frames.length + x) * 4;
+      image.data[o] = (color >> 16) & 0xff;
+      image.data[o + 1] = (color >> 8) & 0xff;
+      image.data[o + 2] = color & 0xff;
+      image.data[o + 3] = 255;
+    });
+  });
+  ctx.putImageData(image, 0, 0);
+  const texture = textures.addCanvas(entry.key, canvas);
+  if (!texture) return;
+  frames.forEach((frame, index) => texture.add(frame.name, 0, index * w, 0, w, h));
+}
+
+/** Registers a document's animations as `<assetKey>:<animation>`. */
+export function createPixelArtAnimations(anims: Phaser.Animations.AnimationManager, entry: PixelArtEntry): void {
+  for (const [name, def] of Object.entries(entry.doc.animations ?? {})) {
+    const key = `${entry.key}:${name}`;
+    if (anims.exists(key)) continue;
+    anims.create({
+      key,
+      frames: def.frames.map((frame) => ({ key: entry.key, frame })),
+      frameRate: def.rate,
+      repeat: def.repeat ?? -1,
+    });
+  }
 }
 
 /** Crossed-out magenta box: the universal "art missing here" sign. */
@@ -143,6 +185,7 @@ export function buildGeneratedTextures(textures: Phaser.Textures.TextureManager,
   for (const entry of entries) {
     if (textures.exists(entry.key)) continue;
     if (entry.kind === 'pixels') createPixelsTexture(textures, entry);
+    else if (entry.kind === 'pixelart') createPixelArtTexture(textures, entry);
     else if (entry.kind === 'image') createImagePlaceholder(textures, entry);
     else createSpritesheetPlaceholder(textures, entry);
   }

@@ -1,6 +1,6 @@
 # UNCLAIMED — 기술 아키텍처
 
-> 문서 버전 0.1 · PHASE 1 기준 · 코드와 어긋나면 코드를 기준으로 이 문서를 고칩니다.
+> 문서 버전 0.2 · PHASE 4 기준 · 코드와 어긋나면 코드를 기준으로 이 문서를 고칩니다.
 
 ## 1. 기술 스택 (확정)
 
@@ -136,24 +136,56 @@ graph TD
 | menu | C / Ctrl | Y / X |
 | pause | Esc | Start |
 
-### 이후 PHASE에서 추가될 시스템
+### PHASE 2–4에서 구현됨
 
-요청하신 폴더 구조의 파일 중 아직 기능이 없는 것은 **빈 파일로 만들지 않았습니다**(작동하지 않는 것을 있는 것처럼 보이지 않기 위해). 각 PHASE에서 실제 구현과 함께 생성합니다.
-
-| 파일 | PHASE | 요지 |
+| 파일 | 역할 | 의존 |
 |---|---|---|
-| `game/GameState.ts` | 2 | 플레이어 상태, 위치, 플래그, 관계, 인벤토리, 플레이 시간. 저장의 단일 원천 |
-| `systems/SaveSystem.ts` | 2 | 슬롯 3개 + 자동 저장, `VersionedStore` 기반, 손상 시 백업 슬롯 복구 |
-| `scenes/MenuScene.ts` | 2 | 현재 TitleScene이 NEW GAME/CONTINUE/SETTINGS/CREDITS 메뉴를 갖춘 MenuScene으로 발전 |
-| `scenes/WorldScene.ts`, `entities/Player.ts`, `entities/NPC.ts` | 2 | Tiled 맵, 충돌, 상호작용, 출입구, 세이브 포인트 |
-| `systems/EventSystem.ts` 확장 → `systems/EventScript.ts` | 2–3 | 맵 이벤트·컷신 스크립트 실행기(대기, 이동, 대사, 플래그) |
-| `systems/DialogueSystem.ts`, `ui/DialogueUI.ts` | 3 | JSON 대사 그래프, 조건 분기, 표정, 선택지, 인라인 명령(흔들림·효과음·음악·변수) |
-| `systems/BattleSystem.ts`, `scenes/BattleScene.ts`, `ui/BattleUI.ts`, `entities/Soul.ts` | 4 | 턴 상태 머신, 행동 선택, 판정 |
-| `systems/BulletSystem.ts`, `entities/Bullet.ts` | 4 | 객체 풀 + 패턴 모듈(직선·원형·방사·회전·낙하·추적·연사·복합·페이즈) |
-| `entities/Enemy.ts`, `entities/Boss.ts`, `data/enemies/*` | 5 | 적 정의(ACT 반응, 자비 조건, 페이즈) |
-| `systems/StorySystem.ts`, `systems/InventorySystem.ts` | 6 (인벤토리 기초는 4) | 플래그·관계·루트 판정, 아이템 |
-| `scenes/EndingScene.ts` | 6 | 루트별 엔딩, 크레딧 |
-| `ui/SettingsUI.ts`, `ui/InventoryUI.ts`, `ui/MenuUI.ts` | 2 / 4 | 게임 전용 UI |
+| `game/GameState.ts` | 저장되는 모든 상태(이름·HP·위치·인벤토리·장비·플래그·관계·조우 기록·통계), 검증, 조건 키 해석기 | 순수 |
+| `game/GameSession.ts` | 진행 중인 플레이(상태 + 슬롯 + 인벤토리), 플레이 시간 | SaveSystem |
+| `systems/SaveSystem.ts` | 슬롯 3개 × (수동 + 백업 + 자동), 최신/수동 우선 불러오기, 요약 | VersionedStore |
+| `systems/InventorySystem.ts` | 사용·장착(제자리 교체)·버리기·정렬, 공격/방어 합산 | 순수 |
+| `systems/script/Condition.ts` | 조건식 파서·평가기 (캐시) | 순수 |
+| `systems/text/RichText.ts`, `TextWrap.ts` | 인라인 마크업 → 글자별 색/효과/이벤트, 줄바꿈 | 순수 |
+| `systems/DialogueSystem.ts` | 스크립트 VM (호스트 인터페이스로 UI·명령 위임) | 순수 |
+| `systems/BattleSystem.ts` | 전투 규칙 모델 | 순수 |
+| `systems/BulletSystem.ts` | 탄 풀 + 에미터 9종 + 충돌 | Phaser |
+| `systems/content/ContentDB.ts` | `src/data` 전체 로드 + 구조·교차 참조 검증 | 순수 |
+| `systems/assets/PixelArt.ts` | 픽셀아트 문서 해석(파생 프레임: from/mirror/parts/palette/shift) | 순수 |
+| `systems/audio/MusicPlayer.ts` | 룩어헤드 스텝 시퀀서, 크로스페이드 | Web Audio |
+| `systems/VirtualControls.ts` | 터치 컨트롤 공유 상태 | — |
+| `scenes/MenuScene.ts` | 타이틀 + 메인 메뉴 + 슬롯/이름/설정/크레딧 패널 | UI 키트 |
+| `scenes/WorldScene.ts` | 맵 구성, 탐험, 상호작용, 스크립트 호스트(DialogueHost) | 위 전부 |
+| `scenes/BattleScene.ts` | 전투 턴 루프(async), 회피 | BattleModel, BulletSystem |
+| `scenes/GameOverScene.ts` | 게임 오버, 마지막 기록에서 재시작 | SaveSystem |
+| `entities/Player.ts`, `NPC.ts`, `Soul.ts`, `Enemy.ts` | 화면 위 존재와 그 움직임 | Phaser |
+| `ui/Panel.ts`, `ListMenu.ts`, `UIStack.ts` | 창 프레임, 범용 선택 목록(키보드·탭), 포커스 스택 | Phaser |
+| `ui/MenuPanels.ts`, `NameEntryPanel.ts`, `PauseMenu.ts` | 확인·메시지·설정·슬롯·크레딧·이름·일시정지·저장 패널 | UI 키트 |
+| `ui/DialogueUI.ts`, `BattleUI.ts`, `TouchControls.ts` | 대화창, 전투 위젯, 터치 컨트롤 | UI 키트 |
+
+### 아직 없는 것 (해당 PHASE에서 실제 구현과 함께 추가)
+
+| 파일 | PHASE |
+|---|---|
+| `entities/Boss.ts` (페이즈·전용 연출) | 5 |
+| `systems/StorySystem.ts` (루트 판정, 세이브와 분리된 영구 기록) | 6 |
+| `scenes/EndingScene.ts` | 6 |
+
+## 5.1 콘텐츠 데이터 형식
+
+모든 콘텐츠는 `src/data` 아래 JSON이며 `tests/unit/Content.test.ts`가 출하 전 전부 검증합니다.
+
+| 위치 | 형식 요약 |
+|---|---|
+| `data/maps/<id>.json` | `layout`(ASCII 행) + `legend`(문자 → 타일/장식/solid/secret/over), `spawns`, `npcs`, `objects`, `exits`, `triggers`(once), `savePoints`, `encounters`, `music`, `ambience`, `onEnter` |
+| `data/dialogues/*.json` | `{ "스크립트ID": [노드…] }`. 노드: `say`(+`who`,`face`,`speed`) · `choice` · `if/then/else` · `goto` · `call` · `set` · `do`(명령) |
+| `data/enemies/<id>.json` | 능력치, `vars`, `acts`(조건·필요조건·변수 변경·조건부 문구), `spareWhen`, `flavor`, `speech`, `patterns`(조건부) + `patternDefs`(에미터 목록) |
+| `data/items/items.json` | `consumable`/`weapon`/`armor`/`key`, 회복·공격·방어, 사용 문구 |
+| `data/characters/*.json` | 이름, 이름표 색, 초상화·필드 스프라이트 에셋, 보이스(파형·음높이·변화폭·간격), 작가용 노트 |
+| `data/audio/songs/<id>.json` | BPM, 스텝/박, 채널(파형·볼륨·게이트·패턴: 음이름 / `.` 쉼 / `-` 지속 / 드럼 `k s x o`) |
+| `data/art/*.json` | 픽셀아트 문서(팔레트 인덱스 문자열 행, 파생 프레임, 애니메이션) |
+| `data/story/*.json` | 시작 위치·아이템, 이름 반응, 크레딧 |
+
+조건 키: `flag:<id>`, `item:<id>`, `rel:<id>`, `met:/spared:/cleared:<enemy>`, `stat:<name>`, `hp`, `maxHp`, `buttons`, 전투 중 `var:<변수>`, `acted:<act>`, `hp%`, `turn`.
 
 ## 6. 데이터 설계 원칙
 
@@ -166,9 +198,9 @@ graph TD
 | 항목 | 목표 | 현재 (PHASE 1) |
 |---|---|---|
 | 프레임 | 60 FPS 고정 | 60 FPS (헤드리스 Chromium, WebGL) |
-| 초기 JS | Phaser 제외 < 150 KB gzip | 17 KB gzip (+ Phaser 332 KB gzip, 별도 청크) |
+| 초기 JS | Phaser 제외 < 150 KB gzip | 70 KB gzip, 아트·콘텐츠 포함 (+ Phaser 332 KB gzip, 별도 청크) |
 | 폰트 | < 1.2 MB | 1.1 MB (PHASE 8에서 사용 글자만 서브셋해 축소 예정) |
-| 탄막 | 동시 500발에서 60 FPS | PHASE 4에서 객체 풀로 구현·측정 |
+| 탄막 | 동시 500발에서 60 FPS | 객체 풀(free-list) 구현. 현재 패턴은 동시 수십 발 수준. 500발 부하 측정은 PHASE 5 보스 패턴과 함께 |
 | 메모리 | 씬 왕복 시 증가 없음 | 스모크 테스트가 5회 왕복 후 리스너·객체 수 불변을 검사 |
 
 ## 8. 테스트 전략
@@ -176,9 +208,9 @@ graph TD
 | 명령 | 내용 |
 |---|---|
 | `npm run typecheck` | 앱(`tsconfig.json`)과 빌드 설정(`tsconfig.node.json`) 타입 검사 |
-| `npm test` | Vitest 단위 테스트 (배율 계산, 저장 봉투, 설정, 이벤트, 디더링, 매니페스트, 로캘) |
+| `npm test` | Vitest 단위 테스트 69개 (배율, 저장·슬롯, 설정, 이벤트, 조건식, 대화 VM, 전투 규칙, 인벤토리, 리치 텍스트·조사, 픽셀아트, 출하 콘텐츠 교차 검증) |
 | `npm run build` | 타입 검사 + 프로덕션 빌드 |
-| `npm run smoke` | 빌드 결과를 Chromium에서 5개 화면(1080p, Win 125%, 1366×768, 폰 가로·세로)으로 부팅, 배율·중앙 정렬·입력·설정 저장·누수·콘솔 오류 검사 |
+| `npm run smoke` | Chromium에서 5개 화면 레이아웃 + 데스크톱 전체 플레이 여정 + 휴대폰 터치 여정 (ROADMAP의 완료 기준 참고) |
 | `npm run assets:report` | 에셋 상태 목록. `-- --strict`는 플레이스홀더가 남아 있으면 실패 (출시 게이트) |
 
 새 기능은 이 다섯 가지를 모두 통과해야 "완료"입니다.

@@ -1,0 +1,79 @@
+{
+ "size": [
+  16,
+  20
+ ],
+ "palette": {
+  "k": "#1a1420",
+  "w": "#8c6239",
+  "W": "#6e4a1f",
+  "d": "#4a3015",
+  "i": "#3f3a52",
+  "I": "#c8414b",
+  "h": "#a77fcf",
+  "H": "#d9c2f0",
+  "y": "#f2b24c",
+  "Y": "#fff1c4"
+ },
+ "frames": {
+  "idle-0": [
+   "................",
+   "..........kk....",
+   ".........kHHk...",
+   ".........kHhk...",
+   ".........khhk...",
+   ".........khhk...",
+   "....kkkkkkhhk...",
+   "...kiIIIihhhhk..",
+   ".kkkiiiiihhhhkk.",
+   "kwwwwwwwwwwwwwwk",
+   "kwwwwwwwwwwwwwwk",
+   "kWWWWWWWWWWWWWWk",
+   ".kddddddddddddk.",
+   ".kWWkkkkkkkkWWk.",
+   ".kWWk......kWWk.",
+   ".kWWk......kWWk.",
+   ".kWWk......kWWk.",
+   ".kWWk......kWWk.",
+   ".kWWk......kWWk.",
+   "..kk........kk.."
+  ],
+  "idle-1": [
+   ".............Y..",
+   "..........kky...",
+   ".........kHYk...",
+   ".........kHhk...",
+   ".........khhk...",
+   ".........khhk...",
+   "....kkkkkkhhk...",
+   "...kiIIIihhhhk..",
+   ".kkkiiiiihhhhkk.",
+   "kwwwwwwwwwwwwwwk",
+   "kwwwwwwwwwwwwwwk",
+   "kWWWWWWWWWWWWWWk",
+   ".kddddddddddddk.",
+   ".kWWkkkkkkkkWWk.",
+   ".kWWk......kWWk.",
+   ".kWWk......kWWk.",
+   ".kWWk......kWWk.",
+   ".kWWk......kWWk.",
+   ".kWWk......kWWk.",
+   "..kk........kk.."
+  ]
+ },
+ "animations": {
+  "idle": {
+   "frames": [
+    "idle-0",
+    "idle-0",
+    "idle-0",
+    "idle-0",
+    "idle-0",
+    "idle-0",
+    "idle-1",
+    "idle-1"
+   ],
+   "rate": 4
+  }
+ }
+}

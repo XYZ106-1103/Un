@@ -1,0 +1,127 @@
+{
+ "size": [
+  8,
+  8
+ ],
+ "palette": {
+  "w": "#f7f4ea",
+  "p": "#e8e2d0",
+  "g": "#a39fb3",
+  "k": "#1a1420",
+  "d": "#6b6680",
+  "a": "#f2b24c",
+  "s": "#5d8fd6"
+ },
+ "frames": {
+  "dot": [
+   "........",
+   "........",
+   "...ww...",
+   "..wwww..",
+   "..wwww..",
+   "...ww...",
+   "........",
+   "........"
+  ],
+  "wire": [
+   "........",
+   "......ww",
+   ".....wg.",
+   "....wg..",
+   "...wg...",
+   "..wg....",
+   "ww......",
+   "........"
+  ],
+  "wire-h": [
+   "........",
+   "........",
+   "........",
+   "wwwwwwww",
+   "gggggggg",
+   "........",
+   "........",
+   "........"
+  ],
+  "plug": [
+   "..w..w..",
+   "..w..w..",
+   ".wwwwww.",
+   ".wggggw.",
+   ".wwwwww.",
+   "...ww...",
+   "...gg...",
+   "...gg..."
+  ],
+  "note": [
+   "....www.",
+   "....w.ww",
+   "....w...",
+   "....w...",
+   "..www...",
+   ".wwww...",
+   ".www....",
+   "........"
+  ],
+  "spark": [
+   "...a....",
+   "...a....",
+   ".a.a.a..",
+   "..aaa...",
+   "aaawaaa.",
+   "..aaa...",
+   ".a.a.a..",
+   "...a...."
+  ],
+  "digit-0": [
+   ".dddddd.",
+   ".dkkkkd.",
+   ".dkppkd.",
+   ".dkppkd.",
+   ".dkppkd.",
+   ".dkppkd.",
+   ".dkkkkd.",
+   ".dddddd."
+  ],
+  "digit-1": [
+   ".dddddd.",
+   ".dpkkpd.",
+   ".dkkkpd.",
+   ".dpkkpd.",
+   ".dpkkpd.",
+   ".dpkkpd.",
+   ".dkkkkd.",
+   ".dddddd."
+  ],
+  "digit-3": [
+   ".dddddd.",
+   ".dkkkkd.",
+   ".dpppkd.",
+   ".dpkkkd.",
+   ".dpppkd.",
+   ".dpppkd.",
+   ".dkkkkd.",
+   ".dddddd."
+  ],
+  "digit-7": [
+   ".dddddd.",
+   ".dkkkkd.",
+   ".dpppkd.",
+   ".dppkpd.",
+   ".dppkpd.",
+   ".dpkppd.",
+   ".dpkppd.",
+   ".dddddd."
+  ],
+  "scrap": [
+   "........",
+   ".pppp...",
+   ".ppppp..",
+   "..pdppp.",
+   "..ppppp.",
+   "...ppp..",
+   "........",
+   "........"
+  ]
+ }
+}

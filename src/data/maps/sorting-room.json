@@ -1,0 +1,166 @@
+{
+ "id": "sorting-room",
+ "name": "분류실",
+ "music": "sorting",
+ "tileset": "tiles.basement",
+ "legend": {
+  "#": {
+   "tile": "wall-top",
+   "solid": true
+  },
+  "=": {
+   "tile": "wall-face",
+   "solid": true
+  },
+  "|": {
+   "tile": "wall-pipe",
+   "solid": true
+  },
+  ".": {
+   "tile": "floor-a"
+  },
+  ",": {
+   "tile": "floor-b"
+  },
+  ";": {
+   "tile": "floor-lint"
+  },
+  "%": {
+   "tile": "floor-crack"
+  },
+  "H": {
+   "tile": "wall-face",
+   "deco": "shelf",
+   "solid": true
+  },
+  "B": {
+   "tile": "floor-a",
+   "deco": "boxes",
+   "solid": true
+  },
+  "?": {
+   "tile": "floor-a",
+   "deco": "boxes",
+   "solid": true,
+   "secret": true
+  },
+  "L": {
+   "tile": "floor-a",
+   "deco": "box-label",
+   "solid": true
+  },
+  "r": {
+   "tile": "rug"
+  },
+  "D": {
+   "tile": "door"
+  },
+  "E": {
+   "tile": "door"
+  }
+ },
+ "layout": [
+  "##########################",
+  "#==H==H==H====H==H==H====#",
+  "#........................#",
+  "#..BB..L..BB.............#",
+  "#..................,.....#",
+  "D....rrrrr..........BBB..#",
+  "D....rrrrr.......,..B.B..#",
+  "#....rrrrr..........B?B..#",
+  "#........................E",
+  "#..;.............;.......E",
+  "#..BB..L....,......BBBBB.#",
+  "#........................#",
+  "##########################"
+ ],
+ "spawns": {
+  "from-chute": {
+   "x": 1,
+   "y": 6,
+   "facing": "right"
+  },
+  "from-path": {
+   "x": 24,
+   "y": 8,
+   "facing": "left"
+  }
+ },
+ "npcs": [
+  {
+   "id": "ledger",
+   "character": "ledger",
+   "x": 11,
+   "y": 4,
+   "facing": "down",
+   "behavior": "idle",
+   "script": "sorting.ledger"
+  }
+ ],
+ "savePoints": [
+  {
+   "id": "desk-sorting",
+   "x": 13,
+   "y": 4,
+   "script": "sorting.desk"
+  }
+ ],
+ "objects": [
+  {
+   "id": "label-gloves",
+   "x": 7,
+   "y": 3,
+   "script": "sorting.label1"
+  },
+  {
+   "id": "label-umbrellas",
+   "x": 7,
+   "y": 10,
+   "script": "sorting.label2"
+  },
+  {
+   "id": "box-etc",
+   "x": 20,
+   "y": 10,
+   "script": "sorting.etc"
+  },
+  {
+   "id": "nook",
+   "x": 21,
+   "y": 6,
+   "script": "sorting.nook"
+  }
+ ],
+ "triggers": [
+  {
+   "id": "meet",
+   "x": 3,
+   "y": 5,
+   "w": 1,
+   "h": 2,
+   "script": "sorting.meet",
+   "once": true,
+   "if": "!flag:met_ledger"
+  }
+ ],
+ "exits": [
+  {
+   "x": 0,
+   "y": 5,
+   "h": 2,
+   "to": "chute-bottom",
+   "spawn": "from-sorting"
+  },
+  {
+   "x": 25,
+   "y": 8,
+   "h": 2,
+   "to": "umbrella-path",
+   "spawn": "from-sorting",
+   "if": "flag:met_ledger"
+  }
+ ],
+ "ambience": {
+  "dust": true
+ }
+}

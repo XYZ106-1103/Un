@@ -24,7 +24,7 @@ export class BootScene extends Phaser.Scene {
     if (!fontsLoaded) document.documentElement.dataset.fontFallback = 'true';
     const fonts = new FontSystem(this.textures, this.cache.bitmapFont);
 
-    attachServices(this.game, { ...core, display, audio, fonts });
+    attachServices(this.game, { display, audio, fonts });
 
     // Keep the scale mode in sync with the settings (changed from menus or the dev room).
     core.events.on('settings:changed', ({ settings, changed }) => {

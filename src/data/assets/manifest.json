@@ -8,7 +8,12 @@
       "status": "wip",
       "usage": "The player's soul in battle: a lost-and-found claim tag. Also the title-screen ornament.",
       "brief": "Pointed claim tag with a punched hole. Needs a hit flash frame and a 'torn' variant for the defeat sequence.",
-      "palette": { "o": "tag", "s": "amber", "h": "ink", "w": "white" },
+      "palette": {
+        "o": "tag",
+        "s": "amber",
+        "h": "ink",
+        "w": "white"
+      },
       "rows": [
         "..oooooooo",
         ".oowoooooo",
@@ -22,7 +27,10 @@
       "key": "ui.logo",
       "kind": "image",
       "status": "placeholder",
-      "size": [224, 56],
+      "size": [
+        224,
+        56
+      ],
       "usage": "Title screen wordmark.",
       "brief": "Hand-lettered 'UNCLAIMED' wordmark, slightly uneven like a stamped label, with a claim tag hanging from the final D on a string. Two variants: normal and 'faded' (used after certain endings).",
       "file": null
@@ -31,30 +39,98 @@
       "key": "bg.title",
       "kind": "image",
       "status": "placeholder",
-      "size": [480, 270],
+      "size": [
+        480,
+        270
+      ],
       "usage": "Title screen backdrop (currently a procedural stand-in: light shaft and falling lint).",
       "brief": "The bottom of the Lost & Found drop chute seen from below: a heap of forgotten objects, a single shaft of light from the slot above, dust motes. Layered for subtle parallax (3 layers).",
-      "file": null
-    },
-    {
-      "key": "char.player",
-      "kind": "spritesheet",
-      "status": "placeholder",
-      "size": [16, 24],
-      "frames": 16,
-      "usage": "Player character overworld walk cycle (4 directions x 4 frames: down, left, right, up).",
-      "brief": "A small child in an oversized raincoat with one mitten. Readable silhouette at 16x24. Idle, walk (4f), and later: surprised, sad, laugh, sit.",
       "file": null
     },
     {
       "key": "tiles.dev",
       "kind": "spritesheet",
       "status": "placeholder",
-      "size": [16, 16],
+      "size": [
+        16,
+        16
+      ],
       "frames": 4,
       "usage": "Development test room floor/wall tiles. Not shipped.",
       "brief": "Development only; replaced by area tilesets in PHASE 2.",
       "file": null
+    },
+    {
+      "key": "char.player",
+      "kind": "pixelart",
+      "source": "player.json",
+      "status": "wip",
+      "usage": "Player overworld sprite: idle and walk in 4 directions. The left mitten shows on the correct hand when facing left.",
+      "brief": "Child in an oversized mustard raincoat, red boots, one teal mitten. Next: run, surprised, sad, laugh, sit."
+    },
+    {
+      "key": "char.ledger",
+      "kind": "pixelart",
+      "source": "ledger.json",
+      "status": "wip",
+      "usage": "Ledger's overworld sprite (idle with blink, glance and bob).",
+      "brief": "Small green hardcover registry book on stubby legs, ribbon bookmark. Next: walk cycle, flustered page-flutter."
+    },
+    {
+      "key": "portrait.ledger",
+      "kind": "pixelart",
+      "source": "portrait-ledger.json",
+      "status": "wip",
+      "usage": "Ledger's dialogue portrait: neutral, nervous, happy, sad, surprised.",
+      "brief": "Cover-as-face with round glasses. Next: talking mouth frames, 'ink blot' embarrassed face."
+    },
+    {
+      "key": "obj.stamp-desk",
+      "kind": "pixelart",
+      "source": "stamp-desk.json",
+      "status": "wip",
+      "usage": "Save point: Ledger's stamp desk (glints).",
+      "brief": "Tiny desk, ink pad, rubber stamp. Next: stamping animation when saving."
+    },
+    {
+      "key": "ui.icons",
+      "kind": "pixelart",
+      "source": "icons.json",
+      "status": "wip",
+      "usage": "Interaction hint and battle command icons (white, tinted at runtime).",
+      "brief": "10x10 icons: talk, clear (broom), act, pocket, let go."
+    },
+    {
+      "key": "bullets",
+      "kind": "pixelart",
+      "source": "bullets.json",
+      "status": "wip",
+      "usage": "Bullet frames for all enemy patterns.",
+      "brief": "8x8: dot, wires, plug, note, spark, receipt digits, paper scrap."
+    },
+    {
+      "key": "tiles.basement",
+      "kind": "pixelart",
+      "source": "tiles-basement.json",
+      "status": "wip",
+      "usage": "Tileset for the chute bottom, sorting room and umbrella path.",
+      "brief": "Plank floors, lint, cracks, lit floor, walls, chute, shelves, boxes, pile, sign, door, rug, umbrellas. Next: forest tileset."
+    },
+    {
+      "key": "enemy.earbuds",
+      "kind": "pixelart",
+      "source": "enemy-earbuds.json",
+      "status": "wip",
+      "usage": "Battle sprite: Tangled Earbuds (2-frame jitter).",
+      "brief": "Knot of white cord with two buds and a plug. Next: untangled/loose frames per mercy state."
+    },
+    {
+      "key": "enemy.receipt",
+      "kind": "pixelart",
+      "source": "enemy-receipt.json",
+      "status": "wip",
+      "usage": "Battle sprite: Receipt Ghost (2-frame sway).",
+      "brief": "Long curled faded receipt with a torn bottom. Next: 'remembered' happy frame."
     }
   ]
 }

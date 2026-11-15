@@ -17,6 +17,8 @@ export interface GameEventMap {
   'audio:unlocked': undefined;
   'debug:toggled': { visible: boolean };
   'scene:entered': { key: string };
+  /** Which touch controls a scene wants right now. */
+  'touch:context': { mode: 'full' | 'dpad' | 'none' };
 }
 
 export type GameEventName = keyof GameEventMap;

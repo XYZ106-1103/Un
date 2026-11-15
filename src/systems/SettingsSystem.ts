@@ -28,6 +28,7 @@ export interface Settings {
   showFps: boolean;
   /** Show on-screen touch controls: auto = only on touch devices. */
   touchControls: 'auto' | 'on' | 'off';
+  language: 'auto' | 'ko' | 'en';
 }
 
 export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
@@ -41,6 +42,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
   reduceFlashing: false,
   showFps: false,
   touchControls: 'auto',
+  language: 'auto',
 });
 
 export const SETTINGS_VERSION = 1;
@@ -69,6 +71,7 @@ export function sanitizeSettings(input: unknown): Settings {
       src.touchControls === 'on' || src.touchControls === 'off' || src.touchControls === 'auto'
         ? src.touchControls
         : d.touchControls,
+    language: src.language === 'ko' || src.language === 'en' || src.language === 'auto' ? src.language : d.language,
   };
 }
 

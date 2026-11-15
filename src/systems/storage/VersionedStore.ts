@@ -23,7 +23,7 @@ export interface Envelope<T> {
 }
 
 export type LoadResult<T> =
-  | { status: 'ok'; data: T; migratedFrom?: number }
+  | { status: 'ok'; data: T; savedAt: string; migratedFrom?: number }
   | { status: 'empty' }
   | { status: 'corrupt'; reason: string }
   | { status: 'future-version'; version: number };
@@ -80,6 +80,7 @@ export class VersionedStore<T> {
       return { status: 'corrupt', reason: 'unrecognised envelope' };
     }
     const { version, checksum: storedSum, data } = parsed;
+    const savedAt = typeof parsed.savedAt === 'string' ? parsed.savedAt : new Date(0).toISOString();
     if (typeof version !== 'number' || !Number.isInteger(version) || version < 1) {
       return { status: 'corrupt', reason: 'invalid version' };
     }
@@ -105,8 +106,8 @@ export class VersionedStore<T> {
     if (!checked.ok) return { status: 'corrupt', reason: checked.reason };
 
     return version < this.options.version
-      ? { status: 'ok', data: checked.value, migratedFrom: version }
-      : { status: 'ok', data: checked.value };
+      ? { status: 'ok', data: checked.value, savedAt, migratedFrom: version }
+      : { status: 'ok', data: checked.value, savedAt };
   }
 
   save(data: T, now: Date = new Date()): StorageWriteResult {
@@ -118,6 +119,16 @@ export class VersionedStore<T> {
       data,
     };
     return this.storage.write(this.options.key, JSON.stringify(envelope));
+  }
+
+  /** Raw stored text (for backups). */
+  raw(): string | null {
+    return this.storage.read(this.options.key);
+  }
+
+  /** Writes raw text verbatim (restoring a backup copy). */
+  writeRaw(text: string): void {
+    this.storage.write(this.options.key, text);
   }
 
   /** Keeps a copy of unreadable data so a bug fix could still recover it later. */

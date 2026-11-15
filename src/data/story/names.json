@@ -1,0 +1,11 @@
+{
+  "$comment": "Reactions to particular names (lower-cased, trimmed). Shown before the name is confirmed. `block: true` refuses the name.",
+  "레저": { "text": "…그건 장부 이름인데요. 등록 번호가 겹치면 곤란합니다." },
+  "ledger": { "text": "…그건 장부 이름인데요. 등록 번호가 겹치면 곤란합니다." },
+  "미트": { "text": "따뜻한 이름이네요. 어딘가 한 짝이 모자란 느낌이지만." },
+  "탤리": { "text": "그 이름은 아직 부르지 않는 게 좋겠습니다.", "block": true },
+  "물품": { "text": "사람은 물품이 아니에요. 적어도, 아직은.", "block": true },
+  "item": { "text": "People aren't items. Not yet, anyway.", "block": true },
+  "주인": { "text": "…모두가 기다리던 이름이군요." },
+  "아무개": { "text": "분실물 신고서에서 가장 많이 본 이름입니다." }
+}

@@ -14,6 +14,9 @@
 
 import Phaser from 'phaser';
 import sfxData from '@/data/audio/sfx.json';
+import { content } from './content/ContentDB';
+import type { VoiceDef } from './content/types';
+import { MusicPlayer } from './audio/MusicPlayer';
 import type { EventSystem } from './EventSystem';
 import type { Settings, SettingsSystem } from './SettingsSystem';
 
@@ -48,6 +51,9 @@ export class AudioSystem {
   private readonly buses: { music: GainNode; sfx: GainNode; voice: GainNode } | null;
   private readonly lastPlayed = new Map<string, number>();
   private unsubscribe: (() => void) | null = null;
+  private readonly music: MusicPlayer | null;
+  /** Song requested while audio was still locked; started on unlock. */
+  private pendingSong: string | null = null;
 
   constructor(
     private readonly game: Phaser.Game,
@@ -63,7 +69,9 @@ export class AudioSystem {
         return node;
       };
       this.buses = { music: make(), sfx: make(), voice: make() };
+      this.music = new MusicPlayer(manager.context, this.buses.music);
     } else {
+      this.music = null;
       // HTML5/no-audio fallback: synthesis needs Web Audio, so SFX stay silent.
       this.ctx = null;
       this.buses = null;
@@ -74,8 +82,58 @@ export class AudioSystem {
     this.unsubscribe = events.on('settings:changed', ({ settings: next }) => this.applyVolumes(next));
 
     if (manager.locked) {
-      manager.once(Phaser.Sound.Events.UNLOCKED, () => this.events.emit('audio:unlocked'));
+      manager.once(Phaser.Sound.Events.UNLOCKED, () => {
+        this.events.emit('audio:unlocked');
+        if (this.pendingSong) this.playMusic(this.pendingSong);
+      });
     }
+  }
+
+  get currentMusic(): string | null {
+    return this.music?.currentId ?? this.pendingSong;
+  }
+
+  /** Crossfades to a song from src/data/audio/songs. `null` fades music out. */
+  playMusic(id: string | null, fadeS = 0.6): void {
+    if (!this.music) return;
+    if (id === null) {
+      this.pendingSong = null;
+      this.music.stop(fadeS);
+      return;
+    }
+    const song = content.song(id);
+    if (!song) {
+      console.warn(`[AudioSystem] unknown song "${id}"`);
+      return;
+    }
+    if (this.ctx?.state !== 'running') {
+      this.pendingSong = id;
+      return;
+    }
+    this.pendingSong = null;
+    this.music.play(song, fadeS);
+  }
+
+  /** One dialogue "voice" blip with a little random pitch so speech doesn't drone. */
+  playVoice(voice: VoiceDef): void {
+    const ctx = this.ctx;
+    if (!ctx || !this.buses || ctx.state !== 'running') return;
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const env = ctx.createGain();
+    osc.type = voice.wave;
+    osc.frequency.setValueAtTime(voice.pitch + (Math.random() * 2 - 1) * voice.variance, t);
+    env.gain.setValueAtTime(0, t);
+    env.gain.linearRampToValueAtTime(voice.volume, t + 0.004);
+    env.gain.linearRampToValueAtTime(0, t + 0.045);
+    osc.connect(env);
+    env.connect(this.buses.voice);
+    osc.start(t);
+    osc.stop(t + 0.05);
+    osc.onended = () => {
+      osc.disconnect();
+      env.disconnect();
+    };
   }
 
   /** False until the browser lets audio play (first tap/click/key press). */
@@ -129,6 +187,7 @@ export class AudioSystem {
   }
 
   destroy(): void {
+    this.music?.destroy();
     this.unsubscribe?.();
     this.unsubscribe = null;
     if (this.buses) {

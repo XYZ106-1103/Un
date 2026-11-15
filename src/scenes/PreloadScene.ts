@@ -6,8 +6,10 @@
 
 import Phaser from 'phaser';
 import { BASE_HEIGHT, BASE_WIDTH, PALETTE, SCENE_KEYS } from '@/game/Constants';
+import { getServices } from '@/game/Services';
 import { ASSETS } from '@/systems/assets/AssetManifest';
-import { buildGeneratedTextures } from '@/systems/assets/PlaceholderFactory';
+import { content, reportContentErrors } from '@/systems/content/ContentDB';
+import { buildGeneratedTextures, createPixelArtAnimations } from '@/systems/assets/PlaceholderFactory';
 import { t } from '@/systems/LocaleSystem';
 import { PixelText } from '@/ui/PixelText';
 import { fadeToScene } from '@/utils/AnimationUtils';
@@ -43,7 +45,7 @@ export class PreloadScene extends Phaser.Scene {
     this.drawBar(0);
 
     for (const entry of ASSETS) {
-      if (entry.kind === 'pixels' || entry.file === null) continue;
+      if (entry.kind === 'pixels' || entry.kind === 'pixelart' || entry.file === null) continue;
       const url = urlFor(entry.file);
       if (!url) {
         console.error(`[Preload] "${entry.key}" points at missing file src/assets/${entry.file}`);
@@ -68,8 +70,11 @@ export class PreloadScene extends Phaser.Scene {
     if (this.failed.length > 0) {
       console.warn(`[Preload] using placeholders for: ${this.failed.join(', ')}`);
     }
-    this.createAnimations();
-    fadeToScene(this, SCENE_KEYS.Title, undefined, 250);
+    for (const entry of ASSETS) if (entry.kind === 'pixelart') createPixelArtAnimations(this.anims, entry);
+    reportContentErrors();
+    // Rasterise every glyph the script uses now, instead of mid-dialogue.
+    getServices(this.game).fonts.preload(content.allText());
+    fadeToScene(this, SCENE_KEYS.Menu, undefined, 250);
   }
 
   private drawBar(progress: number): void {
@@ -84,19 +89,5 @@ export class PreloadScene extends Phaser.Scene {
     g.fillStyle(PALETTE.tag);
     g.fillRect(x, y, Math.round(BAR_W * Phaser.Math.Clamp(progress, 0, 1)), BAR_H);
     this.label?.setText(`${t('loading')} ${Math.round(progress * 100)}%`);
-  }
-
-  private createAnimations(): void {
-    const directions = ['down', 'left', 'right', 'up'] as const;
-    directions.forEach((dir, row) => {
-      const key = `player-walk-${dir}`;
-      if (this.anims.exists(key)) return;
-      this.anims.create({
-        key,
-        frames: this.anims.generateFrameNumbers('char.player', { start: row * 4, end: row * 4 + 3 }),
-        frameRate: 8,
-        repeat: -1,
-      });
-    });
   }
 }

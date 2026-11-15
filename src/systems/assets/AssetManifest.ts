@@ -8,9 +8,17 @@
 
 import manifestJson from '@/data/assets/manifest.json';
 import { PALETTE, type PaletteColor } from '@/game/Constants';
+import { resolvePixelArt, validateAnimations, type PixelArtDoc } from './PixelArt';
 
 export type AssetStatus = 'placeholder' | 'wip' | 'final';
-export type AssetKind = 'image' | 'spritesheet' | 'pixels';
+export type AssetKind = 'image' | 'spritesheet' | 'pixels' | 'pixelart';
+
+/** Art documents under src/data/art, keyed by file name. */
+const ART_DOCS: Record<string, PixelArtDoc> = Object.fromEntries(
+  Object.entries(
+    import.meta.glob('../../data/art/*.json', { eager: true, import: 'default' }) as Record<string, PixelArtDoc>,
+  ).map(([path, doc]) => [path.slice(path.lastIndexOf('/') + 1), doc]),
+);
 
 interface BaseEntry {
   key: string;
@@ -39,7 +47,14 @@ export interface PixelsEntry extends BaseEntry {
   rows: string[];
 }
 
-export type AssetEntry = ImageEntry | SpritesheetEntry | PixelsEntry;
+/** Multi-frame pixel art from a document in src/data/art (see PixelArt.ts). */
+export interface PixelArtEntry extends BaseEntry {
+  kind: 'pixelart';
+  source: string;
+  doc: PixelArtDoc;
+}
+
+export type AssetEntry = ImageEntry | SpritesheetEntry | PixelsEntry | PixelArtEntry;
 
 export function validateEntry(raw: unknown): { ok: true; entry: AssetEntry } | { ok: false; reason: string } {
   if (typeof raw !== 'object' || raw === null) return { ok: false, reason: 'not an object' };
@@ -61,6 +76,17 @@ export function validateEntry(raw: unknown): { ok: true; entry: AssetEntry } | {
     for (const row of e.rows as string[]) {
       for (const ch of row) if (ch !== '.' && !(ch in palette)) return fail(`symbol "${ch}" not in palette`);
     }
+  } else if (e.kind === 'pixelart') {
+    if (typeof e.source !== 'string') return fail('pixelart needs a source file');
+    const doc = ART_DOCS[e.source];
+    if (!doc) return fail(`art document src/data/art/${e.source} not found`);
+    try {
+      resolvePixelArt(doc, e.source);
+      validateAnimations(doc, e.source);
+    } catch (error) {
+      return fail((error as Error).message);
+    }
+    return { ok: true, entry: { ...(raw as object), doc } as PixelArtEntry };
   } else if (e.kind === 'image' || e.kind === 'spritesheet') {
     const size = e.size;
     if (!Array.isArray(size) || size.length !== 2 || !size.every((n) => Number.isInteger(n) && n > 0)) {

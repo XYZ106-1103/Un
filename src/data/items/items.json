@@ -1,0 +1,40 @@
+{
+  "$comment": "Every item. kind: consumable | weapon | armor | key. useText supports {name} and {heal}; {name|을/를} picks the Korean particle.",
+  "left-mitten": {
+    "name": "왼쪽 장갑",
+    "description": "손뜨개 장갑 한 짝. 따뜻하다.\n왜 아직 가지고 있는지 잘 모르겠다.",
+    "kind": "key",
+    "droppable": false,
+    "useText": ["장갑을 꼭 쥐었다.", "어딘가에 있을 나머지 한 짝이 생각났다."]
+  },
+  "lint-candy": {
+    "name": "보풀 사탕",
+    "description": "주머니 속을 오래 굴러다닌 사탕.\n보풀이 조금 붙어 있다. HP 8 회복.",
+    "kind": "consumable",
+    "heal": 8,
+    "useText": ["{name|을/를} 먹었다. 보풀까지 꼭꼭 씹었다."],
+    "price": 4
+  },
+  "tape-bandage": {
+    "name": "테이프 반창고",
+    "description": "누군가 반창고 대신 테이프를 감아 둔 것.\n떼어 낼 때 조금 아프다. HP 12 회복.",
+    "kind": "consumable",
+    "heal": 12,
+    "useText": ["{name|을/를} 붙였다. 생각보다 잘 붙는다."],
+    "price": 7
+  },
+  "safety-pin": {
+    "name": "옷핀",
+    "description": "작지만 단단하다. 무언가를 고정하는 데 쓴다.\n찌르는 데 쓰는 게 아니라. 공격 +2.",
+    "kind": "weapon",
+    "attack": 2,
+    "useText": ["옷핀을 손에 쥐었다.", "찌르기보다는, 무언가를 붙잡아 두고 싶은 마음이다."]
+  },
+  "bottlecap-badge": {
+    "name": "병뚜껑 배지",
+    "description": "병뚜껑을 납작하게 눌러 만든 배지.\n'용감함'이라고 긁혀 있다. 방어 +1.",
+    "kind": "armor",
+    "defense": 1,
+    "useText": ["{name|을/를} 가슴에 달았다. 조금 용감해진 기분이다."]
+  }
+}

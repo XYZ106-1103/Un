@@ -1,27 +1,38 @@
 /**
- * Title screen (PHASE 1 version).
+ * Title screen and main menu: NEW GAME / CONTINUE / SETTINGS / CREDITS.
  *
- * Shows the title, a swinging claim-tag ornament and a start prompt. The logo and
- * backdrop are procedural stand-ins until the manifest entries `ui.logo` / `bg.title`
- * receive real files; while they are placeholders a TEMP ART notice is shown.
- *
- * PHASE 2 adds the real main menu (NEW GAME / CONTINUE / SETTINGS / CREDITS) here.
- * Until then, confirming opens the PHASE 1 render-test room.
+ * The logo and backdrop are procedural stand-ins until the manifest entries `ui.logo` /
+ * `bg.title` receive real files; while they are placeholders a TEMP ART notice is shown.
  */
 
 import Phaser from 'phaser';
 import { BASE_HEIGHT, BASE_WIDTH, DEPTH, GAME_TITLE, GAME_VERSION, PALETTE, SCENE_KEYS } from '@/game/Constants';
+import { GameSession } from '@/game/GameSession';
+import { createNewGameState } from '@/game/GameState';
 import { getServices } from '@/game/Services';
 import { getAsset } from '@/systems/assets/AssetManifest';
+import { content } from '@/systems/content/ContentDB';
 import { InputSystem } from '@/systems/InputSystem';
 import { t } from '@/systems/LocaleSystem';
+import type { SlotId } from '@/systems/SaveSystem';
+import { ListMenu } from '@/ui/ListMenu';
+import { ConfirmPanel, CreditsPanel, MessagePanel, SettingsPanel, SlotPanel } from '@/ui/MenuPanels';
+import { NameEntryPanel } from '@/ui/NameEntryPanel';
 import { addPixelShadow, PixelText } from '@/ui/PixelText';
+import { UIStack } from '@/ui/UIStack';
 import { fadeIn, fadeToScene, isTransitioning, pixelLine } from '@/utils/AnimationUtils';
 import { paintDitheredGradient } from '@/utils/DitherUtils';
+import startData from '@/data/story/start.json';
+import namesData from '@/data/story/names.json';
+import creditsData from '@/data/story/credits.json';
 
 /** Top of the logo block. */
 const LOGO_TOP = 46;
 const STRING_LENGTH = 18;
+const MENU_Y = 168;
+
+type NameReaction = { text: string; block?: boolean };
+const NAME_REACTIONS = namesData as unknown as Record<string, NameReaction>;
 
 interface Mote {
   x: number;
@@ -32,28 +43,34 @@ interface Mote {
   color: number;
 }
 
-export class TitleScene extends Phaser.Scene {
+export class MenuScene extends Phaser.Scene {
   private input$!: InputSystem;
   private backdrop!: Phaser.GameObjects.Graphics;
   private motesLayer!: Phaser.GameObjects.Graphics;
   private stringLayer!: Phaser.GameObjects.Graphics;
   private tag!: Phaser.GameObjects.Image;
   private prompt!: PixelText;
+  private menu: ListMenu | null = null;
+  private readonly ui = new UIStack();
   private motes: Mote[] = [];
   private tagAnchor = { x: 0, y: 0 };
   private elapsed = 0;
-  private started = false;
+  private state: 'title' | 'menu' | 'starting' = 'title';
 
   constructor() {
-    super(SCENE_KEYS.Title);
+    super(SCENE_KEYS.Menu);
   }
 
-  create(): void {
-    this.started = false;
+  create(data?: { skipTitle?: boolean }): void {
+    this.state = 'title';
     this.elapsed = 0;
+    this.menu = null;
+    this.ui.clear();
     this.input$ = new InputSystem(this);
-    const { events } = getServices(this.game);
-    events.emit('scene:entered', { key: SCENE_KEYS.Title });
+    const services = getServices(this.game);
+    services.session = null;
+    services.events.emit('scene:entered', { key: SCENE_KEYS.Menu });
+    services.audio.playMusic('title');
 
     this.backdrop = this.add.graphics().setDepth(DEPTH.background);
     this.drawBackdrop();
@@ -75,7 +92,7 @@ export class TitleScene extends Phaser.Scene {
       originX: 0.5,
     }).setDepth(DEPTH.ui);
 
-    new PixelText(this, BASE_WIDTH - 6, BASE_HEIGHT - 14, `v${GAME_VERSION} · PHASE 1`, {
+    new PixelText(this, BASE_WIDTH - 6, BASE_HEIGHT - 14, `v${GAME_VERSION}`, {
       font: 'small',
       color: PALETTE.fog,
       originX: 1,
@@ -83,28 +100,145 @@ export class TitleScene extends Phaser.Scene {
 
     this.showPlaceholderNotice();
     fadeIn(this, 600);
+    if (data?.skipTitle) this.openMenu(false);
   }
 
   override update(_time: number, delta: number): void {
     this.elapsed += delta;
     this.updateMotes(delta);
     this.updateTag();
+    if (isTransitioning(this) || this.state === 'starting') return;
 
-    // Blink the prompt: steady rhythm, never faster than ~1 Hz (photosensitivity).
-    if (!this.started) this.prompt.setVisible(Math.floor(this.elapsed / 600) % 2 === 0);
+    if (this.state === 'title') {
+      // Blink the prompt: steady rhythm, never faster than ~1 Hz (photosensitivity).
+      this.prompt.setVisible(Math.floor(this.elapsed / 600) % 2 === 0);
+      if (this.input$.justPressed('confirm') || this.input$.tapped()) this.openMenu(true);
+      if (import.meta.env.DEV && this.input.keyboard?.checkDown(this.input.keyboard.addKey('F2'), 1000)) {
+        fadeToScene(this, SCENE_KEYS.DevRoom);
+      }
+      return;
+    }
+    if (this.ui.size > 0) this.ui.handle(this.input$);
+    else this.menu?.handle(this.input$);
+  }
 
-    if (!this.started && !isTransitioning(this) && (this.input$.justPressed('confirm') || this.input$.tapped())) {
-      this.start();
+  private openMenu(withSound: boolean): void {
+    this.state = 'menu';
+    this.prompt.setVisible(false);
+    if (withSound) getServices(this.game).audio.playSfx('title-start');
+    const hasSave = getServices(this.game).saves.hasAnySave();
+    const items = [
+      { label: t('menu.newGame') },
+      { label: t('menu.continue'), disabled: !hasSave },
+      { label: t('menu.settings') },
+      { label: t('menu.credits') },
+    ];
+    const width = 120;
+    this.menu = new ListMenu(this, (BASE_WIDTH - width) / 2, MENU_Y, items, {
+      width,
+      lineHeight: 15,
+      onConfirm: (i) => this.choose(i),
+    }).setDepth(DEPTH.ui);
+    if (hasSave) this.menu.select(1, true);
+    new PixelText(this, BASE_WIDTH / 2, MENU_Y + 64, hasSave ? t('menu.hint') : t('menu.noSave'), {
+      font: 'small',
+      color: PALETTE.fog,
+      originX: 0.5,
+    }).setDepth(DEPTH.ui);
+    this.menu.setAlpha(0);
+    this.tweens.add({ targets: this.menu, alpha: 1, duration: 250 });
+  }
+
+  private choose(index: number): void {
+    switch (index) {
+      case 0:
+        return this.pushPanel(
+          new SlotPanel(this, 'new').onPick((slot, summary) => {
+            if (summary.status === 'empty') this.askName(slot);
+            else {
+              this.pushPanel(
+                new ConfirmPanel(this, t('slot.overwrite', { n: slot })).onResult((yes) => {
+                  if (yes) this.askName(slot);
+                }),
+              );
+            }
+          }),
+        );
+      case 1:
+        return this.pushPanel(new SlotPanel(this, 'load').onPick((slot) => this.continueGame(slot)));
+      case 2:
+        return this.pushPanel(new SettingsPanel(this));
+      case 3:
+        return this.pushPanel(new CreditsPanel(this, creditsData.lines));
     }
   }
 
-  private start(): void {
-    this.started = true;
-    const { audio } = getServices(this.game);
-    audio.playSfx('title-start');
-    this.prompt.setVisible(true);
-    this.tweens.add({ targets: this.prompt, alpha: 0, duration: 120, yoyo: true, repeat: 2 });
-    this.time.delayedCall(500, () => fadeToScene(this, SCENE_KEYS.DevRoom, undefined, 500));
+  private pushPanel(panel: SlotPanel | ConfirmPanel | SettingsPanel | CreditsPanel | MessagePanel | NameEntryPanel): void {
+    this.menu?.setFocused(false);
+    this.ui.push(panel);
+    panel.onClose(() => {
+      this.ui.remove(panel);
+      if (this.ui.size === 0) this.menu?.setFocused(true);
+    });
+  }
+
+  private askName(slot: SlotId, initial = ''): void {
+    this.pushPanel(
+      new NameEntryPanel(this, initial).onSubmit((name) => {
+        const reaction = NAME_REACTIONS[name.toLowerCase()];
+        const confirmName = () =>
+          this.pushPanel(
+            new ConfirmPanel(this, t('name.confirm', { name }), true).onResult((yes) => {
+              if (yes) this.startNewGame(slot, name);
+              else this.askName(slot, name);
+            }),
+          );
+        if (!reaction) return confirmName();
+        const msg = new MessagePanel(this, reaction.text);
+        this.pushPanel(msg);
+        msg.onClose(() => {
+          this.ui.remove(msg);
+          if (reaction.block) this.askName(slot, '');
+          else confirmName();
+        });
+      }),
+    );
+  }
+
+  private startNewGame(slot: SlotId, name: string): void {
+    const map = content.map(startData.map);
+    const spawn = map?.spawns[startData.spawn];
+    if (!map || !spawn) {
+      this.pushPanel(new MessagePanel(this, `start map "${startData.map}" missing`));
+      return;
+    }
+    const state = createNewGameState({
+      name,
+      map: map.id,
+      x: spawn.x,
+      y: spawn.y,
+      facing: spawn.facing ?? 'down',
+      items: startData.items,
+    });
+    this.launch(new GameSession(state, slot, getServices(this.game).saves), startData.introScript);
+  }
+
+  private continueGame(slot: SlotId): void {
+    const services = getServices(this.game);
+    const result = services.saves.load(slot);
+    if (result.status !== 'ok' || !content.map(result.state.location.map)) {
+      this.pushPanel(new MessagePanel(this, t('slot.cannotLoad')));
+      return;
+    }
+    this.launch(new GameSession(result.state, slot, services.saves));
+  }
+
+  private launch(session: GameSession, introScript?: string): void {
+    this.state = 'starting';
+    getServices(this.game).session = session;
+    getServices(this.game).audio.playMusic(null, 0.8);
+    this.ui.clear();
+    this.time.delayedCall(200, () => fadeToScene(this, SCENE_KEYS.World, { introScript }, 700));
   }
 
   /** Draws the logo and subtitle; returns where the tag's string hangs from. */

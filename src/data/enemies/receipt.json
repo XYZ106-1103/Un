@@ -1,0 +1,92 @@
+{
+  "id": "receipt",
+  "name": "영수증 유령",
+  "sprite": "enemy.receipt",
+  "hp": 20,
+  "attack": 3,
+  "defense": 1,
+  "reward": { "buttons": 5 },
+  "encounter": "영수증 유령이 바스락거리며 떠오른다.",
+  "check": "오래돼서 글씨가 거의 지워졌다. 무엇을 샀는지 본인도 모른다.",
+  "vars": { "remember": 0, "crumpled": 0 },
+  "acts": [
+    { "id": "check", "label": "관찰", "text": [{ "text": "합계 칸만 유난히 진하다." }] },
+    {
+      "id": "read",
+      "label": "읽어 보기",
+      "set": { "remember": "+1" },
+      "text": [
+        { "if": "var:remember >= 1", "text": ["다시 읽어 보았다.", "'초 7개'… 라고 적혀 있는 것 같다."] },
+        { "text": ["…'우유 1, 밀가루 1, 그리고…'", "나머지는 지워졌다."] }
+      ]
+    },
+    {
+      "id": "guess",
+      "label": "맞혀 보기",
+      "requires": "var:remember >= 1",
+      "deniedText": ["무엇을 맞혀야 할지 감이 오지 않는다.", "먼저 읽어 보자."],
+      "set": { "remember": "+2" },
+      "text": [
+        { "if": "var:remember >= 2", "text": ["\"혹시… 생일 케이크?\"", "영수증이 바스락거린다. {c=tag}기억이 난 것 같다!{/c}"] },
+        { "text": ["\"우유랑 밀가루… 빵?\"", "영수증이 고개를 갸웃한다. 거의 맞힌 것 같다."] }
+      ]
+    },
+    {
+      "id": "crumple",
+      "label": "구기기",
+      "set": { "crumpled": 1 },
+      "text": [{ "text": ["영수증을 꾸깃꾸깃 구겼다.", "숫자들이 사납게 튀어나온다!"] }]
+    }
+  ],
+  "spareWhen": "var:remember >= 3",
+  "flavor": [
+    { "if": "var:crumpled >= 1", "text": "구겨진 영수증이 잔뜩 성이 나 있다." },
+    { "if": "var:remember >= 3", "text": "영수증 유령이 조용히 무언가를 떠올리고 있다." },
+    { "if": "var:remember >= 1", "text": "영수증 유령이 숫자를 세다 말다 한다." },
+    { "text": "영수증 유령이 합계를 기억해 내려 애쓴다." }
+  ],
+  "speech": [
+    { "if": "var:remember >= 3", "text": "생일이었어. 누군가의." },
+    { "if": "var:remember >= 1", "text": "케…이…? 케이…?" },
+    { "text": "합계… 합계가… 얼마였더라…" }
+  ],
+  "patterns": [
+    { "id": "angry", "if": "var:crumpled >= 1" },
+    { "id": "numbers", "if": "var:crumpled < 1 && var:remember < 1" },
+    { "id": "candles", "if": "var:crumpled < 1 && var:remember >= 1" }
+  ],
+  "patternDefs": {
+    "numbers": {
+      "duration": 6000,
+      "box": { "w": 140, "h": 84 },
+      "emitters": [
+        {
+          "type": "sequence",
+          "step": 2000,
+          "children": [
+            { "type": "fall", "interval": 300, "bullet": { "frame": "digit-1", "radius": 3, "speed": 30, "accel": 50 } },
+            { "type": "fall", "interval": 240, "bullet": { "frame": "digit-7", "radius": 3, "speed": 40, "accel": 70 } },
+            { "type": "ring", "interval": 1400, "amount": 14, "gap": 3, "bullet": { "frame": "digit-0", "radius": 3, "speed": 36 } }
+          ]
+        }
+      ]
+    },
+    "candles": {
+      "duration": 5000,
+      "box": { "w": 120, "h": 84 },
+      "emitters": [
+        { "type": "ring", "interval": 1250, "amount": 12, "gap": 3, "bullet": { "frame": "digit-7", "radius": 3, "speed": 34 } },
+        { "type": "linear", "from": "top", "start": 600, "interval": 900, "aim": true, "bullet": { "frame": "digit-3", "radius": 3, "speed": 60 } }
+      ]
+    },
+    "angry": {
+      "duration": 5600,
+      "box": { "w": 120, "h": 90 },
+      "emitters": [
+        { "type": "spiral", "from": [0.5, -0.5], "interval": 260, "amount": 3, "rotate": 80, "bullet": { "frame": "scrap", "radius": 2.5, "speed": 56 } }
+      ]
+    }
+  },
+  "sparedText": "영수증 유령은 작게 접혀서, 누군가의 생일 쪽으로 날아갔다.",
+  "clearedText": "종이 한 장이 바닥에 내려앉았다. 이제 아무것도 기억하지 않는다."
+}

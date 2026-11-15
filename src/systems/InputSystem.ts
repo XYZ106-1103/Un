@@ -13,6 +13,7 @@
  */
 
 import Phaser from 'phaser';
+import { tryGetServices } from '@/game/Services';
 
 export type Action = 'up' | 'down' | 'left' | 'right' | 'confirm' | 'cancel' | 'menu' | 'pause';
 
@@ -148,7 +149,9 @@ export class InputSystem {
     this.heldCodes.delete(event.code);
   }
 
-  private onPointerDown(): void {
+  private onPointerDown(pointer: Phaser.Input.Pointer): void {
+    // Presses on the on-screen d-pad/buttons are actions, not "taps".
+    if (tryGetServices(this.scene.game)?.touch.isOverControl(pointer.x, pointer.y)) return;
     this.pointerTapped = true;
   }
 
@@ -168,6 +171,8 @@ export class InputSystem {
       for (const action of this.codeToActions.get(code) ?? []) this.down.add(action);
     }
     for (const action of this.virtualHeld) this.down.add(action);
+    const touch = tryGetServices(this.scene.game)?.touch;
+    if (touch) for (const action of touch.held) this.down.add(action);
     this.pollGamepads();
 
     // Presses that started and ended between two frames still count.

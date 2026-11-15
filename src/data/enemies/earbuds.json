@@ -1,0 +1,84 @@
+{
+  "id": "earbuds",
+  "name": "꼬인 이어폰",
+  "sprite": "enemy.earbuds",
+  "hp": 24,
+  "attack": 3,
+  "defense": 0,
+  "reward": { "buttons": 6 },
+  "encounter": "꼬인 이어폰이 지지직거리며 길을 막는다!",
+  "check": "엉킨 채로 서랍 속에 버려졌다. 아직 노래가 남아 있다.",
+  "vars": { "tangle": 2, "angry": 0 },
+  "acts": [
+    { "id": "check", "label": "관찰", "text": [{ "text": "엉킨 줄 사이로 노래가 아주 작게 새어 나온다." }] },
+    {
+      "id": "untangle",
+      "label": "풀어주기",
+      "if": "var:tangle > 0",
+      "set": { "tangle": "-1", "angry": 0 },
+      "text": [
+        { "if": "var:tangle >= 2", "text": ["가장 큰 매듭을 살살 풀었다.", "이어폰이 움찔한다. 아픈 건 아닌 것 같다."] },
+        { "text": ["마지막 매듭이 풀렸다!", "이어폰이 길게 늘어지며 한숨 같은 잡음을 낸다."] }
+      ]
+    },
+    {
+      "id": "listen",
+      "label": "귀 기울이기",
+      "text": [
+        { "if": "acted:listen >= 1", "text": ["같은 노래가 또 나온다.", "…후렴이 꽤 좋다."] },
+        { "text": ["한쪽에서만 노래가 들린다. 다른 쪽은 고장 났다.", "…그래도 노래는 끝까지 나온다."] }
+      ]
+    },
+    {
+      "id": "yank",
+      "label": "잡아당기기",
+      "set": { "tangle": "+1", "angry": 1 },
+      "text": [{ "text": ["세게 잡아당겼다!", "매듭이 더 단단해졌다. 이어폰이 화가 났다."] }]
+    }
+  ],
+  "spareWhen": "var:tangle <= 0",
+  "flavor": [
+    { "if": "var:angry >= 1", "text": "이어폰이 찌릿찌릿 화가 나 있다." },
+    { "if": "var:tangle >= 2", "text": "꼬인 이어폰이 지지직거린다." },
+    { "if": "var:tangle == 1", "text": "이어폰이 반쯤 풀려 있다. 조금만 더." },
+    { "text": "이어폰이 느슨하게 흔들린다. 이제 놓아줄 수 있을 것 같다." }
+  ],
+  "speech": [
+    { "if": "var:angry >= 1", "text": "치익! 지지지직!!" },
+    { "if": "var:tangle >= 2", "text": "지직… 지지직…" },
+    { "if": "var:tangle == 1", "text": "…치…익… 고마…" },
+    { "text": "♪……" }
+  ],
+  "patterns": [
+    { "id": "snap", "if": "var:angry >= 1" },
+    { "id": "wires", "if": "var:tangle >= 2 && var:angry < 1" },
+    { "id": "loose", "if": "var:tangle < 2 && var:angry < 1" }
+  ],
+  "patternDefs": {
+    "wires": {
+      "duration": 5200,
+      "box": { "w": 140, "h": 80 },
+      "emitters": [
+        { "type": "linear", "from": "left", "interval": 760, "bullet": { "frame": "wire-h", "radius": 2.5, "speed": 72 } },
+        { "type": "linear", "from": "right", "start": 380, "interval": 760, "bullet": { "frame": "wire-h", "radius": 2.5, "speed": 72 } }
+      ]
+    },
+    "loose": {
+      "duration": 4600,
+      "box": { "w": 130, "h": 80 },
+      "emitters": [
+        { "type": "stream", "from": "enemy", "interval": 420, "spread": 26, "bullet": { "frame": "note", "radius": 2.5, "speed": 70 } }
+      ]
+    },
+    "snap": {
+      "duration": 5600,
+      "box": { "w": 120, "h": 90 },
+      "emitters": [
+        { "type": "radial", "from": [0.5, -0.6], "interval": 900, "amount": 10, "bullet": { "frame": "spark", "radius": 2.5, "speed": 58 } },
+        { "type": "homing", "from": "edges", "start": 600, "interval": 1700, "turn": 70, "bullet": { "frame": "plug", "radius": 2.5, "speed": 42, "lifetime": 3600 } }
+      ]
+    }
+  },
+  "sparedText": "이어폰은 느슨해진 채 어딘가로 굴러갔다. 노래를 흥얼거리면서.",
+  "clearedText": "아무 소리도 나지 않는다."
+}

@@ -41,7 +41,7 @@ describe('VersionedStore', () => {
     expect(store.save({ name: 'Kid', gold: 3 }).ok).toBe(true);
     const raw = JSON.parse(backend.getItem('t:slot') as string);
     expect(raw).toMatchObject({ format: 'unclaimed-save', version: 1, data: { name: 'Kid', gold: 3 } });
-    expect(store.load()).toEqual({ status: 'ok', data: { name: 'Kid', gold: 3 } });
+    expect(store.load()).toMatchObject({ status: 'ok', data: { name: 'Kid', gold: 3 } });
   });
 
   it('reports invalid JSON as corrupt instead of throwing', () => {
@@ -78,7 +78,7 @@ describe('VersionedStore', () => {
       { from: 1, migrate: (d: unknown) => ({ ...(d as object), name: `${(d as Data).name}!` }) },
     ];
     const v3 = new VersionedStore<Data>(old.storage, { key: 'slot', version: 3, validate, migrations });
-    expect(v3.load()).toEqual({ status: 'ok', data: { name: 'Kid!', gold: 50 }, migratedFrom: 1 });
+    expect(v3.load()).toMatchObject({ status: 'ok', data: { name: 'Kid!', gold: 50 }, migratedFrom: 1 });
   });
 
   it('reports a missing migration as corrupt', () => {

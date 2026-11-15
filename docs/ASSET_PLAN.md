@@ -57,15 +57,27 @@ Aseprite (.aseprite, 레이어·태그 = 애니메이션 이름)
 
 오디오 버스: `music` / `sfx` / `voice` → Phaser 마스터. 볼륨은 설정과 연동됩니다.
 
-## 4. 현재 에셋 상태 (PHASE 1 종료 시점)
+## 4. 현재 에셋 상태 (PHASE 4 종료 시점)
 
-| 키 | 종류 | 상태 | 비고 |
+`npm run assets:report`의 요약입니다. **wip** = 직접 그린 실제 아트(다듬는 중), **placeholder** = 임시.
+
+| 키 | 크기 | 상태 | 다음 작업 |
 |---|---|---|---|
-| `soul.tag` | pixels 10×6 | **wip** | 실제 픽셀아트. 피격 깜빡임 프레임, 찢어진 변형 필요 |
-| `ui.logo` | image 224×56 | **placeholder** | 현재 Galmuri Bold 3배로 조판한 대체물. 손글씨 스탬프풍 로고 + 끈에 매달린 보관표, 'faded' 변형 필요 |
-| `bg.title` | image 480×270 | **placeholder** | 현재 디더링 그라데이션 + 빛줄기 + 먼지 효과의 대체물. 3레이어 패럴랙스 배경 필요 |
-| `char.player` | spritesheet 16×24 ×16 | **placeholder** | 마젠타 실루엣. 큰 비옷 + 장갑 한 짝의 아이 필요 |
-| `tiles.dev` | spritesheet 16×16 ×4 | **placeholder** | 개발용, 출시 안 함. PHASE 2에서 지역 타일셋으로 대체 |
+| `soul.tag` | 10×6 | wip | 피격 프레임, 찢어진 변형 |
+| `char.player` | 16×24 ×12 | wip | 달리기, 놀람·슬픔·웃음·앉기 |
+| `char.ledger` | 16×20 ×4 | wip | 걷기, 당황(페이지 펄럭임) |
+| `portrait.ledger` | 48×48 ×5 | wip | 말하는 입 프레임, 잉크 번짐(부끄러움) |
+| `obj.stamp-desk` | 16×20 ×2 | wip | 저장 시 도장 찍는 애니메이션 |
+| `ui.icons` | 10×10 ×5 | wip | — |
+| `bullets` | 8×8 ×11 | wip | 보스용 탄 추가 |
+| `tiles.basement` | 16×16 ×21 | wip | 벽 모서리·문틀 변형, 숲 타일셋 별도 제작 |
+| `enemy.earbuds` | 40×40 ×2 | wip | 확대, 풀린 상태 프레임 |
+| `enemy.receipt` | 32×40 ×2 | wip | 확대, 기억해 낸 표정 |
+| `ui.logo` | 224×56 | **placeholder** | 손글씨 스탬프풍 로고 |
+| `bg.title` | 480×270 | **placeholder** | 3레이어 타이틀 배경 |
+| `tiles.dev` | 16×16 ×4 | **placeholder** | 개발용, 출시 안 함 |
+
+음악 4곡(타이틀·분류실·전투·게임 오버)과 효과음 6종은 데이터로 작곡·합성한 원본입니다.
 
 ## 5. 제3자 리소스
 

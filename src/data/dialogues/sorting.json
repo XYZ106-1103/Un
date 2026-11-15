@@ -1,0 +1,334 @@
+{
+  "$comment": "Sorting room: meeting Ledger, the stamp desk, box labels, the hidden nook.",
+  "sorting.meet": [
+    {
+      "do": "music",
+      "id": null,
+      "fade": 0.4
+    },
+    {
+      "say": "아, 아앗. 잠시만요!{w=300} 움직이지 마세요.",
+      "who": "ledger",
+      "face": "surprised"
+    },
+    {
+      "say": [
+        "…등록 번호 4,112번.\n품목: 아이. 상태: 약간 젖음.",
+        "주인:{w=500} …{face=nervous}공란."
+      ],
+      "who": "ledger",
+      "face": "neutral"
+    },
+    {
+      "say": "죄송합니다, 처음 보는 품목이라서요.\n저는 {c=amber}레저{/c}. 이 분실물 보관소의 등록 장부입니다.",
+      "who": "ledger",
+      "face": "nervous"
+    },
+    {
+      "choice": [
+        {
+          "text": "나는 물건이 아니야.",
+          "then": [
+            {
+              "say": [
+                "아, 네, 네! 물론이죠. 사람이시죠.",
+                "그, 그런데 사람이 내려온 건 처음이라…\n분류 항목이 없어서요."
+              ],
+              "who": "ledger",
+              "face": "nervous"
+            },
+            {
+              "set": {
+                "told_not_item": true
+              }
+            }
+          ]
+        },
+        {
+          "text": "안녕, 레저.",
+          "then": [
+            {
+              "say": "…{w=300}인사를 받은 건 정말 오랜만이에요.",
+              "who": "ledger",
+              "face": "happy"
+            },
+            {
+              "do": "relation",
+              "id": "ledger",
+              "amount": 1
+            }
+          ]
+        },
+        {
+          "text": "(장갑을 꼭 쥔다)",
+          "then": [
+            {
+              "say": [
+                "그 장갑… 한 짝뿐이네요.",
+                "이곳엔 짝을 잃은 것들이 많아요.{w=300} 아주 많이요."
+              ],
+              "who": "ledger",
+              "face": "sad"
+            },
+            {
+              "set": {
+                "ledger_saw_mitten": true
+              }
+            },
+            {
+              "do": "relation",
+              "id": "ledger",
+              "amount": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "do": "music",
+      "id": "sorting"
+    },
+    {
+      "say": [
+        "여기 있는 것들은 전부, 주인이 찾으러 오기를 기다리고 있어요.",
+        "그러니까… 혹시 길에서 누가 덤벼들어도, 너무 미워하진 말아 주세요."
+      ],
+      "who": "ledger",
+      "face": "neutral"
+    },
+    {
+      "say": [
+        "다들 조금 불안할 뿐이에요.\n말을 걸어 보면, 의외로 {c=tag}놓아줄{/c} 수 있을지도 몰라요.",
+        "물론 {c=sock}치워 버릴{/c} 수도 있겠죠.{w=400} …저는 그게 장부에 적히는 게 싫지만요."
+      ],
+      "who": "ledger",
+      "face": "nervous"
+    },
+    {
+      "say": [
+        "그리고 저기 도장 책상에서는 언제든 {c=tag}기록{/c}을 남길 수 있어요.",
+        "기록은 잉크로 쓰는 거라… 함부로 지울 수가 없어요.{w=300} 그게 제 자랑이자 고민이에요."
+      ],
+      "who": "ledger",
+      "face": "happy"
+    },
+    {
+      "set": {
+        "met_ledger": true
+      }
+    }
+  ],
+  "sorting.ledger": [
+    {
+      "if": "cleared:earbuds >= 1 && !flag:ledger_knows_cleared",
+      "then": [
+        {
+          "goto": "sorting.ledger.cleared"
+        }
+      ]
+    },
+    {
+      "if": "spared:earbuds >= 1 && !flag:ledger_knows_spared",
+      "then": [
+        {
+          "goto": "sorting.ledger.spared"
+        }
+      ]
+    },
+    {
+      "set": {
+        "ledger_talks": "+1"
+      }
+    },
+    {
+      "if": "flag:ledger_talks == 1",
+      "then": [
+        {
+          "say": [
+            "분실물 중에 가장 많은 게 뭔지 아세요?",
+            "우산이에요.{w=300} 비가 그치면 다들 잊어버리거든요."
+          ],
+          "who": "ledger",
+          "face": "neutral"
+        }
+      ]
+    },
+    {
+      "if": "flag:ledger_talks == 2",
+      "then": [
+        {
+          "say": "장부엔 모든 게 적혀 있어요.\n제 글씨가 좀 떨려서 문제지만요.",
+          "who": "ledger",
+          "face": "nervous"
+        }
+      ]
+    },
+    {
+      "if": "flag:ledger_talks == 3",
+      "then": [
+        {
+          "say": [
+            "…{player}.",
+            "등록부에 이름을 적었어요. 품목명이 아니라, 이름으로요.\n…괜찮죠?"
+          ],
+          "who": "ledger",
+          "face": "happy"
+        },
+        {
+          "set": {
+            "ledger_wrote_name": true
+          }
+        }
+      ]
+    },
+    {
+      "if": "flag:ledger_talks >= 4",
+      "then": [
+        {
+          "if": "item:left-mitten && !flag:ledger_asked_mitten",
+          "then": [
+            {
+              "say": "그 장갑, 혹시 짝을 찾고 계신 건가요?",
+              "who": "ledger",
+              "face": "neutral"
+            },
+            {
+              "choice": [
+                {
+                  "text": "응.",
+                  "then": [
+                    {
+                      "say": "…그렇다면 숲 너머까지 가 보셔야 할 거예요.\n짝 잃은 것들은 대개 따뜻한 쪽으로 모이거든요.",
+                      "who": "ledger",
+                      "face": "happy"
+                    }
+                  ]
+                },
+                {
+                  "text": "잘 모르겠어.",
+                  "then": [
+                    {
+                      "say": "괜찮아요. 찾는 게 뭔지 모르는 채로 찾는 것도…\n이곳에선 흔한 일이에요.",
+                      "who": "ledger",
+                      "face": "sad"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "set": {
+                "ledger_asked_mitten": true
+              }
+            }
+          ],
+          "else": [
+            {
+              "say": "오늘도 투입구에서 뭔가 떨어졌어요.\n어제도요. 그제도요.",
+              "who": "ledger",
+              "face": "neutral"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sorting.ledger.spared": [
+    {
+      "say": [
+        "꼬인 이어폰을 놓아주셨다고요?",
+        "장부에 '정중히 풀림'이라고 적어 뒀어요.{w=300} 제가 아는 가장 좋은 결말 중 하나예요."
+      ],
+      "who": "ledger",
+      "face": "happy"
+    },
+    {
+      "do": "relation",
+      "id": "ledger",
+      "amount": 1
+    },
+    {
+      "set": {
+        "ledger_knows_spared": true
+      }
+    }
+  ],
+  "sorting.ledger.cleared": [
+    {
+      "say": [
+        "…이어폰 항목에 줄이 그어졌어요.",
+        "이제 그냥 '물품'이라고만 적혀요.{w=400}\n…잉크라서, 지울 수가 없어요."
+      ],
+      "who": "ledger",
+      "face": "sad"
+    },
+    {
+      "set": {
+        "ledger_knows_cleared": true
+      }
+    }
+  ],
+  "sorting.desk": [
+    {
+      "say": "도장 책상. 잉크 패드가 촉촉하다."
+    },
+    {
+      "if": "hp < maxHp",
+      "then": [
+        {
+          "say": "도장 냄새를 맡으니 이상하게 기운이 난다."
+        }
+      ]
+    },
+    {
+      "do": "save"
+    }
+  ],
+  "sorting.label1": [
+    {
+      "say": "[보관함 07] 짝 없는 장갑 — 214켤레.{w=300}\n…아니, 214짝."
+    }
+  ],
+  "sorting.label2": [
+    {
+      "say": [
+        "[보관함 12] 우산 — 수량: 셀 수 없음.",
+        "담당자 메모: 제발 그만 넣어 주세요."
+      ]
+    }
+  ],
+  "sorting.etc": [
+    {
+      "say": "[보관함 31] 기타.{w=400}\n…상자 안에 정말로 기타가 들어 있다."
+    }
+  ],
+  "sorting.nook": [
+    {
+      "if": "flag:got_pin",
+      "then": [
+        {
+          "say": "상자 사이의 작은 틈. 바람이 조금 분다."
+        }
+      ],
+      "else": [
+        {
+          "say": "상자 사이에 비밀 공간이 있다!{w=300}\n틈에 옷핀이 끼어 있다."
+        },
+        {
+          "do": "item.add",
+          "id": "safety-pin"
+        },
+        {
+          "if": "item:safety-pin",
+          "then": [
+            {
+              "set": {
+                "got_pin": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -11,14 +11,21 @@ import type { AudioSystem } from '@/systems/AudioSystem';
 import type { DisplaySystem } from '@/systems/DisplaySystem';
 import type { EventSystem } from '@/systems/EventSystem';
 import type { FontSystem } from '@/systems/FontSystem';
+import type { SaveSystem } from '@/systems/SaveSystem';
 import type { SettingsSystem } from '@/systems/SettingsSystem';
 import type { SafeStorage } from '@/systems/storage/SafeStorage';
+import type { VirtualControls } from '@/systems/VirtualControls';
+import type { GameSession } from './GameSession';
 
 export interface CoreServices {
   root: HTMLElement;
   events: EventSystem;
   storage: SafeStorage;
   settings: SettingsSystem;
+  saves: SaveSystem;
+  touch: VirtualControls;
+  /** The playthrough in progress (null on the title screen). */
+  session: GameSession | null;
 }
 
 export interface Services extends CoreServices {
@@ -40,8 +47,9 @@ export function getCoreServices(game: Phaser.Game): CoreServices {
   return services;
 }
 
-export function attachServices(game: Phaser.Game, services: Services): void {
-  full.set(game, services);
+export function attachServices(game: Phaser.Game, services: Omit<Services, keyof CoreServices>): void {
+  // Merge onto the core object itself so `session` stays shared and mutable.
+  full.set(game, Object.assign(getCoreServices(game), services) as Services);
 }
 
 /** All services. Throws if called before BootScene finished (a programming error). */

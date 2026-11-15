@@ -1,7 +1,8 @@
 /**
  * Always-on-top scene for diagnostics: FPS counter (settings.showFps) and the F3 debug
  * panel (renderer, scaling, active scenes, glyph atlases, placeholder assets).
- * It never takes input, so it can't interfere with the scenes underneath.
+ * It also hosts the on-screen touch controls; it has no interactive objects, so it never
+ * swallows pointer events meant for the scenes underneath.
  */
 
 import Phaser from 'phaser';
@@ -9,6 +10,13 @@ import { BASE_WIDTH, DEPTH, PALETTE, SCENE_KEYS } from '@/game/Constants';
 import { getServices } from '@/game/Services';
 import { placeholderAssets } from '@/systems/assets/AssetManifest';
 import { PixelText } from '@/ui/PixelText';
+import { TouchControls } from '@/ui/TouchControls';
+
+/** Default touch layout per scene; scenes can override with a 'touch:context' event. */
+const TOUCH_DEFAULTS: Record<string, 'full' | 'dpad' | 'none'> = {
+  [SCENE_KEYS.World]: 'full',
+  [SCENE_KEYS.DevRoom]: 'full',
+};
 
 const REFRESH_MS = 250;
 
@@ -26,8 +34,8 @@ export class OverlayScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.input.enabled = false;
     const { events, settings } = getServices(this.game);
+    const touch = new TouchControls(this);
 
     this.panelBg = this.add.graphics().setDepth(DEPTH.debug).setVisible(false);
     this.panelText = new PixelText(this, 8, 40, '', { font: 'small', color: PALETTE.white, lineSpacing: 1 })
@@ -42,6 +50,11 @@ export class OverlayScene extends Phaser.Scene {
       events.on('settings:changed', ({ settings: s }) => this.fpsText.setVisible(s.showFps || this.debugVisible)),
       events.on('scene:entered', ({ key }) => {
         this.lastScene = key;
+        touch.setMode(TOUCH_DEFAULTS[key] ?? 'none');
+      }),
+      events.on('touch:context', ({ mode }) => touch.setMode(mode)),
+      events.on('settings:changed', ({ changed }) => {
+        if (changed.includes('touchControls')) touch.applySetting();
       }),
     );
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {

@@ -6,6 +6,7 @@
 
 import en from '@/data/strings/en.json';
 import ko from '@/data/strings/ko.json';
+import { withJosa } from '@/utils/KoreanUtils';
 
 export type Locale = 'ko' | 'en';
 export type StringKey = keyof typeof ko;
@@ -26,11 +27,22 @@ export function getLocale(): Locale {
   return current;
 }
 
-/** Looks up `key` and fills `{name}` placeholders. Missing keys render as the key itself. */
+/**
+ * Looks up `key` and fills placeholders. Missing keys render as the key itself.
+ *   {name}          plain substitution
+ *   {item|을/를}    substitution + Korean particle chosen from the word's final sound
+ *                   (the particle part is ignored for other locales)
+ */
 export function t(key: StringKey, vars?: Record<string, string | number>): string {
-  const template = TABLES[current][key] ?? TABLES.en[key] ?? key;
+  return format(TABLES[current][key] ?? TABLES.en[key] ?? key, vars);
+}
+
+/** Same placeholder rules as t(), for text that comes from content data. */
+export function format(template: string, vars?: Record<string, string | number>): string {
   if (!vars) return template;
-  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
-    name in vars ? String(vars[name]) : match,
-  );
+  return template.replace(/\{(\w+)(?:\|([^}]+))?\}/g, (match, name: string, josa: string | undefined) => {
+    if (!(name in vars)) return match;
+    const value = String(vars[name]);
+    return josa && current === 'ko' ? withJosa(value, josa) : value;
+  });
 }

@@ -148,7 +148,7 @@ class PixelFont {
     const size = this.texture.width;
     const sizeY = this.texture.height;
     const h = this.lineHeight;
-    this.data.chars[slot.code] = {
+    const next: CharData = {
       x: slot.x,
       y: slot.y,
       width: slot.advance,
@@ -165,6 +165,11 @@ class PixelFont {
       data: {},
       kerning: {},
     };
+    // Update in place: existing BitmapTexts cache references to these glyph objects, so
+    // replacing them after the atlas grows would leave those texts sampling stale UVs.
+    const existing = this.data.chars[slot.code];
+    if (existing) Object.assign(existing, next);
+    else this.data.chars[slot.code] = next;
   }
 
   /** Doubles the atlas and repacks every glyph (UVs depend on atlas size). */
@@ -216,6 +221,16 @@ export class FontSystem {
   /** Pre-rasterises a whole script (e.g. every line of a chapter) during loading. */
   preload(text: string): void {
     for (const font of this.fonts.values()) font.ensure(text);
+  }
+
+  /** Width in native pixels of `text` drawn with `font` at scale 1. */
+  measure(font: FontId, text: string): number {
+    const pf = this.fonts.get(FONTS[font].key);
+    if (!pf) return 0;
+    pf.ensure(text);
+    let width = 0;
+    for (const ch of text) width += pf.data.chars[ch.codePointAt(0) ?? 0]?.xAdvance ?? 0;
+    return width;
   }
 
   stats(): { key: string; glyphs: number; atlas: number }[] {

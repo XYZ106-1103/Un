@@ -1,0 +1,117 @@
+{
+ "id": "chute-bottom",
+ "name": "투입구 바닥",
+ "music": null,
+ "tileset": "tiles.basement",
+ "legend": {
+  "#": {
+   "tile": "wall-top",
+   "solid": true
+  },
+  "=": {
+   "tile": "wall-face",
+   "solid": true
+  },
+  "|": {
+   "tile": "wall-pipe",
+   "solid": true
+  },
+  ".": {
+   "tile": "floor-a"
+  },
+  ",": {
+   "tile": "floor-b"
+  },
+  ";": {
+   "tile": "floor-lint"
+  },
+  "%": {
+   "tile": "floor-crack"
+  },
+  "C": {
+   "tile": "wall-chute",
+   "solid": true
+  },
+  "*": {
+   "tile": "floor-lit"
+  },
+  "P": {
+   "tile": "floor-a",
+   "deco": "pile",
+   "solid": true
+  },
+  "S": {
+   "tile": "floor-b",
+   "deco": "sign",
+   "solid": true
+  },
+  "D": {
+   "tile": "door"
+  }
+ },
+ "layout": [
+  "##################",
+  "#=======C=====|==#",
+  "#..,....**.....,.#",
+  "#.;.....**...;...#",
+  "#...P..****......#",
+  "#.,....****..,..S#",
+  "#...;..****......D",
+  "#.%.....**...;...#",
+  "#......,......,..#",
+  "##################"
+ ],
+ "spawns": {
+  "start": {
+   "x": 8,
+   "y": 5,
+   "facing": "down"
+  },
+  "from-sorting": {
+   "x": 16,
+   "y": 6,
+   "facing": "left"
+  }
+ },
+ "objects": [
+  {
+   "id": "pile",
+   "x": 4,
+   "y": 4,
+   "script": "chute.pile"
+  },
+  {
+   "id": "sign",
+   "x": 16,
+   "y": 5,
+   "script": "chute.sign"
+  },
+  {
+   "id": "chute",
+   "x": 8,
+   "y": 1,
+   "script": "chute.chute"
+  },
+  {
+   "id": "light",
+   "x": 8,
+   "y": 4,
+   "script": "chute.light"
+  }
+ ],
+ "exits": [
+  {
+   "x": 17,
+   "y": 6,
+   "to": "sorting-room",
+   "spawn": "from-chute"
+  }
+ ],
+ "ambience": {
+  "dust": true,
+  "lightShaft": {
+   "x": 136,
+   "width": 26
+  }
+ }
+}

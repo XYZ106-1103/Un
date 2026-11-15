@@ -49,7 +49,7 @@ export class DevRoomScene extends Phaser.Scene {
     this.buildSign();
 
     this.player = this.add
-      .sprite((MAP_W * TILE_SIZE) / 2, (MAP_H * TILE_SIZE) / 2, 'char.player', 0)
+      .sprite((MAP_W * TILE_SIZE) / 2, (MAP_H * TILE_SIZE) / 2, 'char.player', 'down-0')
       .setOrigin(0.5, 1)
       .setDepth(DEPTH.world);
 
@@ -78,7 +78,7 @@ export class DevRoomScene extends Phaser.Scene {
 
     if (this.input$.justPressed('cancel') || this.backButtonTapped()) {
       audio.playSfx('ui-cancel');
-      fadeToScene(this, SCENE_KEYS.Title);
+      fadeToScene(this, SCENE_KEYS.Menu);
       return;
     }
     if (this.input$.justPressed('menu')) {
@@ -110,12 +110,12 @@ export class DevRoomScene extends Phaser.Scene {
 
     if (dx === 0 && dy === 0) {
       this.player.anims.stop();
-      this.player.setFrame(['down', 'left', 'right', 'up'].indexOf(this.facing) * 4);
+      this.player.setFrame(`${this.facing}-0`);
       return;
     }
 
     this.facing = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'left' : 'right') : dy < 0 ? 'up' : 'down';
-    this.player.anims.play(`player-walk-${this.facing}`, true);
+    this.player.anims.play(`char.player:walk-${this.facing}`, true);
 
     const step = (PLAYER_SPEED * delta) / 1000;
     const minX = TILE_SIZE + 6;
@@ -194,7 +194,7 @@ export class DevRoomScene extends Phaser.Scene {
     });
     this.inputLine = new PixelText(this, 6, BASE_HEIGHT - 19, '', { font: 'small', color: PALETTE.mitten });
     [this.scaleLine, this.viewportLine, this.inputLine].forEach(hud);
-    const temp = placeholderAssets().map((a) => a.key).filter((k) => k === 'char.player' || k === 'tiles.dev');
+    const temp = placeholderAssets().map((a) => a.key).filter((k) => k === 'tiles.dev');
     if (temp.length > 0) {
       hud(new PixelText(this, BASE_WIDTH - 6, BASE_HEIGHT - 19, t('title.temp', { list: temp.join(', ') }), {
         font: 'small',

@@ -18,7 +18,10 @@ export const GAME_VERSION = __APP_VERSION__;
 export const SCENE_KEYS = {
   Boot: 'Boot',
   Preload: 'Preload',
-  Title: 'Title',
+  Menu: 'Menu',
+  World: 'World',
+  Battle: 'Battle',
+  GameOver: 'GameOver',
   DevRoom: 'DevRoom',
   Overlay: 'Overlay',
 } as const;

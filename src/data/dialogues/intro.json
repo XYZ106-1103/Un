@@ -1,0 +1,12 @@
+{
+  "$comment": "Opening of a new game.",
+  "intro.fall": [
+    { "do": "shake", "intensity": 3, "duration": 400 },
+    { "say": "쿵." },
+    { "do": "wait", "ms": 500 },
+    { "say": ["어딘가 아주 높은 곳에서 떨어진 것 같다.", "위를 올려다보니, 손바닥만 한 빛이 보인다.\n분실물 보관소의 투입구다."] },
+    { "say": "주머니 속을 더듬어 본다.{w=400} 장갑 한 짝은 무사하다." },
+    { "set": { "intro_done": true } }
+  ]
+}
+

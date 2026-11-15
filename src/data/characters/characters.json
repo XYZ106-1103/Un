@@ -1,0 +1,12 @@
+{
+  "$comment": "Characters who speak. `notes` are for writers only.",
+  "ledger": {
+    "name": "레저",
+    "color": "amber",
+    "portrait": "portrait.ledger",
+    "defaultFace": "neutral",
+    "sprite": "char.ledger",
+    "voice": { "wave": "square", "pitch": 640, "variance": 70, "volume": 0.05, "every": 2 },
+    "notes": "The Lost & Found registry book. Anxious, meticulous, kind. Numbers everything ('등록 번호 4,112번'). Writes in ink, so it can't erase - it hates that and is proud of it. Polite 해요체, trails off with '…', apologises too much."
+  }
+}
