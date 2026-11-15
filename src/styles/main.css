@@ -104,4 +104,70 @@ body {
 }
 .fatal-error p {
   margin: 0;
+  word-break: keep-all;
+}
+
+/* Runtime crash notice (src/game/ErrorOverlay.ts): pixel font at integer sizes, hard edges. */
+.runtime-error {
+  --s: 1;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  box-sizing: border-box;
+  width: min(92vw, calc(300px * var(--s)));
+  padding: calc(10px * var(--s));
+  display: flex;
+  flex-direction: column;
+  gap: calc(6px * var(--s));
+  font: calc(12px * var(--s)) 'Galmuri11', monospace;
+  -webkit-font-smoothing: none;
+  color: var(--paper);
+  background: var(--ink);
+  border: calc(2px * var(--s)) solid var(--paper);
+  box-shadow: 0 0 0 calc(2px * var(--s)) var(--ink);
+  user-select: text;
+  -webkit-user-select: text;
+  touch-action: auto;
+}
+@media (min-width: 960px) and (min-height: 540px) {
+  .runtime-error { --s: 2; }
+}
+@media (min-width: 1680px) and (min-height: 945px) {
+  .runtime-error { --s: 3; }
+}
+.runtime-error p {
+  margin: 0;
+  line-height: 1.4;
+  /* Korean wraps between words, not inside them. */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.runtime-error__title {
+  font-family: 'Galmuri11 Bold', 'Galmuri11', monospace;
+  color: #ffcf4a;
+}
+.runtime-error__code {
+  font: calc(10px * var(--s)) 'Galmuri9', monospace;
+  color: var(--mist);
+  word-break: break-all;
+}
+.runtime-error__actions {
+  display: flex;
+  gap: calc(6px * var(--s));
+  justify-content: flex-end;
+  margin-top: calc(2px * var(--s));
+}
+.runtime-error button {
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 0;
+  padding: calc(3px * var(--s)) calc(8px * var(--s));
+  cursor: pointer;
+}
+.runtime-error button:focus-visible {
+  outline: calc(1px * var(--s)) solid #ffcf4a;
+  outline-offset: calc(1px * var(--s));
 }

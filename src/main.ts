@@ -1,4 +1,5 @@
 import './styles/main.css';
+import { installErrorOverlay } from '@/game/ErrorOverlay';
 import { GameApp } from '@/game/Game';
 import { t } from '@/systems/LocaleSystem';
 
@@ -23,9 +24,18 @@ function start(): void {
   // Exposed for the smoke test and for poking at things from devtools.
   (window as unknown as { __unclaimed: GameApp }).__unclaimed = app;
 
+  // Runtime crashes: pause the loop behind a notice instead of failing silently.
+  const removeOverlay = installErrorOverlay({
+    onShow: () => app.game.loop.sleep(),
+    onDismiss: () => app.game.loop.wake(),
+  });
+
   // Phaser does not support hot-swapping scenes cleanly: rebuild the game on HMR.
   if (import.meta.hot) {
-    import.meta.hot.dispose(() => app.destroy());
+    import.meta.hot.dispose(() => {
+      removeOverlay();
+      app.destroy();
+    });
   }
 }
 

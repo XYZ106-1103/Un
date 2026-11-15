@@ -54,6 +54,7 @@ export class MenuScene extends Phaser.Scene {
   private readonly ui = new UIStack();
   private motes: Mote[] = [];
   private tagAnchor = { x: 0, y: 0 };
+  private pairTag: Phaser.GameObjects.Image | null = null;
   private elapsed = 0;
   private state: 'title' | 'menu' | 'starting' = 'title';
 
@@ -85,6 +86,15 @@ export class MenuScene extends Phaser.Scene {
       .image(this.tagAnchor.x, this.tagAnchor.y + STRING_LENGTH, 'soul.tag')
       .setOrigin(2 / 10, 2 / 6)
       .setDepth(DEPTH.ui);
+    // The title remembers how the last chapter ended (MetaSystem): a pair of tags after
+    // the return ending, an empty string after the clear ending.
+    const lastEnding = services.meta.lastEnding;
+    this.tag.setVisible(lastEnding !== 'clear');
+    this.pairTag?.destroy();
+    this.pairTag =
+      lastEnding === 'return'
+        ? this.add.image(this.tagAnchor.x, this.tagAnchor.y + STRING_LENGTH + 7, 'soul.tag').setOrigin(2 / 10, 2 / 6).setDepth(DEPTH.ui)
+        : null;
 
     const touch = this.sys.game.device.input.touch;
     this.prompt = new PixelText(this, BASE_WIDTH / 2, 196, t(touch ? 'title.prompt.touch' : 'title.prompt.keys'), {
@@ -134,6 +144,26 @@ export class MenuScene extends Phaser.Scene {
       { label: t('menu.credits') },
     ];
     const width = 120;
+    // Dark pool behind the menu so it stays legible over the busy backdrop. The edge
+    // fades out over 4px with an ordered (Bayer) dither: hard pixels, no alpha blending.
+    const pool = this.add.graphics().setDepth(DEPTH.ui - 1);
+    const pw = 184;
+    const ph = 88;
+    const px = (BASE_WIDTH - pw) / 2;
+    const py = MENU_Y - 8;
+    const FADE = 4;
+    const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+    pool.fillStyle(PALETTE.ink).fillRect(px + FADE, py + FADE, pw - FADE * 2, ph - FADE * 2);
+    for (let y = py; y < py + ph; y++) {
+      for (let x = px; x < px + pw; x++) {
+        const edge = Math.min(x - px, px + pw - 1 - x, y - py, py + ph - 1 - y);
+        if (edge >= FADE) continue;
+        const density = ((edge + 1) / (FADE + 1)) * 16;
+        if ((BAYER[(y % 4) * 4 + (x % 4)] ?? 0) < density) pool.fillRect(x, y, 1, 1);
+      }
+    }
+    pool.setAlpha(0);
+    this.tweens.add({ targets: pool, alpha: 1, duration: 250 });
     this.menu = new ListMenu(this, (BASE_WIDTH - width) / 2, MENU_Y, items, {
       width,
       lineHeight: 15,
@@ -220,6 +250,7 @@ export class MenuScene extends Phaser.Scene {
       facing: spawn.facing ?? 'down',
       items: startData.items,
     });
+    getServices(this.game).meta.recordStart();
     this.launch(new GameSession(state, slot, getServices(this.game).saves), startData.introScript);
   }
 
@@ -230,7 +261,10 @@ export class MenuScene extends Phaser.Scene {
       this.pushPanel(new MessagePanel(this, t('slot.cannotLoad')));
       return;
     }
-    this.launch(new GameSession(result.state, slot, services.saves));
+    const session = new GameSession(result.state, slot, services.saves);
+    const undone = services.meta.detectUndo(result.savedAt);
+    if (undone) session.setFlags({ meta_undo: undone, meta_undo_seen: false });
+    this.launch(session);
   }
 
   private launch(session: GameSession, introScript?: string): void {
@@ -246,8 +280,10 @@ export class MenuScene extends Phaser.Scene {
     let right: number;
     let bottom: number;
     const logo = getAsset('ui.logo');
-    if (logo && logo.kind === 'image' && logo.file !== null && this.textures.exists('ui.logo')) {
-      const image = this.add.image(BASE_WIDTH / 2, LOGO_TOP, 'ui.logo').setOrigin(0.5, 0).setDepth(DEPTH.ui);
+    const hasLogoArt = logo && logo.status !== 'placeholder' && this.textures.exists('ui.logo');
+    if (hasLogoArt) {
+      const frame = logo.kind === 'pixelart' ? 'logo' : undefined;
+      const image = this.add.image(BASE_WIDTH / 2, LOGO_TOP - 12, 'ui.logo', frame).setOrigin(0.5, 0).setDepth(DEPTH.ui);
       right = image.x + image.width / 2;
       bottom = image.y + image.height;
     } else {
@@ -281,6 +317,11 @@ export class MenuScene extends Phaser.Scene {
 
   /** Stand-in backdrop: Bayer-dithered gradient and a light shaft from the drop slot above. */
   private drawBackdrop(): void {
+    const art = getAsset('bg.title');
+    if (art && art.status !== 'placeholder' && this.textures.exists('bg.title')) {
+      this.add.image(0, 0, 'bg.title', art.kind === 'pixelart' ? 'bg' : undefined).setOrigin(0).setDepth(DEPTH.background - 1);
+      return;
+    }
     const key = 'bg.title.standin';
     if (!this.textures.exists(key)) {
       const texture = this.textures.createCanvas(key, BASE_WIDTH, BASE_HEIGHT);
@@ -351,6 +392,19 @@ export class MenuScene extends Phaser.Scene {
     const g = this.stringLayer;
     g.clear();
     g.fillStyle(PALETTE.mist);
+    // After the clear ending the string hangs empty and still.
+    if (!this.tag.visible) {
+      pixelLine(g, this.tagAnchor.x, this.tagAnchor.y, this.tagAnchor.x, this.tagAnchor.y + STRING_LENGTH);
+      return;
+    }
     pixelLine(g, this.tagAnchor.x, this.tagAnchor.y, Math.round(x), Math.round(y));
+    if (this.pairTag) {
+      // The second tag hangs a little lower on the same string, swinging slightly out of step.
+      const a2 = Math.sin(this.elapsed / 900 - 0.4) * 0.35;
+      const x2 = this.tagAnchor.x + Math.sin(a2) * (STRING_LENGTH + 7);
+      const y2 = this.tagAnchor.y + Math.cos(a2) * (STRING_LENGTH + 7);
+      this.pairTag.setPosition(Math.round(x2), Math.round(y2));
+      pixelLine(g, Math.round(x), Math.round(y), Math.round(x2), Math.round(y2));
+    }
   }
 }

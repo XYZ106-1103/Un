@@ -25,40 +25,19 @@
     },
     {
       "key": "ui.logo",
-      "kind": "image",
-      "status": "placeholder",
-      "size": [
-        224,
-        56
-      ],
+      "kind": "pixelart",
+      "source": "logo.json",
+      "status": "wip",
       "usage": "Title screen wordmark.",
-      "brief": "Hand-lettered 'UNCLAIMED' wordmark, slightly uneven like a stamped label, with a claim tag hanging from the final D on a string. Two variants: normal and 'faded' (used after certain endings).",
-      "file": null
+      "brief": "Stamped 'UNCLAIMED' wordmark in a worn rubber-stamp frame. Next: 'faded' variant for post-ending titles."
     },
     {
       "key": "bg.title",
-      "kind": "image",
-      "status": "placeholder",
-      "size": [
-        480,
-        270
-      ],
-      "usage": "Title screen backdrop (currently a procedural stand-in: light shaft and falling lint).",
-      "brief": "The bottom of the Lost & Found drop chute seen from below: a heap of forgotten objects, a single shaft of light from the slot above, dust motes. Layered for subtle parallax (3 layers).",
-      "file": null
-    },
-    {
-      "key": "tiles.dev",
-      "kind": "spritesheet",
-      "status": "placeholder",
-      "size": [
-        16,
-        16
-      ],
-      "frames": 4,
-      "usage": "Development test room floor/wall tiles. Not shipped.",
-      "brief": "Development only; replaced by area tilesets in PHASE 2.",
-      "file": null
+      "kind": "pixelart",
+      "source": "title-bg.json",
+      "status": "wip",
+      "usage": "Title screen backdrop (dynamic dust drawn on top).",
+      "brief": "Bottom of the drop chute: a heap of lost things lit by the shaft from the slot. Next: parallax layers."
     },
     {
       "key": "char.player",
@@ -106,7 +85,7 @@
       "source": "bullets.json",
       "status": "wip",
       "usage": "Bullet frames for all enemy patterns.",
-      "brief": "8x8: dot, wires, plug, note, spark, receipt digits, paper scrap."
+      "brief": "8x8: dot, wires, plug, note, spark, receipt digits, paper scrap, raindrop, rib, fluff, bubble, snowflake, button."
     },
     {
       "key": "tiles.basement",
@@ -121,7 +100,7 @@
       "kind": "pixelart",
       "source": "enemy-earbuds.json",
       "status": "wip",
-      "usage": "Battle sprite: Tangled Earbuds (2-frame jitter).",
+      "usage": "Battle sprite: Tangled Earbuds (2-frame jitter + untangled/calm frames).",
       "brief": "Knot of white cord with two buds and a plug. Next: untangled/loose frames per mercy state."
     },
     {
@@ -129,8 +108,104 @@
       "kind": "pixelart",
       "source": "enemy-receipt.json",
       "status": "wip",
-      "usage": "Battle sprite: Receipt Ghost (2-frame sway).",
+      "usage": "Battle sprite: Receipt Ghost (2-frame sway + remembered/calm frames).",
       "brief": "Long curled faded receipt with a torn bottom. Next: 'remembered' happy frame."
+    },
+    {
+      "key": "tiles.forest",
+      "kind": "pixelart",
+      "source": "tiles-forest.json",
+      "status": "wip",
+      "usage": "Tileset for the Umbrella Stand Forest: moss, puddles, umbrella trees (canopy drawn over characters), tank, valves, pipes, stall, bridge.",
+      "brief": "Next: animated water, more canopy colours."
+    },
+    {
+      "key": "char.mitt",
+      "kind": "pixelart",
+      "source": "mitt.json",
+      "status": "wip",
+      "usage": "Mitt's overworld sprite (4 directions, hop walk) and follower animations.",
+      "brief": "Knitted teal right mitten with the amber flower stitch on its back."
+    },
+    {
+      "key": "portrait.mitt",
+      "kind": "pixelart",
+      "source": "portrait-mitt.json",
+      "status": "wip",
+      "usage": "Mitt's portrait: neutral, happy, sad, surprised, teary.",
+      "brief": "Next: talking frames."
+    },
+    {
+      "key": "char.hoopstud",
+      "kind": "pixelart",
+      "source": "hoopstud.json",
+      "status": "wip",
+      "usage": "Hoop & Stud, the earring shopkeepers (idle bob).",
+      "brief": "Gold hoop and lilac stud side by side."
+    },
+    {
+      "key": "portrait.hoopstud",
+      "kind": "pixelart",
+      "source": "portrait-hoopstud.json",
+      "status": "wip",
+      "usage": "Hoop & Stud portrait: neutral, happy, annoyed.",
+      "brief": "Next: separate faces for each twin."
+    },
+    {
+      "key": "char.brolly",
+      "kind": "pixelart",
+      "source": "brolly.json",
+      "status": "wip",
+      "usage": "Sir Brolly's overworld sprite.",
+      "brief": "Black folded umbrella knight with a red sash and a magnificent strap moustache."
+    },
+    {
+      "key": "portrait.brolly",
+      "kind": "pixelart",
+      "source": "portrait-brolly.json",
+      "status": "wip",
+      "usage": "Sir Brolly portrait: proud, flustered, sad, happy.",
+      "brief": "Next: open-canopy portrait."
+    },
+    {
+      "key": "enemy.brolly",
+      "kind": "pixelart",
+      "source": "enemy-brolly.json",
+      "status": "wip",
+      "usage": "Boss battle sprite: closed (phase 1), open canopy (phase 2), calm (sheltering in the rain).",
+      "brief": "Next: more open-canopy frames, defeat frame."
+    },
+    {
+      "key": "enemy.sock",
+      "kind": "pixelart",
+      "source": "enemy-sock.json",
+      "status": "wip",
+      "usage": "Battle sprite: Single Sock (idle + calm).",
+      "brief": "Red-and-white striped sock."
+    },
+    {
+      "key": "enemy.button",
+      "kind": "pixelart",
+      "source": "enemy-button.json",
+      "status": "wip",
+      "usage": "Battle sprite: Spare Button (idle + sewn/calm).",
+      "brief": "Four-hole gold button with a loose thread."
+    },
+    {
+      "key": "enemy.duck",
+      "kind": "pixelart",
+      "source": "enemy-duck.json",
+      "status": "wip",
+      "usage": "Battle sprite: Rubber Duck (idle + floating/calm).",
+      "brief": "Squeaky yellow duck."
+    },
+    {
+      "key": "enemy.globe",
+      "kind": "pixelart",
+      "source": "enemy-globe.json",
+      "status": "wip",
+      "usage": "Battle sprite: Snow Globe (idle + calm).",
+      "brief": "Glass dome with a tiny red house."
     }
   ]
 }

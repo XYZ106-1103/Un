@@ -99,4 +99,41 @@ describe('BattleModel', () => {
     }
     expect(damageMultiplier(0.97)).toEqual({ mult: 2.2, critical: true });
   });
+
+  it('boss phases enter once, in order, by HP or variables', () => {
+    const boss: EnemyDef = {
+      ...enemy,
+      id: 'boss',
+      hp: 100,
+      defense: 0,
+      vars: { praised: 0 },
+      acts: [...enemy.acts, { id: 'praise', label: 'p', set: { praised: '+1' }, text: [{ text: 'ok' }] }],
+      phases: [{ id: 'open', if: 'var:hp% <= 60 || var:praised >= 2', soul: 'tether', enter: ['opened'] }],
+    };
+    const state = createNewGameState({ name: 'A', map: 'm', x: 0, y: 0, facing: 'down', items: [] });
+    const model = new BattleModel([boss], state, new InventorySystem(state, () => undefined), new SeededRandom(3));
+    const e = model.enemies[0]!;
+    expect(model.advancePhases()).toEqual([]);
+    model.performAct(e, 'praise');
+    expect(model.advancePhases()).toEqual([]); // one compliment is not enough
+    expect(model.soulMode()).toBe('free');
+    model.performAct(e, 'praise');
+    const entered = model.advancePhases();
+    expect(entered.map((p) => p.phase.id)).toEqual(['open']);
+    expect(e.vars.phase).toBe(1);
+    expect(model.soulMode()).toBe('tether');
+    expect(model.advancePhases()).toEqual([]); // never re-entered
+  });
+
+  it('acts can write story flags and end the battle', () => {
+    const special: EnemyDef = {
+      ...enemy,
+      acts: [...enemy.acts, { id: 'retreat', label: 'r', endBattle: 'fled', flags: { tried: true }, text: [{ text: 'bye' }] }],
+    };
+    const state = createNewGameState({ name: 'A', map: 'm', x: 0, y: 0, facing: 'down', items: [] });
+    const model = new BattleModel([special], state, new InventorySystem(state, () => undefined), new SeededRandom(3));
+    model.performAct(model.enemies[0]!, 'retreat');
+    expect(state.flags.tried).toBe(true);
+    expect(model.outcome()).toBe('fled');
+  });
 });

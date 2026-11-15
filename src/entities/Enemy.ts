@@ -70,6 +70,41 @@ export class EnemyView {
     this.hpBar.setVisible(true);
   }
 
+  /** Brief white flash on a hit (a gentle tint pulse when flashing is reduced). */
+  flash(reduced: boolean): void {
+    if (reduced) {
+      this.sprite.setTint(PALETTE.paper);
+      this.scene.time.delayedCall(120, () => this.sprite.clearTint());
+    } else {
+      this.sprite.setTintFill(PALETTE.white);
+      this.scene.time.delayedCall(70, () => this.sprite.clearTint());
+    }
+  }
+
+  /** Mercy feedback: a calmer pose once the enemy can be let go (if the art has one). */
+  setCalm(calm: boolean): void {
+    const key = this.state.def.sprite;
+    const anim = calm && this.scene.anims.exists(`${key}:calm`) ? `${key}:calm` : this.idleKey();
+    if (anim && this.sprite.anims.currentAnim?.key !== anim) this.sprite.play(anim);
+  }
+
+  /** Boss phase art: plays `<sprite>:phase<N>` when the art defines it (N = 1 for the first phase change). */
+  setPhase(index: number): void {
+    const key = `${this.state.def.sprite}:phase${index + 1}`;
+    if (this.scene.anims.exists(key)) {
+      this.phaseAnim = key;
+      this.sprite.play(key);
+    }
+  }
+
+  private phaseAnim: string | null = null;
+
+  private idleKey(): string | null {
+    if (this.phaseAnim) return this.phaseAnim;
+    const key = `${this.state.def.sprite}:idle`;
+    return this.scene.anims.exists(key) ? key : null;
+  }
+
   spared(): void {
     this.sprite.anims.pause();
     this.scene.tweens.add({ targets: this.sprite, alpha: 0.35, y: this.sprite.y - 6, duration: 600, ease: 'Sine.easeOut' });

@@ -68,6 +68,8 @@ export class GameOverScene extends Phaser.Scene {
     const result = services.saves.load(slot, { prefer: 'manual' });
     if (result.status !== 'ok') return this.toTitle();
     services.session = new GameSession(result.state, slot, services.saves);
+    const undone = services.meta.detectUndo(result.savedAt);
+    if (undone) services.session.setFlags({ meta_undo: undone, meta_undo_seen: false });
     fadeToScene(this, SCENE_KEYS.World, {}, 600);
   }
 

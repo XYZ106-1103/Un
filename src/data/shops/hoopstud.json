@@ -1,0 +1,26 @@
+{
+  "id": "hoopstud",
+  "name": "후프 & 스터드 잡화점",
+  "keeper": "hoopstud",
+  "items": [
+    { "id": "lint-candy", "price": 4 },
+    { "id": "rain-candy", "price": 6 },
+    { "id": "tape-bandage", "price": 8 },
+    { "id": "thread", "price": 5 },
+    { "id": "warm-sock", "price": 14 },
+    { "id": "sewing-needle", "price": 15 },
+    { "id": "knit-scarf", "price": 18 }
+  ],
+  "greeting": [
+    "후프: 어서 와! 스터드: …세요. 후프: 우리 가게는! 스터드: …작습니다.",
+    "스터드: 단추는 정확히 세서 주세요. 후프: 대충 세도 돼! 스터드: 안 됩니다."
+  ],
+  "thanks": [
+    "후프: 고마워! 스터드: …워요. 둘 다: 또 와!",
+    "스터드: 거래 완료. 후프: 잘 어울린다! 스터드: 아직 안 써 봤잖아."
+  ],
+  "broke": [
+    "스터드: 단추가 모자랍니다. 후프: 조금은 깎아… 스터드: 안 됩니다.",
+    "후프: 아이고, 단추가… 스터드: 부족하네요. 정확히는요."
+  ]
+}

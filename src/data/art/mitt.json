@@ -1,0 +1,176 @@
+{
+ "size": [
+  16,
+  16
+ ],
+ "palette": {
+  "k": "#1a1420",
+  "m": "#3fa7a0",
+  "M": "#2a716c",
+  "n": "#62c4bb",
+  "y": "#e8e2d0",
+  "Y": "#b9ad90",
+  "a": "#f2b24c",
+  "r": "#e08a7a",
+  "e": "#1a1420",
+  "z": "#f7f4ea"
+ },
+ "frames": {
+  "down-0": [
+   ".....kkkkkkk....",
+   "....kmmmmmmmk...",
+   "...kmnnmmmmmmk..",
+   "..kkmmmmmmmmMk..",
+   ".kmkmMmmMmmMMk..",
+   ".kmmmmemmMemMk..",
+   ".kmmmmemmmemMk..",
+   ".kmmmrmmMmmrMk..",
+   ".kmmmmMmeMmmMk..",
+   "..kMmmmmmmmmMk..",
+   "...kmMmmMmmMMk..",
+   "...kmmMmmMmmMk..",
+   "...kyyyyyyyyyk..",
+   "...kYyYyYyYyYk..",
+   "...kyyyyyyyyyk..",
+   "....kkkkkkkkk..."
+  ],
+  "down-1": {
+   "from": "down-0",
+   "shift": [
+    0,
+    -1
+   ]
+  },
+  "up-0": [
+   ".....kkkkkkk....",
+   "....kmmmmmmmk...",
+   "...kmnnmmmmmmk..",
+   "..kkmmmmmmmmMk..",
+   ".kmkmMmmMmmMMk..",
+   ".kmmmmMmmMmmMk..",
+   ".kmmmmmaaammMk..",
+   ".kmmmMmazamMMk..",
+   ".kmmmmMaaammMk..",
+   "..kMmmmmmmmmMk..",
+   "...kmMmmMmmMMk..",
+   "...kmmMmmMmmMk..",
+   "...kyyyyyyyyyk..",
+   "...kYyYyYyYyYk..",
+   "...kyyyyyyyyyk..",
+   "....kkkkkkkkk..."
+  ],
+  "up-1": {
+   "from": "up-0",
+   "shift": [
+    0,
+    -1
+   ]
+  },
+  "right-0": [
+   ".....kkkkkkk....",
+   "....kmmmmmmmk...",
+   "...kmnnmmmmmmk..",
+   "...kmmmmmmmmMkk.",
+   "...kmMmmMmmMMkmk",
+   "...kmmMmmMemMmmk",
+   "...kmmmmmmemmmmk",
+   "...kmMmmMrmMmmmk",
+   "...kmmMmmMmeMmmk",
+   "...kmmmmmmmmMkMk",
+   "...kmMmmMmmMMkk.",
+   "...kmmMmmMmmMk..",
+   "...kyyyyyyyyyk..",
+   "...kYyYyYyYyYk..",
+   "...kyyyyyyyyyk..",
+   "....kkkkkkkkk..."
+  ],
+  "right-1": {
+   "from": "right-0",
+   "shift": [
+    0,
+    -1
+   ]
+  },
+  "left-0": {
+   "mirror": "right-0"
+  },
+  "left-1": {
+   "mirror": "right-1"
+  }
+ },
+ "animations": {
+  "idle-down": {
+   "frames": [
+    "down-0",
+    "down-0",
+    "down-0",
+    "down-1"
+   ],
+   "rate": 2
+  },
+  "idle-up": {
+   "frames": [
+    "up-0",
+    "up-0",
+    "up-0",
+    "up-1"
+   ],
+   "rate": 2
+  },
+  "idle-left": {
+   "frames": [
+    "left-0",
+    "left-0",
+    "left-0",
+    "left-1"
+   ],
+   "rate": 2
+  },
+  "idle-right": {
+   "frames": [
+    "right-0",
+    "right-0",
+    "right-0",
+    "right-1"
+   ],
+   "rate": 2
+  },
+  "walk-down": {
+   "frames": [
+    "down-1",
+    "down-0"
+   ],
+   "rate": 6
+  },
+  "walk-up": {
+   "frames": [
+    "up-1",
+    "up-0"
+   ],
+   "rate": 6
+  },
+  "walk-left": {
+   "frames": [
+    "left-1",
+    "left-0"
+   ],
+   "rate": 6
+  },
+  "walk-right": {
+   "frames": [
+    "right-1",
+    "right-0"
+   ],
+   "rate": 6
+  },
+  "idle": {
+   "frames": [
+    "down-0",
+    "down-0",
+    "down-0",
+    "down-1"
+   ],
+   "rate": 2
+  }
+ }
+}

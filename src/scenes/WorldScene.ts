@@ -8,6 +8,7 @@ import Phaser from 'phaser';
 import { BASE_HEIGHT, BASE_WIDTH, DEPTH, PALETTE, SCENE_KEYS, TILE_SIZE } from '@/game/Constants';
 import type { GameSession } from '@/game/GameSession';
 import { getServices } from '@/game/Services';
+import { Follower } from '@/entities/Follower';
 import { NPC } from '@/entities/NPC';
 import { Player } from '@/entities/Player';
 import { getAsset } from '@/systems/assets/AssetManifest';
@@ -19,6 +20,9 @@ import { t } from '@/systems/LocaleSystem';
 import { evaluateCondition, type Resolver } from '@/systems/script/Condition';
 import type { Rect } from '@/systems/VirtualControls';
 import { DialogueUI } from '@/ui/DialogueUI';
+import { ShopPanel } from '@/ui/ShopPanel';
+import { evaluateRoute, isHollow } from '@/systems/StorySystem';
+import { Particles } from '@/systems/Particles';
 import { PauseMenu, SavePanel, showMapBanner } from '@/ui/PauseMenu';
 import { UIStack } from '@/ui/UIStack';
 import { fadeIn, fadeToScene, isTransitioning, wait } from '@/utils/AnimationUtils';
@@ -60,6 +64,11 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
   private insideExit = false;
   private stepsToEncounter = Infinity;
   private hint!: Phaser.GameObjects.Image;
+  private follower: Follower | null = null;
+  private cinema: Phaser.GameObjects.Graphics | null = null;
+  private rain: { x: number; y: number; s: number }[] = [];
+  private rainLayer: Phaser.GameObjects.Graphics | null = null;
+  private particles!: Particles;
   private motes: { x: number; y: number; s: number; p: number }[] = [];
   private motesLayer: Phaser.GameObjects.Graphics | null = null;
   private elapsed = 0;
@@ -107,17 +116,24 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
     this.buildAmbience();
     this.hint = this.add.image(0, 0, 'ui.icons', 'talk').setOrigin(0.5, 1).setDepth(DEPTH.worldOverlay).setVisible(false);
     this.dialogue = new DialogueUI(this);
+    this.dialogue.nameFilter = isHollow(state) ? () => t('hollow.name') : null;
+    this.cinema = null;
+    this.particles = new Particles(this, DEPTH.worldOverlay + 3);
+    this.spawnFollower();
     this.resetEncounterCounter();
 
     services.events.emit('scene:entered', { key: SCENE_KEYS.World });
-    services.audio.playMusic(map.music);
+    this.playMapMusic();
+    services.audio.playAmbience(map.ambience?.rain ? 'rain' : null);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.runner?.abort());
 
     fadeIn(this, 400);
     if (data.map && !data.introScript) this.session.save('auto');
     showMapBanner(this, map.name);
 
-    const intro = data.introScript ?? map.onEnter;
+    // Ledger remembers what a reload tried to undo (see MetaSystem); said once, wherever you are.
+    const undoNotice = this.session.flag('meta_undo') && this.session.flag('meta_undo_seen') === false;
+    const intro = data.introScript ?? (undoNotice ? 'meta.undo' : map.onEnter);
     if (intro) this.time.delayedCall(450, () => void this.runScript(intro));
   }
 
@@ -126,6 +142,7 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
     this.elapsed += delta;
     this.session.addPlayTime(delta);
     this.dialogue.tick(delta);
+    this.particles.update(delta);
     this.updateAmbience(delta);
     const frozen = this.busy || this.ui.size > 0 || isTransitioning(this);
     for (const npc of this.npcs) npc.update(delta, (r, self) => this.blockedFor(r, self), frozen);
@@ -160,6 +177,8 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
       }
     }
     const moved = this.player.move(axis, this.input$.isDown('cancel'), delta, (r) => this.blocked(r));
+    if (moved > 0) this.follower?.record(this.player.x, this.player.y, this.player.facing);
+    this.follower?.update(moved > 0);
     if (moved > 0) {
       const st = this.session.state;
       st.location.x = Math.floor(this.player.x / TILE_SIZE);
@@ -221,9 +240,9 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
       if (!evaluateCondition(def.if, resolve)) continue;
       const rect = tileRect(def.x, def.y, def.w, def.h);
       const obj: WorldObject = { def, rect, solid: Boolean(def.solid), save: false };
-      if (def.sprite) {
+      if (def.sprite || def.sprites) {
         obj.sprite = this.add
-          .image(rect.x + rect.w / 2, rect.y + rect.h, this.map.tileset, def.sprite)
+          .image(rect.x + rect.w / 2, rect.y + rect.h, this.map.tileset, this.objectFrame(def) ?? def.sprite)
           .setOrigin(0.5, 1)
           .setDepth(DEPTH.world + (rect.y + rect.h) / 10);
       }
@@ -276,6 +295,18 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
         g.fillRect(Math.round(x - width / 2 - spread), y, Math.round(width + spread * 2), 1);
       }
     }
+    if (amb?.rain) {
+      this.rainLayer = this.add.graphics().setDepth(DEPTH.worldOverlay + 2);
+      const count = Math.round(Math.min(110, Math.max(30, this.mapW * this.mapH * 0.18)));
+      this.rain = Array.from({ length: count }, () => ({
+        x: Math.random() * this.mapW * TILE_SIZE,
+        y: Math.random() * this.mapH * TILE_SIZE,
+        s: 150 + Math.random() * 80,
+      }));
+    } else {
+      this.rainLayer = null;
+      this.rain = [];
+    }
     if (amb?.dust) {
       // Dust drifts inside the room only (world space), never over the void outside it.
       this.motesLayer = this.add.graphics().setDepth(DEPTH.worldOverlay + 1);
@@ -292,6 +323,22 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
   }
 
   private updateAmbience(delta: number): void {
+    const r = this.rainLayer;
+    if (r) {
+      r.clear();
+      const h = this.mapH * TILE_SIZE;
+      for (const d of this.rain) {
+        d.y += (d.s * delta) / 1000;
+        d.x -= (d.s * 0.25 * delta) / 1000;
+        if (d.y > h) {
+          // Splash where it lands, then respawn at the top.
+          r.fillStyle(PALETTE.mist, 0.5).fillRect(Math.round(d.x) - 1, h - 2, 1, 1).fillRect(Math.round(d.x) + 1, h - 2, 1, 1);
+          d.y = -4;
+          d.x = Math.random() * (this.mapW + 4) * TILE_SIZE;
+        }
+        r.fillStyle(PALETTE.sky, 0.55).fillRect(Math.round(d.x), Math.round(d.y), 1, 3);
+      }
+    }
     const g = this.motesLayer;
     if (!g) return;
     g.clear();
@@ -341,23 +388,27 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
     return { x: o.rect.x + 1, y: o.rect.y + o.rect.h - 10, w: o.rect.w - 2, h: 10 };
   }
 
-  private interactTarget(): NPC | WorldObject | null {
+  private interactTarget(): NPC | WorldObject | Follower | null {
     const p = this.player.probe();
     const npc = this.npcs.find((n) => !n.hidden && contains(n.talkArea(), p.x, p.y));
     if (npc) return npc;
+    if (this.follower && contains(this.follower.talkArea(), p.x, p.y) && content.script(`follower.${this.follower.character.id}`)) {
+      return this.follower;
+    }
     // A little slack so standing flush against an object still counts as facing it.
     const slack = (r: Rect): Rect => ({ x: r.x - 2, y: r.y - 2, w: r.w + 4, h: r.h + 4 });
     return this.objects.find((o) => contains(slack(o.rect), p.x, p.y)) ?? null;
   }
 
-  private updateHint(target: NPC | WorldObject | null): void {
+  private updateHint(target: NPC | WorldObject | Follower | null): void {
     if (!target) {
       this.hint.setVisible(false);
       return;
     }
     const bob = Math.floor(this.elapsed / 350) % 2;
-    const x = target instanceof NPC ? target.x : target.rect.x + target.rect.w / 2;
-    const top = target instanceof NPC ? target.sprite.getTopCenter().y : (target.sprite?.getTopCenter().y ?? target.rect.y);
+    const isActor = target instanceof NPC || target instanceof Follower;
+    const x = isActor ? target.x : target.rect.x + target.rect.w / 2;
+    const top = isActor ? target.sprite.getTopCenter().y : (target.sprite?.getTopCenter().y ?? target.rect.y);
     this.hint.setPosition(Math.round(x), Math.round(top - 2 - bob)).setVisible(true);
   }
 
@@ -420,8 +471,11 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
 
   // ── Interaction & scripts ───────────────────────────────────────────────────
 
-  private interact(target: NPC | WorldObject): void {
-    if (target instanceof NPC) {
+  private interact(target: NPC | WorldObject | Follower): void {
+    if (target instanceof Follower) {
+      target.faceTowards(this.player.x, this.player.y);
+      void this.runScript(`follower.${target.character.id}`);
+    } else if (target instanceof NPC) {
       target.faceTowards(this.player.x, this.player.y);
       void this.runScript(target.def.script);
     } else {
@@ -444,6 +498,7 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
       await body();
     } finally {
       if (this.scene.isActive() || this.scene.isSleeping()) {
+        this.refreshObjects();
         this.dialogue.close();
         this.busy = false;
         this.runner = null;
@@ -466,7 +521,13 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
   }
 
   resolver(): Resolver {
-    return this.session.resolver((key) => (key === 'map' ? this.map.id : undefined));
+    const meta = getServices(this.game).meta.data;
+    return this.session.resolver((key) => {
+      if (key === 'map') return this.map.id;
+      if (key === 'meta:undoNotices') return meta.undoNotices;
+      if (key === 'meta:endings') return meta.endings.length;
+      return undefined;
+    });
   }
 
   async command(cmd: CommandNode): Promise<void> {
@@ -512,6 +573,7 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
         const ok = this.session.inventory.add(item.id);
         if (cmd.quiet !== true) {
           services.audio.playSfx(ok ? 'tag-chime' : 'ui-deny');
+          if (ok) this.particles.burst(this.player.x, this.player.y - 20, { count: 10, colors: [PALETTE.tag, PALETTE.white], speed: 35, gravity: -10, life: 700 });
           await this.say({ text: ok ? t('item.got', { item: item.name }) : t('item.full'), page: 0, pages: 1 });
         }
         if (!ok && typeof cmd.failFlag === 'string') this.session.setFlags({ [cmd.failFlag]: true });
@@ -558,6 +620,30 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
         if (npc) await npc.walkTo(num('x') * TILE_SIZE + TILE_SIZE / 2, num('y') * TILE_SIZE + TILE_SIZE - 2, num('speed', 50));
         return;
       }
+      case 'shop': {
+        const shop = content.shop(str('id'));
+        if (shop) await this.openPanel(new ShopPanel(this, this.session, shop));
+        return;
+      }
+      case 'cinema':
+        await this.setCinema(cmd.on !== false);
+        return;
+      case 'follower': {
+        const id = cmd.id === null ? false : str('id');
+        this.session.setFlags({ follower: id });
+        this.follower?.sprite.destroy();
+        this.follower = null;
+        if (id) this.spawnFollower();
+        return;
+      }
+      case 'ending': {
+        const route = evaluateRoute(this.session.state);
+        getServices(this.game).meta.recordEnding(route);
+        this.runner?.abort();
+        getServices(this.game).audio.playAmbience(null);
+        fadeToScene(this, SCENE_KEYS.Ending, { route }, 1500);
+        return;
+      }
       case 'player.face':
         this.player.face(str('facing') as Facing);
         return;
@@ -577,6 +663,21 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
       // Encounter sting: the claim tag blinks over the player before the screen cuts.
       const tag = this.add.image(this.player.x, this.player.y - 28, 'soul.tag').setDepth(DEPTH.transition);
       this.tweens.add({ targets: tag, alpha: 0, yoyo: true, repeat: 2, duration: 90 });
+      // Then the screen closes like eyelids (pixel-safe wipe, no zoom).
+      const wipe = this.add.graphics().setScrollFactor(0).setDepth(DEPTH.transition);
+      this.time.delayedCall(330, () => {
+        services.audio.playSfx('wipe');
+        this.tweens.addCounter({
+          from: 0,
+          to: BASE_HEIGHT / 2 + 1,
+          duration: 220,
+          ease: 'Cubic.easeIn',
+          onUpdate: (tw) => {
+            const h = Math.round(tw.getValue() ?? 0);
+            wipe.clear().fillStyle(PALETTE.ink).fillRect(0, 0, BASE_WIDTH, h).fillRect(0, BASE_HEIGHT - h, BASE_WIDTH, h);
+          },
+        });
+      });
       this.time.delayedCall(560, () => {
         tag.destroy();
         const data: BattleData = {
@@ -584,8 +685,10 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
           canFlee,
           returnTo: SCENE_KEYS.World,
           onEnd: (result) => {
+            // This scene slept through the battle, so remove the wipe here, not on a timer.
+            wipe.destroy();
             if (result !== 'defeat') {
-              services.audio.playMusic(this.map.music);
+              this.playMapMusic();
               this.cameras.main.fadeIn(300, 11, 10, 16);
             }
             resolve(result);
@@ -602,7 +705,10 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
       this.dialogue.close();
       const panel = new SavePanel(this, this.session, this.map.name).onResult((saved) => {
         this.ui.remove(panel);
-        if (saved) this.session.state.hp = this.session.state.maxHp;
+        if (saved) {
+          this.session.state.hp = this.session.state.maxHp;
+          this.particles.burst(this.player.x, this.player.y - 16, { count: 18, colors: [PALETTE.tag, PALETTE.amber, PALETTE.white], speed: 40, gravity: -20, life: 900 });
+        }
         resolve();
       });
       this.session.state.lastSavePoint = this.map.id;
@@ -624,6 +730,69 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
       onClose: () => this.ui.remove(menu),
     });
     this.ui.push(menu);
+  }
+
+  private objectFrame(def: ObjectDef | SavePointDef): string | undefined {
+    if (!('sprites' in def) || !def.sprites) return undefined;
+    const resolve = this.session.resolver();
+    return def.sprites.find((s) => evaluateCondition(s.if, resolve))?.frame;
+  }
+
+  /** Re-evaluates conditional object frames (valves turning, a tank filling). */
+  private refreshObjects(): void {
+    for (const o of this.objects) {
+      const frame = this.objectFrame(o.def);
+      if (frame && o.sprite) o.sprite.setFrame(frame);
+    }
+  }
+
+  /** Map song, or its "-hollow" variant (fewer instruments) when the world has gone quiet. */
+  private playMapMusic(): void {
+    const id = this.map.music;
+    const audio = getServices(this.game).audio;
+    if (id && isHollow(this.session.state) && content.song(`${id}-hollow`)) audio.playMusic(`${id}-hollow`);
+    else audio.playMusic(id);
+  }
+
+  private spawnFollower(): void {
+    const id = this.session.flag('follower');
+    const character = typeof id === 'string' ? content.character(id) : undefined;
+    if (!character) return;
+    const back: Record<Facing, [number, number]> = { down: [0, -12], up: [0, 12], left: [12, 0], right: [-12, 0] };
+    const [ox, oy] = back[this.player.facing];
+    this.follower = new Follower(this, character, this.player.x + ox, this.player.y + oy, this.player.facing);
+  }
+
+  /** Letterbox bars for cutscenes (pixel-safe: no zoom). */
+  private setCinema(on: boolean): Promise<void> {
+    if (!this.cinema) this.cinema = this.add.graphics().setScrollFactor(0).setDepth(DEPTH.dialogue - 1);
+    const g = this.cinema;
+    const from = on ? 0 : 22;
+    const to = on ? 22 : 0;
+    return new Promise((resolve) => {
+      this.tweens.addCounter({
+        from,
+        to,
+        duration: 350,
+        onUpdate: (tw) => {
+          const h = Math.round(tw.getValue() ?? 0);
+          g.clear().fillStyle(PALETTE.ink).fillRect(0, 0, BASE_WIDTH, h).fillRect(0, BASE_HEIGHT - h, BASE_WIDTH, h);
+        },
+        onComplete: () => resolve(),
+      });
+    });
+  }
+
+  /** Pushes a panel and resolves when it closes. */
+  private openPanel(panel: ShopPanel): Promise<void> {
+    return new Promise((resolve) => {
+      this.dialogue.close();
+      panel.onClose(() => {
+        this.ui.remove(panel);
+        resolve();
+      });
+      this.ui.push(panel);
+    });
   }
 
   private goToMap(mapId: string, spawn: string): void {

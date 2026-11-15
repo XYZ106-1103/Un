@@ -22,7 +22,8 @@ import { SCALE_MODES, type ScaleResult } from '@/utils/ScaleUtils';
 const MAP_W = 40;
 const MAP_H = 24;
 const PLAYER_SPEED = 80; // px/s
-const TILE = { floorA: 0, floorB: 1, wall: 2, marker: 3 } as const;
+/** Frame indices in tiles.basement (see src/data/art/tiles-basement.json). */
+const TILE = { floorA: 0, floorB: 1, wall: 5, marker: 11 } as const;
 const BACK_BUTTON = { x: BASE_WIDTH - 46, y: 4, w: 42, h: 14 };
 
 type Facing = 'down' | 'left' | 'right' | 'up';
@@ -139,7 +140,7 @@ export class DevRoomScene extends Phaser.Scene {
       data.push(row);
     }
     const map = this.make.tilemap({ data, tileWidth: TILE_SIZE, tileHeight: TILE_SIZE });
-    const tileset = map.addTilesetImage('dev', 'tiles.dev', TILE_SIZE, TILE_SIZE, 0, 0);
+    const tileset = map.addTilesetImage('dev', 'tiles.basement', TILE_SIZE, TILE_SIZE, 0, 0);
     if (!tileset) throw new Error('DevRoom: tileset missing');
     map.createLayer(0, tileset, 0, 0)?.setDepth(DEPTH.background);
   }
@@ -194,7 +195,7 @@ export class DevRoomScene extends Phaser.Scene {
     });
     this.inputLine = new PixelText(this, 6, BASE_HEIGHT - 19, '', { font: 'small', color: PALETTE.mitten });
     [this.scaleLine, this.viewportLine, this.inputLine].forEach(hud);
-    const temp = placeholderAssets().map((a) => a.key).filter((k) => k === 'tiles.dev');
+    const temp = placeholderAssets().map((a) => a.key);
     if (temp.length > 0) {
       hud(new PixelText(this, BASE_WIDTH - 6, BASE_HEIGHT - 19, t('title.temp', { list: temp.join(', ') }), {
         font: 'small',

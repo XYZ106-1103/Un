@@ -1,0 +1,193 @@
+{
+ "id": "sock",
+ "name": "외짝 양말",
+ "sprite": "enemy.sock",
+ "hp": 18,
+ "attack": 3,
+ "defense": 0,
+ "reward": {
+  "buttons": 5
+ },
+ "encounter": "외짝 양말이 폴짝 뛰어나온다. 혹시… 짝을 보셨나요?",
+ "check": "빨래하다 잃어버린 한 짝. 매일 건조기 앞에서 기다렸다.",
+ "vars": {
+  "lonely": 2,
+  "hurt": 0
+ },
+ "acts": [
+  {
+   "id": "check",
+   "label": "관찰",
+   "text": [
+    {
+     "text": "뒤꿈치에 작은 구멍이 나 있다. 그래도 무늬는 선명하다."
+    }
+   ]
+  },
+  {
+   "id": "praise",
+   "label": "무늬 칭찬",
+   "set": {
+    "lonely": "-1"
+   },
+   "text": [
+    {
+     "if": "var:lonely >= 2",
+     "text": [
+      "\"줄무늬가 멋지다.\"",
+      "외짝 양말이 조금 부풀어 올랐다."
+     ]
+    },
+    {
+     "text": [
+      "\"짝이 없어도 멋진 무늬야.\"",
+      "외짝 양말이 고개를(?) 끄덕였다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "introduce",
+   "label": "소개해 주기",
+   "requires": "met:sock >= 2",
+   "deniedText": [
+    "소개해 줄 다른 양말을 아직 모른다.",
+    "…숲 어딘가에 또 있을지도?"
+   ],
+   "set": {
+    "lonely": "-2"
+   },
+   "text": [
+    {
+     "text": [
+      "아까 만났던 다른 외짝 양말 이야기를 해 주었다.",
+      "\"그 애도… 기다리고 있었구나.\" 외짝 양말이 따뜻해졌다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tease",
+   "label": "\"짝은 없어\"",
+   "set": {
+    "hurt": 1,
+    "lonely": "+1"
+   },
+   "text": [
+    {
+     "text": [
+      "\"네 짝은 이제 안 와.\"",
+      "외짝 양말이 바짝 오그라들었다!"
+     ]
+    }
+   ]
+  }
+ ],
+ "spareWhen": "var:lonely <= 0",
+ "flavor": [
+  {
+   "if": "var:hurt >= 1",
+   "text": "외짝 양말이 몸을 꼬며 울먹인다."
+  },
+  {
+   "if": "var:lonely <= 0",
+   "text": "외짝 양말이 편안해 보인다. 이제 놓아줄 수 있을 것 같다."
+  },
+  {
+   "text": "외짝 양말이 건조기 냄새를 풍긴다."
+  }
+ ],
+ "speech": [
+  {
+   "if": "var:hurt >= 1",
+   "text": "…알아. 알고 있어."
+  },
+  {
+   "if": "var:lonely <= 0",
+   "text": "고마워. 조금 덜 외로워."
+  },
+  {
+   "text": "내 짝… 줄무늬… 왼쪽…"
+  }
+ ],
+ "patterns": [
+  {
+   "id": "angry",
+   "if": "var:hurt >= 1"
+  },
+  {
+   "id": "fluff",
+   "if": "var:hurt < 1"
+  }
+ ],
+ "patternDefs": {
+  "fluff": {
+   "duration": 5000,
+   "box": {
+    "w": 130,
+    "h": 80
+   },
+   "emitters": [
+    {
+     "type": "stream",
+     "from": "enemy",
+     "interval": 380,
+     "spread": 40,
+     "bullet": {
+      "frame": "fluff",
+      "radius": 2.5,
+      "speed": 62
+     }
+    },
+    {
+     "type": "linear",
+     "from": "left",
+     "start": 1500,
+     "interval": 900,
+     "bullet": {
+      "frame": "fluff",
+      "radius": 2.5,
+      "speed": 55
+     }
+    }
+   ]
+  },
+  "angry": {
+   "duration": 5200,
+   "box": {
+    "w": 120,
+    "h": 84
+   },
+   "emitters": [
+    {
+     "type": "homing",
+     "from": "edges",
+     "interval": 800,
+     "turn": 90,
+     "bullet": {
+      "frame": "fluff",
+      "radius": 2.5,
+      "speed": 48,
+      "lifetime": 3200
+     }
+    },
+    {
+     "type": "radial",
+     "from": [
+      0.5,
+      -0.5
+     ],
+     "interval": 1300,
+     "amount": 8,
+     "bullet": {
+      "frame": "fluff",
+      "radius": 2.5,
+      "speed": 54
+     }
+    }
+   ]
+  }
+ },
+ "sparedText": "외짝 양말은 폴짝폴짝, 건조기가 있는 쪽으로 돌아갔다.",
+ "clearedText": "이제 그냥 양말 한 짝이다."
+}

@@ -1,0 +1,165 @@
+{
+ "id": "forest-1",
+ "name": "우산꽂이 숲",
+ "music": "forest",
+ "tileset": "tiles.forest",
+ "legend": {
+  "#": {
+   "tile": "wall-top",
+   "solid": true
+  },
+  "=": {
+   "tile": "wall-umbrellas",
+   "solid": true
+  },
+  ".": {
+   "tile": "moss-a"
+  },
+  ",": {
+   "tile": "moss-b"
+  },
+  "~": {
+   "tile": "moss-wet"
+  },
+  "o": {
+   "tile": "puddle"
+  },
+  ":": {
+   "tile": "path"
+  },
+  "f": {
+   "tile": "flowers"
+  },
+  "A": {
+   "tile": "moss-a",
+   "deco": "um-tl",
+   "over": true
+  },
+  "B": {
+   "tile": "moss-a",
+   "deco": "um-tr",
+   "over": true
+  },
+  "C": {
+   "tile": "moss-a",
+   "deco": "um-bl",
+   "over": true
+  },
+  "D": {
+   "tile": "moss-a",
+   "deco": "um-br",
+   "over": true
+  },
+  "E": {
+   "tile": "moss-a",
+   "deco": "shaft-l",
+   "solid": true
+  },
+  "F": {
+   "tile": "moss-a",
+   "deco": "shaft-r",
+   "solid": true
+  },
+  "M": {
+   "tile": "moss-a",
+   "deco": "mailbox",
+   "solid": true
+  }
+ },
+ "layout": [
+  "##############################",
+  "#============================#",
+  "#..AB....,...AB......AB....,.#",
+  "#..CD..~.....CD..M...CD......#",
+  "#..EF.....,..EF..:...EF..o...#",
+  "::::::::::::::::::::::::::::::",
+  "::::::::::::::::::::::::::::::",
+  "#...,..AB.....f.....AB...~...#",
+  "#.o....CD.........,.CD.......#",
+  "#......EF..AB.......EF...AB..#",
+  "#..,.......CD............CD..#",
+  "#.....f....EF...,........EF..#",
+  "#..........................,.#",
+  "##############################"
+ ],
+ "spawns": {
+  "from-path": {
+   "x": 1,
+   "y": 5,
+   "facing": "right"
+  },
+  "from-east": {
+   "x": 28,
+   "y": 5,
+   "facing": "left"
+  }
+ },
+ "npcs": [
+  {
+   "id": "mitt",
+   "character": "mitt",
+   "x": 16,
+   "y": 4,
+   "facing": "right",
+   "behavior": "idle",
+   "script": "forest.mitt.meet",
+   "if": "!flag:mitt_joined"
+  }
+ ],
+ "objects": [
+  {
+   "id": "mailbox",
+   "x": 17,
+   "y": 3,
+   "script": "forest.mailbox"
+  }
+ ],
+ "triggers": [
+  {
+   "id": "meet-mitt",
+   "x": 11,
+   "y": 5,
+   "w": 1,
+   "h": 2,
+   "script": "forest.mitt.meet",
+   "once": true,
+   "if": "!flag:mitt_joined"
+  }
+ ],
+ "exits": [
+  {
+   "x": 0,
+   "y": 5,
+   "h": 2,
+   "to": "umbrella-path",
+   "spawn": "from-forest"
+  },
+  {
+   "x": 29,
+   "y": 5,
+   "h": 2,
+   "to": "forest-2",
+   "spawn": "from-west"
+  }
+ ],
+ "encounters": {
+  "steps": 24,
+  "groups": [
+   [
+    "sock"
+   ],
+   [
+    "duck"
+   ],
+   [
+    "sock",
+    "duck"
+   ]
+  ],
+  "if": "flag:mitt_joined"
+ },
+ "onEnter": "forest.enter",
+ "ambience": {
+  "rain": true
+ }
+}

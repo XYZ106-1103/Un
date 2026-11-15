@@ -2,7 +2,8 @@
 
 분실물 보관소 아래, 아무도 찾으러 오지 않은 물건들이 영혼을 얻어 이룬 세계를 무대로 한 2D 픽셀 RPG. 웹 브라우저에서 실행됩니다.
 
-> 현재 단계: **PHASE 4까지 완료** — 메인 메뉴·저장·필드·대화·전투가 실제로 플레이 가능합니다 (방 3개, 적 2종). 진행 상황은 [docs/ROADMAP.md](docs/ROADMAP.md)
+> 현재 버전: **v0.1.0 — 0장 + 1장 완성.** 처음부터 1장 엔딩(3종)과 크레딧까지 플레이할 수 있습니다 (맵 6개, 일반 적 6종, 보스 1, 동료 1, 상점 1, 곡 8개).
+> 2–4장은 아직 만들지 않았습니다. 진행 상황과 알려진 한계는 [docs/ROADMAP.md](docs/ROADMAP.md)
 
 ## 실행
 
@@ -19,12 +20,16 @@ npm run preview   # 빌드 결과 미리보기
 
 ```bash
 npm run typecheck      # TypeScript 검사
-npm test               # 단위 테스트 (Vitest)
-npm run build && npm run smoke   # Chromium에서 5개 화면 크기 스모크 테스트 (playwright 필요)
-npm run assets:report  # 에셋 상태 (placeholder / wip / final)
+npm test               # 단위 테스트 (Vitest) — 콘텐츠 교차 검증, 폰트 글리프 커버리지 포함
+npm run build && npm run smoke   # Chromium 스모크 테스트: 레이아웃, 0장·1장 전체 플레이(두 루트),
+                                 # 저장소 손상, 기기 프로필, 오류 알림 (playwright 필요)
+npm run smoke -- --only chapter1,damaged   # 일부 구역만 (layout, desktop, phone, chapter1, damaged, devices, crash)
+npm run bench          # 탄막 부하 벤치마크 (동시 탄 80 ~ 2,000발)
+npm run assets:report -- --strict   # 출시 게이트: 플레이스홀더가 하나라도 있으면 실패
 ```
 
-스모크 테스트는 `playwright` 패키지가 필요합니다: `npm i -D playwright && npx playwright install chromium`
+스모크 테스트·벤치마크는 `playwright` 패키지가 필요합니다: `npm i -D playwright && npx playwright install chromium`
+폰트를 다시 서브셋하려면 `pip install fonttools brotli` 후 `npm run fonts:subset -- <원본 Galmuri 폴더>`
 
 ## 조작
 
@@ -41,10 +46,20 @@ npm run assets:report  # 에셋 상태 (placeholder / wip / final)
 
 ## 지금 플레이할 수 있는 것
 
+**0장 — 투입구와 분류실**
 1. 새로 하기 → 기록 칸 선택 → 이름 입력 (특정 이름에는 반응이 있습니다)
 2. **투입구 바닥**: 떨어진 자리. 물건 더미를 여러 번 조사해 보세요.
 3. **분류실**: 등록 장부 **레저**와의 만남(선택지), 도장 책상(기록), 상자 라벨, 숨은 공간
-4. **우산꽂이 숲 입구**: 첫 전투(꼬인 이어폰)와 랜덤 인카운터(영수증 유령). 치우거나, 대화로 미련을 풀어 놓아줄 수 있습니다. 레저는 당신이 무엇을 했는지 기억합니다.
+4. **우산꽂이 숲 입구**: 첫 전투(꼬인 이어폰)와 랜덤 인카운터(영수증 유령). 치우거나, 대화로 미련을 풀어 놓아줄 수 있습니다.
+
+**1장 — 우산꽂이 숲**
+5. 매일 주인에게 편지를 쓰는 장갑 오른짝 **미트**. 주머니 속 왼짝 장갑을 보여줄 수도, 숨길 수도 있습니다.
+6. 숲의 적 4종(외짝 양말, 여분 단추, 고무 오리, 스노글로브), 귀걸이 형제 **후프 & 스터드**의 상점
+7. 밸브 퍼즐 → 물탱크 → 물뿌리개. 어디에 쓰는지는 직접 알아내 보세요.
+8. 보스 **브롤리 경**: 2페이즈, 끈에 묶인 영혼, 그리고 칼 대신 다른 방법으로 끝내는 길
+9. 숲 끝의 등불 아래에서 **엔딩 3종**(돌려주기 · 간직하기 · 치우기)과 크레딧
+
+모든 것을 치우면 세계가 조용해지고, 레저는 잉크로 적은 것을 잊지 않습니다. 엔딩을 본 뒤 타이틀 화면을 다시 보세요.
 
 ## 문서
 
@@ -57,12 +72,14 @@ npm run assets:report  # 에셋 상태 (placeholder / wip / final)
 
 ```
 src/
-├── main.ts                 진입점, 치명적 오류 화면
-├── game/                   Constants, GameConfig, Game(앱 루트), Services, GameState, GameSession
-├── scenes/                 Boot, Preload, Menu, World, Battle, GameOver, Overlay, DevRoom(개발용)
-├── entities/               Player, NPC, Soul, Enemy
+├── main.ts                 진입점, 시작 실패 화면
+├── game/                   Constants, GameConfig, Game(앱 루트), Services, GameState, GameSession,
+│                           ErrorOverlay(런타임 오류 알림)
+├── scenes/                 Boot, Preload, Menu, World, Battle, GameOver, Ending, Overlay, DevRoom(개발용)
+├── entities/               Player, NPC, Follower, Soul, Enemy
 ├── systems/                Event, Settings, Display, Input, Audio, Font, Locale, Save, Inventory,
-│   │                       Dialogue(VM), Battle(규칙), Bullet(탄막), VirtualControls
+│   │                       Dialogue(VM), Battle(규칙), Bullet(탄막), Story(루트), Meta(영구 기록),
+│   │                       Particles, VirtualControls
 │   ├── script/             Condition(조건식)
 │   ├── text/               RichText, TextWrap
 │   ├── content/            ContentDB(로딩·검증), types
@@ -70,17 +87,19 @@ src/
 │   ├── audio/              MusicPlayer(칩튠 시퀀서)
 │   └── storage/            SafeStorage, VersionedStore
 ├── ui/                     PixelText, Panel, ListMenu, UIStack, MenuPanels, NameEntryPanel,
-│                           PauseMenu, DialogueUI, BattleUI, TouchControls
+│                           PauseMenu, DialogueUI, BattleUI, ShopPanel, TouchControls
 ├── utils/                  Math, Scale, Dither, Animation, Korean(조사)
-├── data/                   maps, dialogues, enemies, items, characters, art(픽셀아트),
-│                           audio(sfx, songs), story, strings, assets/manifest.json
-└── assets/fonts/           Galmuri (SIL OFL 1.1)
-tests/unit/                 Vitest (콘텐츠 교차 검증 포함)
-scripts/                    smoke-test.mjs, asset-report.mjs
+├── data/                   maps, dialogues, enemies, items, characters, shops, art(픽셀아트),
+│                           audio(sfx, songs), story(routes·endings·quests·credits), strings,
+│                           assets/manifest.json
+└── assets/fonts/           Galmuri 서브셋 (SIL OFL 1.1) + coverage.json(글리프 범위)
+tests/unit/                 Vitest (콘텐츠 교차 검증, 폰트 커버리지 포함)
+scripts/                    smoke-test.mjs, bench-bullets.mjs, asset-report.mjs, subset-fonts.py
 ```
 
 새 맵·대사·적을 추가하는 방법은 [docs/ARCHITECTURE.md §5.1](docs/ARCHITECTURE.md)의 데이터 형식을 참고하세요. 잘못된 참조는 `npm test`가 잡아냅니다.
 
 ## 라이선스 고지
 
-- Galmuri 폰트 © Lee Minseo — SIL Open Font License 1.1 (`src/assets/fonts/Galmuri-OFL-LICENSE.txt`)
+- Galmuri 폰트 © Lee Minseo — SIL Open Font License 1.1 (`src/assets/fonts/Galmuri-OFL-LICENSE.txt`). 배포본은 사용 글자 범위로 서브셋한 파일입니다(OFL 허용 범위의 수정).
+- 그 밖의 모든 그래픽·음악·효과음·텍스트는 이 프로젝트를 위해 새로 만든 것입니다.

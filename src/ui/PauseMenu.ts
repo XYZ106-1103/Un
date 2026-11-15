@@ -11,6 +11,8 @@ import { getServices } from '@/game/Services';
 import type { InputSystem } from '@/systems/InputSystem';
 import { t } from '@/systems/LocaleSystem';
 import { formatPlayTime } from '@/systems/SaveSystem';
+import { content } from '@/systems/content/ContentDB';
+import { questStatuses } from '@/systems/StorySystem';
 import { ListMenu } from './ListMenu';
 import { ConfirmPanel, SettingsPanel } from './MenuPanels';
 import { drawBar } from './Panel';
@@ -55,6 +57,36 @@ class StatusPanel extends Panel {
       this.add(new PixelText(scene, 14, 38 + i * 13, k, { font: 'small', color: PALETTE.mist }));
       this.add(new PixelText(scene, 216, 38 + i * 13, v, { font: 'small', color: PALETTE.paper, originX: 1 }));
     });
+  }
+
+  override handle(input: InputSystem): void {
+    if (input.justPressed('cancel') || input.justPressed('confirm') || input.tapped()) {
+      getServices(this.scene.game).audio.playSfx('ui-cancel');
+      this.close();
+    }
+  }
+}
+
+class QuestPanel extends Panel {
+  constructor(scene: Phaser.Scene, session: GameSession) {
+    super(scene, 126, 8, 300, 150, t('pause.quests'));
+    const list = questStatuses(session.state, content.quests()).filter((q) => q.status !== 'hidden');
+    if (list.length === 0) {
+      this.add(new PixelText(scene, 14, 26, t('quests.none'), { font: 'small', color: PALETTE.mist }));
+      return;
+    }
+    let y = 24;
+    for (const { quest, status } of list) {
+      const done = status === 'done';
+      this.add(new PixelText(scene, 14, y, `${done ? '☑' : '□'} ${quest.title}`, { color: done ? PALETTE.fog : PALETTE.tag }));
+      y += 14;
+      const body = done ? (quest.doneText ?? '') : quest.description;
+      if (body) {
+        const text = new PixelText(scene, 24, y, body, { font: 'small', color: done ? PALETTE.fog : PALETTE.paper, maxWidth: 262 });
+        this.add(text);
+        y += text.height + 6;
+      }
+    }
   }
 
   override handle(input: InputSystem): void {
@@ -153,13 +185,13 @@ export class PauseMenu extends Panel {
     private readonly session: GameSession,
     private readonly callbacks: PauseCallbacks,
   ) {
-    super(scene, 8, 70, 110, 72);
+    super(scene, 8, 70, 110, 85);
     this.card = new StatusCard(scene, session);
     this.menu = new ListMenu(
       scene,
       12,
       10,
-      [{ label: t('pause.pocket') }, { label: t('pause.status') }, { label: t('pause.settings') }, { label: t('pause.quit') }],
+      [{ label: t('pause.pocket') }, { label: t('pause.status') }, { label: t('pause.quests') }, { label: t('pause.settings') }, { label: t('pause.quit') }],
       { width: 90, lineHeight: 13, onConfirm: (i) => this.choose(i), onCancel: () => this.closeAll() },
     );
     this.add(this.menu);
@@ -179,7 +211,8 @@ export class PauseMenu extends Panel {
         }),
       );
     } else if (i === 1) this.open(new StatusPanel(scene, this.session));
-    else if (i === 2) this.open(new SettingsPanel(scene));
+    else if (i === 2) this.open(new QuestPanel(scene, this.session));
+    else if (i === 3) this.open(new SettingsPanel(scene));
     else {
       this.open(
         new ConfirmPanel(scene, t('pause.quitConfirm')).onResult((yes) => {

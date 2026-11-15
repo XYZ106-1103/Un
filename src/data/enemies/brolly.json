@@ -1,0 +1,329 @@
+{
+ "id": "brolly",
+ "name": "브롤리 경",
+ "sprite": "enemy.brolly",
+ "hp": 60,
+ "attack": 4,
+ "defense": 2,
+ "reward": {
+  "buttons": 20
+ },
+ "music": "boss",
+ "canFlee": false,
+ "encounter": "브롤리 경이 우산살을 칼처럼 뽑아 든다! \"덤벼라!\"",
+ "check": "우산꽂이 숲의 자칭 기사. …지하에는 비가 오지 않는다.",
+ "vars": {
+  "sheltered": 0,
+  "praised": 0,
+  "rained": 0
+ },
+ "phases": [
+  {
+   "id": "open",
+   "if": "var:hp% <= 60 || var:praised >= 2",
+   "enter": [
+    "브롤리 경이 촤악 펼쳐졌다!",
+    "\"보아라! 이것이 나의 진짜 모습이로다!\"",
+    "(끈이 묶였다. 좌우로 흔들고, 위아래로 길이를 조절하자.)"
+   ],
+   "soul": "tether"
+  }
+ ],
+ "acts": [
+  {
+   "id": "check",
+   "label": "관찰",
+   "text": [
+    {
+     "text": "손잡이가 반질반질하다. 매일 닦은 모양이다."
+    }
+   ]
+  },
+  {
+   "id": "praise",
+   "label": "칭찬하기",
+   "set": {
+    "praised": "+1"
+   },
+   "text": [
+    {
+     "if": "var:praised >= 1",
+     "text": [
+      "\"정말 멋진 기사야.\"",
+      "\"그, 그렇지! 펼쳐진 모습은 더 멋지노라!\""
+     ]
+    },
+    {
+     "text": [
+      "\"우산살이 늠름하다.\"",
+      "\"흠, 흠! 보는 눈이 있구나!\""
+     ]
+    }
+   ]
+  },
+  {
+   "id": "shelter",
+   "label": "우산 아래 서기",
+   "set": {
+    "sheltered": "+1"
+   },
+   "text": [
+    {
+     "if": "var:phase >= 1",
+     "text": [
+      "펼쳐진 우산 아래로 쏙 들어갔다.",
+      "\"…무, 뭐 하는 것이냐. 비, 비도 안 오는데.\" 브롤리 경의 목소리가 떨린다."
+     ]
+    },
+    {
+     "text": [
+      "접힌 우산 아래에는 설 자리가 없다.",
+      "\"펼쳐 달라고? 그, 그건 진짜 비가 올 때만 하는 것이다!\""
+     ]
+    }
+   ]
+  },
+  {
+   "id": "rain",
+   "label": "비 내리기",
+   "if": "item:watering-can-full",
+   "requires": "var:sheltered >= 1 && var:phase >= 1",
+   "deniedText": [
+    "비를 내리려면… 먼저 펼쳐진 우산 아래에 서야 할 것 같다."
+   ],
+   "set": {
+    "rained": 1
+   },
+   "flags": {
+    "brolly_rain": true
+   },
+   "text": [
+    {
+     "text": [
+      "물뿌리개를 높이 들었다.",
+      "후드득, 후드득. 펼쳐진 우산 위로 비가 내린다.",
+      "\"…비다.{w=400} 진짜 비야!\"",
+      "브롤리 경이 우산을 활짝 펴서 비를 막아 준다.{w=300} 처음으로, 해야 할 일을 하고 있다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "retreat",
+   "label": "물러나기",
+   "if": "!item:watering-can-full",
+   "endBattle": "fled",
+   "text": [
+    {
+     "text": [
+      "\"흥, 겁쟁이로군! …다음에 다시 오너라. 기다려 주지.\"",
+      "(브롤리 경은… 비를 기다리고 있는 것 같다.)"
+     ]
+    }
+   ]
+  }
+ ],
+ "spareWhen": "var:rained >= 1",
+ "flavor": [
+  {
+   "if": "var:rained >= 1",
+   "text": "빗소리 아래, 브롤리 경이 조용히 서 있다. 이제 놓아줄 수 있을 것 같다."
+  },
+  {
+   "if": "var:phase >= 1",
+   "text": "펼쳐진 브롤리 경이 의기양양하다. 그런데 어딘가 쓸쓸해 보인다."
+  },
+  {
+   "text": "브롤리 경이 기사다운 자세를 잡는다. 손잡이가 조금 떨린다."
+  }
+ ],
+ "speech": [
+  {
+   "if": "var:rained >= 1",
+   "text": "비가… 오는구나. 내가 막아 주마."
+  },
+  {
+   "if": "var:sheltered >= 1",
+   "text": "내 아래에 서다니… 이상한 녀석이로다."
+  },
+  {
+   "if": "var:phase >= 1",
+   "text": "펼쳐진 나를 보아라! 비가 와도 끄떡없노라! …비만 온다면."
+  },
+  {
+   "text": "이 길은 지나갈 수 없다! 기사의 이름으로!"
+  }
+ ],
+ "patterns": [
+  {
+   "id": "thrust",
+   "if": "var:phase < 1"
+  },
+  {
+   "id": "drizzle",
+   "if": "var:phase < 1"
+  },
+  {
+   "id": "storm",
+   "if": "var:phase >= 1 && var:rained < 1"
+  },
+  {
+   "id": "gentle",
+   "if": "var:rained >= 1"
+  }
+ ],
+ "patternDefs": {
+  "thrust": {
+   "duration": 5200,
+   "box": {
+    "w": 140,
+    "h": 80
+   },
+   "emitters": [
+    {
+     "type": "linear",
+     "from": "left",
+     "interval": 700,
+     "aim": true,
+     "bullet": {
+      "frame": "rib",
+      "radius": 2.5,
+      "speed": 95
+     }
+    },
+    {
+     "type": "linear",
+     "from": "right",
+     "start": 350,
+     "interval": 700,
+     "aim": true,
+     "bullet": {
+      "frame": "rib",
+      "radius": 2.5,
+      "speed": 95
+     }
+    }
+   ]
+  },
+  "drizzle": {
+   "duration": 5200,
+   "box": {
+    "w": 140,
+    "h": 80
+   },
+   "emitters": [
+    {
+     "type": "fall",
+     "interval": 170,
+     "bullet": {
+      "frame": "raindrop",
+      "radius": 2,
+      "speed": 40,
+      "accel": 90
+     }
+    },
+    {
+     "type": "stream",
+     "from": "enemy",
+     "start": 2000,
+     "interval": 500,
+     "spread": 20,
+     "bullet": {
+      "frame": "rib",
+      "radius": 2.5,
+      "speed": 80
+     }
+    }
+   ]
+  },
+  "storm": {
+   "duration": 6500,
+   "box": {
+    "w": 160,
+    "h": 100
+   },
+   "emitters": [
+    {
+     "type": "fall",
+     "interval": 140,
+     "bullet": {
+      "frame": "raindrop",
+      "radius": 2,
+      "speed": 45,
+      "accel": 100
+     }
+    },
+    {
+     "type": "sequence",
+     "step": 2100,
+     "children": [
+      {
+       "type": "linear",
+       "from": [
+        -0.05,
+        0.55
+       ],
+       "angle": 0,
+       "interval": 900,
+       "bullet": {
+        "frame": "rib",
+        "radius": 2.5,
+        "speed": 85
+       }
+      },
+      {
+       "type": "linear",
+       "from": [
+        1.05,
+        0.8
+       ],
+       "angle": 180,
+       "interval": 800,
+       "bullet": {
+        "frame": "rib",
+        "radius": 2.5,
+        "speed": 90
+       }
+      },
+      {
+       "type": "radial",
+       "from": [
+        0.5,
+        -0.3
+       ],
+       "interval": 1000,
+       "amount": 10,
+       "bullet": {
+        "frame": "raindrop",
+        "radius": 2,
+        "speed": 60
+       }
+      }
+     ]
+    }
+   ]
+  },
+  "gentle": {
+   "duration": 3600,
+   "box": {
+    "w": 140,
+    "h": 80
+   },
+   "emitters": [
+    {
+     "type": "fall",
+     "interval": 420,
+     "bullet": {
+      "frame": "raindrop",
+      "radius": 2,
+      "speed": 30,
+      "accel": 20,
+      "damage": 1
+     }
+    }
+   ]
+  }
+ },
+ "sparedText": "브롤리 경은 비를 맞으며, 아주 오랜만에 쓸모 있는 얼굴로 웃었다.",
+ "clearedText": "…그냥 접힌 우산이다. 비가 와도, 이제는 펴지지 않는다."
+}

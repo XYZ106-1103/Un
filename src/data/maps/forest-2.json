@@ -1,0 +1,313 @@
+{
+ "id": "forest-2",
+ "name": "빗물 저장소",
+ "music": "forest",
+ "tileset": "tiles.forest",
+ "legend": {
+  "#": {
+   "tile": "wall-top",
+   "solid": true
+  },
+  "=": {
+   "tile": "wall-umbrellas",
+   "solid": true
+  },
+  ".": {
+   "tile": "moss-a"
+  },
+  ",": {
+   "tile": "moss-b"
+  },
+  "~": {
+   "tile": "moss-wet"
+  },
+  "o": {
+   "tile": "puddle"
+  },
+  ":": {
+   "tile": "path"
+  },
+  "f": {
+   "tile": "flowers"
+  },
+  "A": {
+   "tile": "moss-a",
+   "deco": "um-tl",
+   "over": true
+  },
+  "B": {
+   "tile": "moss-a",
+   "deco": "um-tr",
+   "over": true
+  },
+  "C": {
+   "tile": "moss-a",
+   "deco": "um-bl",
+   "over": true
+  },
+  "D": {
+   "tile": "moss-a",
+   "deco": "um-br",
+   "over": true
+  },
+  "E": {
+   "tile": "moss-a",
+   "deco": "shaft-l",
+   "solid": true
+  },
+  "F": {
+   "tile": "moss-a",
+   "deco": "shaft-r",
+   "solid": true
+  },
+  "T": {
+   "tile": "moss-a",
+   "solid": true
+  },
+  "v": {
+   "tile": "moss-a",
+   "solid": true
+  },
+  "S": {
+   "tile": "moss-a",
+   "deco": "sign",
+   "solid": true
+  },
+  "Q": {
+   "tile": "moss-a",
+   "deco": "stall-tl",
+   "over": true
+  },
+  "R": {
+   "tile": "moss-a",
+   "deco": "stall-tr",
+   "over": true
+  },
+  "U": {
+   "tile": "moss-a",
+   "deco": "stall-bl",
+   "solid": true
+  },
+  "V": {
+   "tile": "moss-a",
+   "deco": "stall-br",
+   "solid": true
+  }
+ },
+ "layout": [
+  "############################",
+  "#==========================#",
+  "#.....TT..........QR.......#",
+  "#.,...TT....,.....UV...,...#",
+  "#..........................#",
+  "::::::::::::::::::::::::::::",
+  "::::::::::::::::::::::::::::",
+  "#..S..v..v..v.....AB.......#",
+  "#.........,.......CD...o...#",
+  "#..AB.......~.....EF.......#",
+  "#..CD......................#",
+  "#..EF....,......AB.....,...#",
+  "#...............CD.........#",
+  "#..o............EF.........#",
+  "#..........................#",
+  "############################"
+ ],
+ "spawns": {
+  "from-west": {
+   "x": 1,
+   "y": 5,
+   "facing": "right"
+  },
+  "from-east": {
+   "x": 26,
+   "y": 5,
+   "facing": "left"
+  }
+ },
+ "npcs": [
+  {
+   "id": "hoopstud",
+   "character": "hoopstud",
+   "x": 18,
+   "y": 3,
+   "facing": "down",
+   "behavior": "idle",
+   "script": "forest.shop",
+   "if": "stat:cleared < 3"
+  }
+ ],
+ "objects": [
+  {
+   "id": "tank-tl",
+   "x": 6,
+   "y": 2,
+   "script": "forest.tank",
+   "sprites": [
+    {
+     "if": "flag:tank_full",
+     "frame": "tank-full-tl"
+    },
+    {
+     "if": "!flag:tank_full",
+     "frame": "tank-dry-tl"
+    }
+   ]
+  },
+  {
+   "id": "tank-tr",
+   "x": 7,
+   "y": 2,
+   "script": "forest.tank",
+   "sprites": [
+    {
+     "if": "flag:tank_full",
+     "frame": "tank-full-tr"
+    },
+    {
+     "if": "!flag:tank_full",
+     "frame": "tank-dry-tr"
+    }
+   ]
+  },
+  {
+   "id": "tank-bl",
+   "x": 6,
+   "y": 3,
+   "script": "forest.tank",
+   "sprites": [
+    {
+     "if": "flag:tank_full",
+     "frame": "tank-full-bl"
+    },
+    {
+     "if": "!flag:tank_full",
+     "frame": "tank-dry-bl"
+    }
+   ]
+  },
+  {
+   "id": "tank-br",
+   "x": 7,
+   "y": 3,
+   "script": "forest.tank",
+   "sprites": [
+    {
+     "if": "flag:tank_full",
+     "frame": "tank-full-br"
+    },
+    {
+     "if": "!flag:tank_full",
+     "frame": "tank-dry-br"
+    }
+   ]
+  },
+  {
+   "id": "can",
+   "x": 8,
+   "y": 2,
+   "script": "forest.can"
+  },
+  {
+   "id": "valve-red",
+   "x": 6,
+   "y": 7,
+   "script": "forest.valve.red",
+   "sprites": [
+    {
+     "if": "flag:valve_red",
+     "frame": "valve-red-open"
+    },
+    {
+     "if": "!flag:valve_red",
+     "frame": "valve-red-shut"
+    }
+   ]
+  },
+  {
+   "id": "valve-blue",
+   "x": 9,
+   "y": 7,
+   "script": "forest.valve.blue",
+   "sprites": [
+    {
+     "if": "flag:valve_blue",
+     "frame": "valve-blue-open"
+    },
+    {
+     "if": "!flag:valve_blue",
+     "frame": "valve-blue-shut"
+    }
+   ]
+  },
+  {
+   "id": "valve-gold",
+   "x": 12,
+   "y": 7,
+   "script": "forest.valve.gold",
+   "sprites": [
+    {
+     "if": "flag:valve_gold",
+     "frame": "valve-gold-open"
+    },
+    {
+     "if": "!flag:valve_gold",
+     "frame": "valve-gold-shut"
+    }
+   ]
+  },
+  {
+   "id": "hint",
+   "x": 3,
+   "y": 7,
+   "script": "forest.hint"
+  },
+  {
+   "id": "stall",
+   "x": 19,
+   "y": 3,
+   "script": "forest.shop"
+  }
+ ],
+ "savePoints": [
+  {
+   "id": "desk-forest",
+   "x": 22,
+   "y": 3,
+   "script": "forest.desk"
+  }
+ ],
+ "exits": [
+  {
+   "x": 0,
+   "y": 5,
+   "h": 2,
+   "to": "forest-1",
+   "spawn": "from-east"
+  },
+  {
+   "x": 27,
+   "y": 5,
+   "h": 2,
+   "to": "forest-3",
+   "spawn": "from-west"
+  }
+ ],
+ "encounters": {
+  "steps": 26,
+  "groups": [
+   [
+    "button"
+   ],
+   [
+    "globe"
+   ],
+   [
+    "button",
+    "globe"
+   ]
+  ]
+ },
+ "ambience": {
+  "rain": true
+ }
+}

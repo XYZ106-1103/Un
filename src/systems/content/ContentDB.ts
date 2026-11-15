@@ -14,6 +14,9 @@ import { ConditionError, validateCondition } from '@/systems/script/Condition';
 import type {
   CharacterDef,
   CondText,
+  EndingDef,
+  QuestDef,
+  ShopDef,
   EmitterDef,
   EnemyDef,
   ItemDef,
@@ -36,6 +39,9 @@ const mapFiles = glob<MapDef>(import.meta.glob('../../data/maps/*.json', { eager
 const dialogueFiles = glob<ScriptTable>(import.meta.glob('../../data/dialogues/*.json', { eager: true, import: 'default' }));
 const enemyFiles = glob<EnemyDef>(import.meta.glob('../../data/enemies/*.json', { eager: true, import: 'default' }));
 const songFiles = glob<SongDef>(import.meta.glob('../../data/audio/songs/*.json', { eager: true, import: 'default' }));
+const shopFiles = glob<ShopDef>(import.meta.glob('../../data/shops/*.json', { eager: true, import: 'default' }));
+const questFiles = glob<Record<string, QuestDef>>(import.meta.glob('../../data/story/quests.json', { eager: true, import: 'default' }));
+const endingFiles = glob<Record<string, EndingDef>>(import.meta.glob('../../data/story/endings.json', { eager: true, import: 'default' }));
 
 const strip = <T>(record: Record<string, T>): Record<string, T> =>
   Object.fromEntries(Object.entries(record).filter(([k]) => !k.startsWith('$')));
@@ -46,6 +52,9 @@ const maps = new Map<string, MapDef>();
 const scripts = new Map<string, ScriptNode[]>();
 const enemies = new Map<string, EnemyDef>();
 const songs = new Map<string, SongDef>();
+const shops = new Map<string, ShopDef>();
+const quests: QuestDef[] = [];
+const endings = new Map<string, EndingDef>();
 const loadErrors: string[] = [];
 
 for (const [file, table] of characterFiles) {
@@ -80,6 +89,12 @@ for (const [file, def] of songFiles) {
   if (def.id !== file) loadErrors.push(`song file ${file}.json has id "${def.id}"`);
   songs.set(def.id, def);
 }
+for (const [file, def] of shopFiles) {
+  if (def.id !== file) loadErrors.push(`shop file ${file}.json has id "${def.id}"`);
+  shops.set(def.id, def);
+}
+for (const [, table] of questFiles) for (const [id, def] of Object.entries(strip(table))) quests.push({ ...def, id });
+for (const [, table] of endingFiles) for (const [id, def] of Object.entries(strip(table))) endings.set(id, { ...def, id });
 
 export const content = {
   character: (id: string): CharacterDef | undefined => characters.get(id),
@@ -88,6 +103,9 @@ export const content = {
   script: (id: string): ScriptNode[] | undefined => scripts.get(id),
   enemy: (id: string): EnemyDef | undefined => enemies.get(id),
   song: (id: string): SongDef | undefined => songs.get(id),
+  shop: (id: string): ShopDef | undefined => shops.get(id),
+  ending: (id: string): EndingDef | undefined => endings.get(id),
+  quests: (): readonly QuestDef[] => quests,
   allScripts: (): [string, ScriptNode[]][] => [...scripts.entries()],
   allMaps: (): MapDef[] => [...maps.values()],
   allEnemies: (): EnemyDef[] => [...enemies.values()],
@@ -105,6 +123,9 @@ export const content = {
     walk([...enemies.values()].map((e) => [e.name, e.encounter, e.check, e.acts, e.flavor, e.speech, e.sparedText, e.clearedText]));
     walk([...maps.values()].map((m) => m.name));
     walk([...characters.values()].map((c) => c.name));
+    walk([...shops.values()].map((s) => [s.name, s.greeting, s.thanks, s.broke]));
+    walk(quests.map((q) => [q.title, q.description, q.doneText]));
+    walk([...endings.values()].map((e) => [e.title, e.pages, e.finalLine]));
     return parts.join('');
   },
 };
@@ -114,6 +135,7 @@ export const content = {
 const COMMANDS = new Set([
   'sfx', 'music', 'shake', 'flash', 'wait', 'face', 'item.add', 'item.remove', 'buttons', 'heal',
   'relation', 'battle', 'save', 'map', 'npc.hide', 'npc.show', 'npc.face', 'npc.move', 'player.face', 'end',
+  'shop', 'cinema', 'follower', 'ending',
 ]);
 const EMITTERS = new Set(['linear', 'ring', 'radial', 'spiral', 'fall', 'homing', 'stream', 'sequence']);
 const FACINGS = new Set(['down', 'up', 'left', 'right']);
@@ -211,6 +233,12 @@ export function validateContent(): string[] {
         case 'face':
           if (!characters.has(String(arg('who')))) err(where, `unknown character "${String(arg('who'))}"`);
           break;
+        case 'shop':
+          if (!shops.has(String(arg('id')))) err(where, `unknown shop "${String(arg('id'))}"`);
+          break;
+        case 'follower':
+          if (arg('id') !== null && !characters.has(String(arg('id')))) err(where, `unknown follower "${String(arg('id'))}"`);
+          break;
         case 'npc.face':
         case 'player.face':
           if (!FACINGS.has(String(arg('facing')))) err(where, 'needs facing');
@@ -288,6 +316,10 @@ export function validateContent(): string[] {
     for (const o of m.objects) {
       if (!scripts.has(o.script)) err(w, `object ${o.id} unknown script "${o.script}"`);
       if (o.sprite && tiles && !tiles.has(o.sprite)) err(w, `object ${o.id} sprite "${o.sprite}" not in tileset`);
+      for (const sp of o.sprites ?? []) {
+        cond(`${w} object ${o.id} sprites`, sp.if);
+        if (tiles && !tiles.has(sp.frame)) err(w, `object ${o.id} sprite "${sp.frame}" not in tileset`);
+      }
       cond(`${w} object ${o.id}`, o.if);
     }
     for (const [i, e] of m.exits.entries()) {
@@ -343,6 +375,30 @@ export function validateContent(): string[] {
       if (!(def.duration > 0)) err(`${w} patternDef ${id}`, 'duration must be > 0');
       def.emitters.forEach((em, i) => checkEmitter(`${w} patternDef ${id}.emitters[${i}]`, em));
     }
+  }
+
+  // Shops, quests, endings
+  for (const shop of shops.values()) {
+    const w = `shop ${shop.id}`;
+    if (!characters.has(shop.keeper)) err(w, `unknown keeper "${shop.keeper}"`);
+    for (const it of shop.items) {
+      if (!items.has(it.id)) err(w, `unknown item "${it.id}"`);
+      if (!(it.price > 0)) err(w, `item ${it.id} needs a positive price`);
+    }
+    text(`${w} greeting`, shop.greeting);
+  }
+  for (const q of quests) {
+    cond(`quest ${q.id}.activeIf`, q.activeIf);
+    cond(`quest ${q.id}.doneIf`, q.doneIf);
+  }
+  for (const route of ['return', 'keep', 'clear']) if (!endings.has(route)) err('endings', `missing ending "${route}"`);
+  for (const e of endings.values()) {
+    if (!songs.has(e.music)) err(`ending ${e.id}`, `unknown song "${e.music}"`);
+    condTexts(`ending ${e.id} pages`, e.pages);
+  }
+  for (const e of enemies.values()) {
+    for (const ph of e.phases ?? []) cond(`enemy ${e.id} phase ${ph.id}`, ph.if);
+    if (e.music && !songs.has(e.music)) err(`enemy ${e.id}`, `unknown song "${e.music}"`);
   }
 
   // Songs

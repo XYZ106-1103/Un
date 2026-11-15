@@ -14,6 +14,7 @@ import { EnemyView } from '@/entities/Enemy';
 import { Soul, SOUL_RADIUS } from '@/entities/Soul';
 import { BattleModel, type EnemyState } from '@/systems/BattleSystem';
 import { BulletSystem } from '@/systems/BulletSystem';
+import { Particles } from '@/systems/Particles';
 import { content } from '@/systems/content/ContentDB';
 import type { EnemyDef } from '@/systems/content/types';
 import { InputSystem } from '@/systems/InputSystem';
@@ -62,6 +63,7 @@ export class BattleScene extends Phaser.Scene {
   private rng!: SeededRandom;
   private finished = false;
   private maskShape: Phaser.GameObjects.Graphics | null = null;
+  private particles!: Particles;
 
   constructor() {
     super(SCENE_KEYS.Battle);
@@ -81,9 +83,8 @@ export class BattleScene extends Phaser.Scene {
     this.input$ = new InputSystem(this);
     this.rng = new SeededRandom(data.seed ?? Math.floor(Math.random() * 2 ** 31));
     services.events.emit('scene:entered', { key: SCENE_KEYS.Battle });
-    services.audio.playMusic(data.music ?? 'battle', 0.2);
-
     const defs = data.enemies.map((id) => content.enemy(id)).filter((d): d is EnemyDef => d !== undefined);
+    services.audio.playMusic(data.music ?? defs.find((d) => d.music)?.music ?? 'battle', 0.2);
     this.model = new BattleModel(defs, this.session.state, this.session.inventory, this.rng);
     this.drawBackground();
     this.views = this.model.enemies.map((e, i, all) => {
@@ -108,6 +109,7 @@ export class BattleScene extends Phaser.Scene {
       this.maskShape = null;
     });
     this.bullets = new BulletSystem(this, bulletLayer);
+    this.particles = new Particles(this, DEPTH.ui + 6);
     this.soul = new Soul(this);
 
     this.cameras.main.fadeIn(250, 11, 10, 16);
@@ -121,6 +123,7 @@ export class BattleScene extends Phaser.Scene {
       this.maskShape.clear().fillStyle(0xffffff).fillRect(r.x, r.y, r.w, r.h);
     }
     this.session.addPlayTime(delta);
+    this.particles.update(delta);
     this.boxText.update(delta);
     this.bubble.update(delta);
     this.meter.update(delta);
@@ -159,8 +162,27 @@ export class BattleScene extends Phaser.Scene {
       const command = await this.commands.choose();
       this.boxText.clear();
       const acted = await [this.doClear, this.doAct, this.doPocket, this.doLetGo][command]?.call(this);
-      if (acted) return;
+      if (acted) {
+        await this.afterAction();
+        return;
+      }
     }
+  }
+
+  /** Boss phase changes and mercy feedback after every player action. */
+  private async afterAction(): Promise<void> {
+    if (this.model.outcome()) return;
+    for (const { enemy, phase } of this.model.advancePhases()) {
+      this.views[enemy.index]?.setPhase(enemy.phase);
+      getServices(this.game).audio.playSfx('phase');
+      if (getServices(this.game).settings.get('screenShake') > 0) this.cameras.main.shake(250, 0.006);
+      if (phase.enter?.length) await this.say(phase.enter);
+    }
+    this.refreshCalm();
+  }
+
+  private refreshCalm(): void {
+    for (const e of this.model.enemies) if (e.status === 'active') this.views[e.index]?.setCalm(this.model.canSpare(e));
   }
 
   private async doClear(): Promise<boolean> {
@@ -170,11 +192,20 @@ export class BattleScene extends Phaser.Scene {
     const accuracy = await this.meter.run();
     const result = this.model.attack(target, accuracy);
     const view = this.views[target.index];
-    getServices(this.game).audio.playSfx(result.miss ? 'ui-deny' : 'ui-cancel');
-    if (!result.miss && getServices(this.game).settings.get('screenShake') > 0) this.cameras.main.shake(120, 0.004);
+    getServices(this.game).audio.playSfx(result.miss ? 'ui-deny' : 'hit');
+    if (!result.miss) {
+      if (getServices(this.game).settings.get('screenShake') > 0) this.cameras.main.shake(120, 0.004);
+      const c = view?.center;
+      if (c) this.particles.burst(c.x, c.y, { count: result.critical ? 22 : 12, colors: [PALETTE.tag, PALETTE.white, PALETTE.amber], speed: 70, gravity: 120 });
+      view?.flash(getServices(this.game).settings.get('reduceFlashing'));
+    }
     await view?.hit(result.damage, result.critical, result.miss);
     if (result.cleared) {
+      // Ink, not pencil: remembered even if the player reloads to undo it.
+      getServices(this.game).meta.recordClear(target.def.id);
       view?.cleared();
+      const c = view?.center;
+      if (c) this.particles.burst(c.x, c.y + 10, { count: 16, colors: [PALETTE.fog, PALETTE.slate], speed: 20, gravity: 30, spread: 120, angle: 90 });
       await this.say([t('battle.cleared', { enemy: target.def.name }), ...(target.def.clearedText ? [target.def.clearedText] : [])]);
     }
     return true;
@@ -227,8 +258,12 @@ export class BattleScene extends Phaser.Scene {
     if (choice === 0) {
       const candidates = this.model.active;
       const spared = this.model.spareAll();
-      for (const e of spared) this.views[e.index]?.spared();
-      if (spared.length > 0) getServices(this.game).audio.playSfx('tag-chime');
+      for (const e of spared) {
+        this.views[e.index]?.spared();
+        const c = this.views[e.index]?.center;
+        if (c) this.particles.burst(c.x, c.y, { count: 26, colors: [PALETTE.tag, PALETTE.white, PALETTE.mitten], speed: 45, gravity: -30, life: 1100 });
+      }
+      if (spared.length > 0) getServices(this.game).audio.playSfx('spare');
       const lines = candidates.map((e) =>
         spared.includes(e)
           ? [t('battle.spared', { enemy: e.def.name }), ...(e.def.sparedText ? [e.def.sparedText] : [])]
@@ -264,6 +299,8 @@ export class BattleScene extends Phaser.Scene {
     this.focus = null;
     await this.box.resize(target);
     this.soul.place(target.x + w / 2, target.y + h / 2);
+    if (this.model.soulMode() === 'tether') this.soul.tether(target);
+    else this.soul.free();
     this.bullets.start(patterns.map((p) => ({ pattern: p.pattern, owner: p.enemy.index })));
     getServices(this.game).events.emit('touch:context', { mode: 'dpad' });
     this.dodging = true;
@@ -295,7 +332,8 @@ export class BattleScene extends Phaser.Scene {
       this.bullets.kill(hit);
       this.soul.hurt();
       this.stats.refresh(this.session.state);
-      getServices(this.game).audio.playSfx('ui-deny');
+      getServices(this.game).audio.playSfx('hurt');
+      this.particles.burst(this.soul.x, this.soul.y, { count: 6, colors: [PALETTE.sock, PALETTE.tag], speed: 40, gravity: 0, life: 300 });
       if (settings.get('screenShake') > 0) this.cameras.main.shake(100, 0.003 * settings.get('screenShake'));
       if (this.session.state.hp <= 0) this.finishDodge();
     }

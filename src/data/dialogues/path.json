@@ -1,30 +1,105 @@
 {
-  "$comment": "Umbrella path: first battle, random encounters, the end of the current demo.",
-  "path.ambush": [
-    { "say": "어디선가 지지직, 소리가 난다." },
-    { "do": "battle", "enemies": ["earbuds"], "canFlee": false },
-    { "if": "flag:last_battle == spared", "then": [{ "say": "멀리서 아주 작게, 노래가 들린다." }] },
-    { "if": "flag:last_battle == cleared", "then": [{ "say": "주위가 조금 더 조용해졌다." }] }
-  ],
-  "path.umbrella": [
-    { "say": ["누군가 비 오는 날 두고 간 우산.", "손잡이에 이름표가 붙어 있지만, 글씨가 번져서 읽을 수 없다."] }
-  ],
-  "path.stand": [
-    { "if": "flag:got_badge", "then": [{ "say": "우산꽂이. 접힌 우산들이 서로 기대어 졸고 있다." }], "else": [
-      { "say": "우산꽂이 바닥에서 무언가 반짝인다." },
-      { "do": "item.add", "id": "bottlecap-badge" },
-      { "if": "item:bottlecap-badge", "then": [{ "set": { "got_badge": true } }] }
-    ] }
-  ],
-  "path.puddle": [
-    { "if": "flag:got_bandage", "then": [{ "say": "웅덩이에 비친 내 얼굴이 조금 피곤해 보인다." }], "else": [
-      { "say": "웅덩이 옆에 테이프 뭉치가 떨어져 있다." },
-      { "do": "item.add", "id": "tape-bandage" },
-      { "if": "item:tape-bandage", "then": [{ "set": { "got_bandage": true } }] }
-    ] }
-  ],
-  "path.end": [
-    { "say": ["[공사 중] 우산꽂이 숲.\n정리가 끝나면 열립니다. — 레저 드림", "(현재 버전은 여기까지입니다. 이 앞은 다음 단계에서 이어집니다.)"] }
-  ]
+ "$comment": "Umbrella path: first battle, random encounters, the end of the current demo.",
+ "path.ambush": [
+  {
+   "say": "어디선가 지지직, 소리가 난다."
+  },
+  {
+   "do": "battle",
+   "enemies": [
+    "earbuds"
+   ],
+   "canFlee": false
+  },
+  {
+   "if": "flag:last_battle == spared",
+   "then": [
+    {
+     "say": "멀리서 아주 작게, 노래가 들린다."
+    }
+   ]
+  },
+  {
+   "if": "flag:last_battle == cleared",
+   "then": [
+    {
+     "say": "주위가 조금 더 조용해졌다."
+    }
+   ]
+  }
+ ],
+ "path.umbrella": [
+  {
+   "say": [
+    "누군가 비 오는 날 두고 간 우산.",
+    "손잡이에 이름표가 붙어 있지만, 글씨가 번져서 읽을 수 없다."
+   ]
+  }
+ ],
+ "path.stand": [
+  {
+   "if": "flag:got_badge",
+   "then": [
+    {
+     "say": "우산꽂이. 접힌 우산들이 서로 기대어 졸고 있다."
+    }
+   ],
+   "else": [
+    {
+     "say": "우산꽂이 바닥에서 무언가 반짝인다."
+    },
+    {
+     "do": "item.add",
+     "id": "bottlecap-badge"
+    },
+    {
+     "if": "item:bottlecap-badge",
+     "then": [
+      {
+       "set": {
+        "got_badge": true
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "path.puddle": [
+  {
+   "if": "flag:got_bandage",
+   "then": [
+    {
+     "say": "웅덩이에 비친 내 얼굴이 조금 피곤해 보인다."
+    }
+   ],
+   "else": [
+    {
+     "say": "웅덩이 옆에 테이프 뭉치가 떨어져 있다."
+    },
+    {
+     "do": "item.add",
+     "id": "tape-bandage"
+    },
+    {
+     "if": "item:tape-bandage",
+     "then": [
+      {
+       "set": {
+        "got_bandage": true
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "path.end": [
+  {
+   "say": [
+    "[안내] 이 앞, 우산꽂이 숲.",
+    "비 조심. 우산 안 빌려줌. — 레저 드림"
+   ]
+  }
+ ]
 }
-

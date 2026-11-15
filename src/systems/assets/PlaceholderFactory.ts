@@ -14,7 +14,6 @@ import { resolvePixelArt } from './PixelArt';
 
 const MAGENTA = toCss(PALETTE.placeholder);
 const MAGENTA_DARK = '#5a0f5a';
-const MAGENTA_LIGHT = '#ffb3ff';
 
 function makeCanvas(width: number, height: number): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D } {
   const canvas = document.createElement('canvas');
@@ -107,73 +106,12 @@ function createImagePlaceholder(textures: Phaser.Textures.TextureManager, entry:
   textures.addCanvas(entry.key, canvas);
 }
 
-/** Direction order of the player sheet: down, left, right, up (4 frames each). */
-const FACING: readonly [number, number][] = [
-  [0, 1],
-  [-1, 0],
-  [1, 0],
-  [0, -1],
-];
-
-function drawPlayerFrame(ctx: CanvasRenderingContext2D, ox: number, w: number, h: number, frame: number): void {
-  const dir = FACING[Math.floor(frame / 4)] ?? [0, 1];
-  const step = frame % 4;
-  const bob = step === 1 || step === 3 ? -1 : 0;
-  const bodyW = 10;
-  const bodyH = 18;
-  const bx = ox + Math.floor((w - bodyW) / 2);
-  const by = h - bodyH - 1 + bob;
-
-  ctx.fillStyle = MAGENTA_DARK;
-  ctx.fillRect(bx - 1, by - 1, bodyW + 2, bodyH + 2 - bob);
-  ctx.fillStyle = MAGENTA;
-  ctx.fillRect(bx, by, bodyW, bodyH);
-  // Head band, so the silhouette reads as "character" not "box".
-  ctx.fillStyle = MAGENTA_LIGHT;
-  ctx.fillRect(bx, by + 6, bodyW, 1);
-  // Facing marker: two "eyes" pushed toward the facing direction.
-  ctx.fillStyle = '#ffffff';
-  const cx = bx + bodyW / 2 + dir[0] * 2;
-  const cy = by + 3 + dir[1];
-  if (dir[1] !== -1) {
-    ctx.fillRect(Math.floor(cx - 2), cy, 1, 2);
-    ctx.fillRect(Math.floor(cx + 1), cy, 1, 2);
-  }
-  // Alternating feet on walk frames.
-  ctx.fillStyle = MAGENTA_DARK;
-  if (step === 1) ctx.fillRect(bx + 1, h - 1, 3, 1);
-  if (step === 3) ctx.fillRect(bx + bodyW - 4, h - 1, 3, 1);
-}
-
-function drawDevTile(ctx: CanvasRenderingContext2D, ox: number, size: number, frame: number): void {
-  const base = ['#24202e', '#2c2738', '#4a4458', '#24202e'][frame] ?? '#24202e';
-  ctx.fillStyle = base;
-  ctx.fillRect(ox, 0, size, size);
-  if (frame === 0 || frame === 1) {
-    ctx.fillStyle = '#34304a';
-    ctx.fillRect(ox, 0, size, 1);
-    ctx.fillRect(ox, 0, 1, size);
-  } else if (frame === 2) {
-    ctx.fillStyle = '#5d5670';
-    ctx.fillRect(ox, 0, size, 2);
-    ctx.fillStyle = '#1b1824';
-    ctx.fillRect(ox, size - 2, size, 2);
-  } else {
-    drawMissingBox(ctx, ox + 4, 4, size - 8, size - 8);
-  }
-  // Magenta corner pixel marks every dev tile as placeholder art.
-  ctx.fillStyle = MAGENTA;
-  ctx.fillRect(ox + size - 2, 1, 1, 1);
-}
-
 function createSpritesheetPlaceholder(textures: Phaser.Textures.TextureManager, entry: SpritesheetEntry): void {
   const [w, h] = entry.size;
   const { canvas, ctx } = makeCanvas(w * entry.frames, h);
   for (let i = 0; i < entry.frames; i++) {
     const ox = i * w;
-    if (entry.key === 'char.player') drawPlayerFrame(ctx, ox, w, h, i);
-    else if (entry.key === 'tiles.dev') drawDevTile(ctx, ox, w, i);
-    else drawMissingBox(ctx, ox, 0, w, h);
+    drawMissingBox(ctx, ox, 0, w, h);
   }
   const texture = textures.addCanvas(entry.key, canvas);
   if (!texture) return;

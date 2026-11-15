@@ -1,0 +1,103 @@
+{
+ "size": [
+  24,
+  32
+ ],
+ "palette": {
+  "k": "#0f0d14",
+  "c": "#2a2638",
+  "C": "#1a1724",
+  "h": "#4b4566",
+  "s": "#8f88a3",
+  "q": "#6e4a1f",
+  "Q": "#4a3015",
+  "a": "#f2b24c",
+  "A": "#b97a2a",
+  "e": "#f7f4ea",
+  "o": "#0f0d14",
+  "r": "#c8414b",
+  "R": "#8a2a33",
+  "z": "#fff1c4",
+  "m": "#4a3015"
+ },
+ "frames": {
+  "idle-0": [
+   "........................",
+   "..........kkkkk.........",
+   ".........kqqqqqk........",
+   "........kqqQQQqqk.......",
+   ".......kqqQkkkQqk.......",
+   ".......kqQk...kk........",
+   ".......kqQk....kk.......",
+   ".......kqQk...kQqk......",
+   ".......kqqQkkkQqqk......",
+   "........kqqqqqqqk.......",
+   ".........kqqqqqk........",
+   "......kkkkkqqqkkkkk.....",
+   ".....kccccccCcccccck....",
+   ".....kccccccCcccccck....",
+   ".....kccceecCceeccck....",
+   "......kcceohcCoecck.....",
+   "......kcccmmmmmccck.....",
+   "......kcrrraaarrrck.....",
+   ".......krrraaarrrk......",
+   ".......kccchcCccck......",
+   ".......kcchcccCcck......",
+   ".......kcchcccCcck......",
+   ".......kcchcccCcck......",
+   "........kchcccCck.......",
+   "........kchcccCck.......",
+   "........khcccccCk.......",
+   "........khcccccCk.......",
+   "........khcccccCk.......",
+   ".........kccccck........",
+   "..........kkskk.........",
+   "...........ksk..........",
+   "...........ksk.........."
+  ],
+  "idle-1": [
+   "..........kkkkk.........",
+   ".........kqqqqqk........",
+   "........kqqQQQqqk.......",
+   ".......kqqQkkkQqk.......",
+   ".......kqQk...kk........",
+   ".......kqQk....kk.......",
+   ".......kqQk...kQqk......",
+   ".......kqqQkkkQqqk......",
+   "........kqqqqqqqk.......",
+   ".........kqqqqqk........",
+   "..........kqqqk.........",
+   "......kkkkkkkkkkkkk.....",
+   ".....kccccccCcccccck....",
+   ".....kccccccCcccccck....",
+   ".....kccceecCceeccck....",
+   "......kcceohcCoecck.....",
+   "......kcccmmmmmccck.....",
+   "......kcrrraaarrrck.....",
+   ".......krrraaarrrk......",
+   ".......kccchcCccck......",
+   ".......kcchcccCcck......",
+   ".......kcchcccCcck......",
+   ".......kcchcccCcck......",
+   "........kchcccCck.......",
+   "........kchcccCck.......",
+   "........khcccccCk.......",
+   "........khcccccCk.......",
+   "........khcccccCk.......",
+   ".........kccccck........",
+   "..........kkskk.........",
+   "...........ksk..........",
+   "...........ksk.........."
+  ]
+ },
+ "animations": {
+  "idle": {
+   "frames": [
+    "idle-0",
+    "idle-0",
+    "idle-1"
+   ],
+   "rate": 3
+  }
+ }
+}

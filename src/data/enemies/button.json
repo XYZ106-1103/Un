@@ -1,0 +1,165 @@
+{
+ "id": "button",
+ "name": "여분 단추",
+ "sprite": "enemy.button",
+ "hp": 16,
+ "attack": 3,
+ "defense": 2,
+ "reward": {
+  "buttons": 6
+ },
+ "encounter": "여분 단추가 데굴데굴 굴러와 앞을 막는다.",
+ "check": "옷과 함께 산 '여분' 단추. 한 번도 쓰인 적이 없다.",
+ "vars": {
+  "sewn": 0,
+  "flicked": 0
+ },
+ "acts": [
+  {
+   "id": "check",
+   "label": "관찰",
+   "text": [
+    {
+     "text": "구멍 네 개가 눈처럼 보인다. 둘은 눈, 둘은… 콧구멍?"
+    }
+   ]
+  },
+  {
+   "id": "sew",
+   "label": "꿰매기",
+   "requires": "item:thread",
+   "deniedText": [
+    "꿰맬 실이 없다.",
+    "잡화점에서 실을 팔지도 모른다."
+   ],
+   "set": {
+    "sewn": 1
+   },
+   "text": [
+    {
+     "text": [
+      "실을 꿰어 단추를 소매에 달아 주었다.",
+      "여분 단추가 처음으로 무언가를 잠근다. 반짝!"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "comfort",
+   "label": "\"언젠가 쓰일 거야\"",
+   "text": [
+    {
+     "if": "acted:comfort >= 2",
+     "text": [
+      "\"…말로만?\" 여분 단추가 의심스럽게 쳐다본다.",
+      "실이 있으면 좋을 텐데."
+     ]
+    },
+    {
+     "text": [
+      "\"언젠가 꼭 쓰일 거야.\"",
+      "여분 단추가 조금 반짝였다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "flick",
+   "label": "튕기기",
+   "set": {
+    "flicked": 1
+   },
+   "text": [
+    {
+     "text": [
+      "손가락으로 튕겼다! 땡그랑!",
+      "여분 단추가 빙글빙글 화를 낸다."
+     ]
+    }
+   ]
+  }
+ ],
+ "spareWhen": "var:sewn >= 1",
+ "flavor": [
+  {
+   "if": "var:sewn >= 1",
+   "text": "단추가 단단히 달려 있다. 이제 놓아줄 수 있을 것 같다."
+  },
+  {
+   "if": "var:flicked >= 1",
+   "text": "여분 단추가 빙글빙글 돌고 있다."
+  },
+  {
+   "text": "여분 단추가 반짝이며 쓸모를 증명하려 한다."
+  }
+ ],
+ "speech": [
+  {
+   "if": "var:sewn >= 1",
+   "text": "잠갔다! 내가 잠갔어!"
+  },
+  {
+   "if": "var:flicked >= 1",
+   "text": "땡그랑! 땡그랑!"
+  },
+  {
+   "text": "나도… 쓰일 수 있는데…"
+  }
+ ],
+ "patterns": [
+  {
+   "id": "spin",
+   "if": "var:flicked >= 1"
+  },
+  {
+   "id": "buttons",
+   "if": "var:flicked < 1"
+  }
+ ],
+ "patternDefs": {
+  "buttons": {
+   "duration": 5000,
+   "box": {
+    "w": 130,
+    "h": 80
+   },
+   "emitters": [
+    {
+     "type": "ring",
+     "interval": 1500,
+     "amount": 12,
+     "gap": 3,
+     "bullet": {
+      "frame": "button",
+      "radius": 3,
+      "speed": 34
+     }
+    }
+   ]
+  },
+  "spin": {
+   "duration": 5200,
+   "box": {
+    "w": 120,
+    "h": 86
+   },
+   "emitters": [
+    {
+     "type": "spiral",
+     "from": "center",
+     "interval": 220,
+     "amount": 2,
+     "rotate": 120,
+     "bullet": {
+      "frame": "button",
+      "radius": 3,
+      "speed": 48
+     },
+     "start": 400
+    }
+   ]
+  }
+ },
+ "sparedText": "여분 단추는 자랑스럽게 달린 채로 떠났다. …소매째로.",
+ "clearedText": "단추 하나가 바닥에 떨어져 있다."
+}

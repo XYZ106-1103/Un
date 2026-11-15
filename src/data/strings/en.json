@@ -21,6 +21,10 @@
   "scale.fit": "fit",
   "error.fatal": "The game could not start.",
   "error.detail": "Please check that your browser supports WebGL or Canvas, then reload.",
+  "error.runtime": "Something went wrong.",
+  "error.runtimeDetail": "Reload to pick up from your last record.",
+  "error.reload": "Reload",
+  "error.continue": "Keep playing",
   "menu.newGame": "NEW GAME",
   "menu.continue": "CONTINUE",
   "menu.settings": "SETTINGS",
@@ -125,5 +129,9 @@
   "gameover.line": "…Isn't there still something to come back for?",
   "gameover.retry": "From the last record",
   "gameover.title.menu": "To title",
-  "hud.interact": "Z"
+  "hud.interact": "Z",
+  "pause.quests": "NOTES",
+  "quests.none": "Nothing written down yet.",
+  "hollow.name": "(item)",
+  "shop.closed": "Closed"
 }

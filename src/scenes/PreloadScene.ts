@@ -14,8 +14,11 @@ import { t } from '@/systems/LocaleSystem';
 import { PixelText } from '@/ui/PixelText';
 import { fadeToScene } from '@/utils/AnimationUtils';
 
-/** Every file under src/assets, resolved to its built URL (hashed in production). */
-const ASSET_URLS = import.meta.glob('../assets/**/*.{png,json,ogg,mp3,wav}', {
+/**
+ * Every runtime file under src/assets, resolved to its built URL (hashed in production).
+ * Fonts are loaded by CSS; fonts/coverage.json is build tooling for the glyph test.
+ */
+const ASSET_URLS = import.meta.glob(['../assets/**/*.{png,json,ogg,mp3,wav}', '!../assets/fonts/**'], {
   eager: true,
   query: '?url',
   import: 'default',

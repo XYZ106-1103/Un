@@ -72,6 +72,12 @@ export class Panel extends Phaser.GameObjects.Container implements Focusable {
     this.setDepth(DEPTH.ui + 10);
     this.setScrollFactor(0, 0, true);
     scene.add.existing(this);
+    // Entrance: drop in 4px with a quick fade (whole-pixel steps, no scaling blur).
+    const targetY = this.y;
+    this.y = targetY - 4;
+    this.alpha = 0;
+    scene.tweens.add({ targets: this, alpha: 1, duration: 110 });
+    scene.tweens.addCounter({ from: 4, to: 0, duration: 110, onUpdate: (tw) => (this.y = targetY - Math.round(tw.getValue() ?? 0)) });
   }
 
   onClose(fn: () => void): this {

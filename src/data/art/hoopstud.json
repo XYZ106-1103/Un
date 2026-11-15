@@ -1,0 +1,81 @@
+{
+ "size": [
+  24,
+  24
+ ],
+ "palette": {
+  "k": "#1a1420",
+  "a": "#f2b24c",
+  "A": "#b97a2a",
+  "z": "#fff1c4",
+  "u": "#a77fcf",
+  "U": "#6f4f94",
+  "g": "#cfd6e0",
+  "G": "#8f88a3",
+  "e": "#1a1420",
+  "r": "#e08a7a"
+ },
+ "frames": {
+  "idle-0": [
+   "........................",
+   "........................",
+   "......kk................",
+   ".....kaak...............",
+   ".....kaak...............",
+   ".....kaak...............",
+   ".....kkkkk..............",
+   "....kaaaaak.....kkk.....",
+   "...kaAAAAAak...kuuuk....",
+   "..kazAkkkAAak.kuuuuuk...",
+   ".kaAkk...kkAakuzzzuuuk..",
+   "kaAAkk...kkAAuuzzzuuuuk.",
+   "kaAkkek.kekkAuuezzueuuk.",
+   "kaAkkek.kekkAuuuuuuuuuk.",
+   "kaAk.k...k.kAauuuuuuuk..",
+   "kaAAk.....kAAakuuuuuk...",
+   ".kaAkk...kkAak.kgguk....",
+   "..kaAAkkkAAak..kggk.....",
+   "...kaAAAAAak...kggk.....",
+   "....kaaaaak....kggk.....",
+   ".....kkkkk.....kggk.....",
+   "................kk......",
+   "........................",
+   "........................"
+  ],
+  "idle-1": [
+   "........................",
+   "......kk................",
+   ".....kaak...............",
+   ".....kaak...............",
+   ".....kaak...............",
+   ".....kkkkk..............",
+   "....kaaaaak.............",
+   "...kaAAAAAak............",
+   "..kazAkkkAAak...kkk.....",
+   ".kaAkk...kkAak.kuuuk....",
+   "kaAAkk...kkAAakuuuuuk...",
+   "kaAkkek.kekkAauzzzuuuk..",
+   "kaAkkek.kekkAuuzzzuuuuk.",
+   "kaAk.k...k.kAuuezzueuuk.",
+   "kaAAk.....kAAuuuuuuuuuk.",
+   ".kaAkk...kkAakuuuuuuuk..",
+   "..kaAAkkkAAak.kuuuuuk...",
+   "...kaAAAAAak...kgguk....",
+   "....kaaaaak....kggk.....",
+   ".....kkkkk.....kggk.....",
+   "...............kggk.....",
+   "...............kggk.....",
+   "................kk......",
+   "........................"
+  ]
+ },
+ "animations": {
+  "idle": {
+   "frames": [
+    "idle-0",
+    "idle-1"
+   ],
+   "rate": 2
+  }
+ }
+}

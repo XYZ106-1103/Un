@@ -56,6 +56,8 @@ export class DialogueUI extends Phaser.GameObjects.Container {
   private advance: (() => void) | null = null;
   private choice: { menu: ListMenu; panel: Phaser.GameObjects.Container; resolve: (i: number) => void } | null = null;
   private atTop = false;
+  /** Lets the story rewrite name plates (the hollow world shows "(물품)"). */
+  nameFilter: ((name: string) => string) | null = null;
 
   constructor(scene: Phaser.Scene) {
     super(scene, BOX.x, BASE_HEIGHT - BOX.h - BOX.margin);
@@ -96,6 +98,13 @@ export class DialogueUI extends Phaser.GameObjects.Container {
   }
 
   say(page: SayPage, vars: Record<string, string | number>): Promise<void> {
+    if (!this.visible) {
+      // Pop in from slightly below/above (whole pixels).
+      const targetY = this.y;
+      const from = this.atTop ? -6 : 6;
+      this.y = targetY + from;
+      this.scene.tweens.addCounter({ from, to: 0, duration: 120, onUpdate: (tw) => (this.y = targetY + Math.round(tw.getValue() ?? 0)) });
+    }
     this.setVisible(true);
     this.closeChoice();
     this.speaker = page.who ? content.character(page.who) : undefined;
@@ -259,7 +268,7 @@ export class DialogueUI extends Phaser.GameObjects.Container {
     }
     this.namePlate.clear();
     if (sp) {
-      this.nameText.setText(sp.name);
+      this.nameText.setText(this.nameFilter ? this.nameFilter(sp.name) : sp.name);
       const w = this.nameText.width + 12;
       const color = parseColor(sp.color) ?? PALETTE.paper;
       this.namePlate.fillStyle(PALETTE.ink);

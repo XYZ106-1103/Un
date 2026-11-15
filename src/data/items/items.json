@@ -5,14 +5,19 @@
     "description": "손뜨개 장갑 한 짝. 따뜻하다.\n왜 아직 가지고 있는지 잘 모르겠다.",
     "kind": "key",
     "droppable": false,
-    "useText": ["장갑을 꼭 쥐었다.", "어딘가에 있을 나머지 한 짝이 생각났다."]
+    "useText": [
+      "장갑을 꼭 쥐었다.",
+      "어딘가에 있을 나머지 한 짝이 생각났다."
+    ]
   },
   "lint-candy": {
     "name": "보풀 사탕",
     "description": "주머니 속을 오래 굴러다닌 사탕.\n보풀이 조금 붙어 있다. HP 8 회복.",
     "kind": "consumable",
     "heal": 8,
-    "useText": ["{name|을/를} 먹었다. 보풀까지 꼭꼭 씹었다."],
+    "useText": [
+      "{name|을/를} 먹었다. 보풀까지 꼭꼭 씹었다."
+    ],
     "price": 4
   },
   "tape-bandage": {
@@ -20,7 +25,9 @@
     "description": "누군가 반창고 대신 테이프를 감아 둔 것.\n떼어 낼 때 조금 아프다. HP 12 회복.",
     "kind": "consumable",
     "heal": 12,
-    "useText": ["{name|을/를} 붙였다. 생각보다 잘 붙는다."],
+    "useText": [
+      "{name|을/를} 붙였다. 생각보다 잘 붙는다."
+    ],
     "price": 7
   },
   "safety-pin": {
@@ -28,13 +35,86 @@
     "description": "작지만 단단하다. 무언가를 고정하는 데 쓴다.\n찌르는 데 쓰는 게 아니라. 공격 +2.",
     "kind": "weapon",
     "attack": 2,
-    "useText": ["옷핀을 손에 쥐었다.", "찌르기보다는, 무언가를 붙잡아 두고 싶은 마음이다."]
+    "useText": [
+      "옷핀을 손에 쥐었다.",
+      "찌르기보다는, 무언가를 붙잡아 두고 싶은 마음이다."
+    ]
   },
   "bottlecap-badge": {
     "name": "병뚜껑 배지",
     "description": "병뚜껑을 납작하게 눌러 만든 배지.\n'용감함'이라고 긁혀 있다. 방어 +1.",
     "kind": "armor",
     "defense": 1,
-    "useText": ["{name|을/를} 가슴에 달았다. 조금 용감해진 기분이다."]
+    "useText": [
+      "{name|을/를} 가슴에 달았다. 조금 용감해진 기분이다."
+    ]
+  },
+  "thread": {
+    "name": "실 한 타래",
+    "description": "튼튼한 무명실. 무언가를 다시 달아 줄 수 있다.",
+    "kind": "key",
+    "droppable": true,
+    "useText": [
+      "실을 손가락에 감아 보았다. 무언가를 꿰매 주고 싶어진다."
+    ],
+    "price": 5
+  },
+  "rain-candy": {
+    "name": "빗방울 사탕",
+    "description": "투명한 파란 사탕. 입에 넣으면 비 냄새가 난다.\nHP 12 회복.",
+    "kind": "consumable",
+    "heal": 12,
+    "useText": [
+      "{name|을/를} 굴려 먹었다. 어디선가 빗소리가 들리는 것 같다."
+    ],
+    "price": 6
+  },
+  "warm-sock": {
+    "name": "따뜻한 수면양말",
+    "description": "짝이 맞는 양말 한 켤레. 여기선 귀한 물건이다.\nHP 를 모두 회복.",
+    "kind": "consumable",
+    "heal": 99,
+    "useText": [
+      "{name|을/를} 신었다. 발끝까지 따뜻해진다."
+    ],
+    "price": 14
+  },
+  "sewing-needle": {
+    "name": "바늘",
+    "description": "반짝이는 바느질 바늘. 꿰매는 데 쓴다.\n공격 +3.",
+    "kind": "weapon",
+    "attack": 3,
+    "useText": [
+      "바늘을 쥐었다. 조심해서 다루자."
+    ],
+    "price": 15
+  },
+  "knit-scarf": {
+    "name": "뜨개 목도리",
+    "description": "누군가 뜨다 만 목도리. 그래도 따뜻하다.\n방어 +2.",
+    "kind": "armor",
+    "defense": 2,
+    "useText": [
+      "{name|을/를} 둘렀다. 실 끝이 조금 풀려 있다."
+    ],
+    "price": 18
+  },
+  "watering-can": {
+    "name": "빈 물뿌리개",
+    "description": "녹슨 양철 물뿌리개. 비어 있다.",
+    "kind": "key",
+    "droppable": false,
+    "useText": [
+      "흔들어 보았다. 아무 소리도 나지 않는다."
+    ]
+  },
+  "watering-can-full": {
+    "name": "물 찬 물뿌리개",
+    "description": "빗물이 찰랑찰랑 담긴 물뿌리개.\n작은 비를 내릴 수 있을 것 같다.",
+    "kind": "key",
+    "droppable": false,
+    "useText": [
+      "물이 찰랑거린다. 비가 필요한 누군가에게 주고 싶다."
+    ]
   }
 }

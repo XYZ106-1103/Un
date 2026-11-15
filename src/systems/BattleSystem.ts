@@ -5,7 +5,7 @@
 
 import { applyFlagChanges, encounterRecord, stateResolver, type GameState } from '@/game/GameState';
 import type { SeededRandom } from '@/utils/MathUtils';
-import type { ActDef, CondText, EnemyDef, FlagValue, PatternDef } from './content/types';
+import type { ActDef, CondText, EnemyDef, FlagValue, PatternDef, PhaseDef } from './content/types';
 import type { InventorySystem, UseResult } from './InventorySystem';
 import { format } from './LocaleSystem';
 import { evaluateCondition, type ConditionValue, type Resolver } from './script/Condition';
@@ -20,6 +20,8 @@ export interface EnemyState {
   status: EnemyStatus;
   /** Times each act was used, for "second time" reactions. */
   actCounts: Record<string, number>;
+  /** Index of the current boss phase (-1 = none yet). */
+  phase: number;
 }
 
 export interface AttackResult {
@@ -57,6 +59,7 @@ export class BattleModel {
       vars: { ...(def.vars ?? {}) },
       status: 'active',
       actCounts: {},
+      phase: -1,
     }));
     for (const e of this.enemies) encounterRecord(state, e.def.id).met += 1;
     state.stats.battles += 1;
@@ -70,7 +73,8 @@ export class BattleModel {
     return stateResolver(this.state, (key): ConditionValue => {
       if (key === 'turn') return this.turn;
       if (!enemy) return undefined;
-      if (key === 'hp%') return (enemy.hp / enemy.def.hp) * 100;
+      // Both spellings work: `hp%` and `var:hp%` (content authors reach for the latter).
+      if (key === 'hp%' || key === 'var:hp%') return (enemy.hp / enemy.def.hp) * 100;
       if (key.startsWith('var:')) return enemy.vars[key.slice(4)];
       if (key.startsWith('acted:')) return enemy.actCounts[key.slice(6)] ?? 0;
       return undefined;
@@ -117,7 +121,38 @@ export class BattleModel {
     const text = this.pick(act.text, enemy);
     enemy.actCounts[actId] = (enemy.actCounts[actId] ?? 0) + 1;
     if (act.set) applyFlagChanges(enemy.vars, act.set);
+    if (act.flags) applyFlagChanges(this.state.flags, act.flags);
+    if (act.endBattle === 'fled') this.fled = true;
     return text;
+  }
+
+  /**
+   * Advances bosses into the next phase whose condition now holds. Returns the phases
+   * entered (so the scene can show their lines). `var:phase` exposes the phase number
+   * (1-based) to pattern and act conditions.
+   */
+  advancePhases(): { enemy: EnemyState; phase: PhaseDef }[] {
+    const entered: { enemy: EnemyState; phase: PhaseDef }[] = [];
+    for (const enemy of this.active) {
+      const phases = enemy.def.phases ?? [];
+      for (let i = enemy.phase + 1; i < phases.length; i++) {
+        const phase = phases[i] as PhaseDef;
+        if (!evaluateCondition(phase.if, this.resolver(enemy))) break;
+        enemy.phase = i;
+        enemy.vars.phase = i + 1;
+        entered.push({ enemy, phase });
+      }
+    }
+    return entered;
+  }
+
+  /** Soul rule for this enemy turn: tethered if any boss phase says so. */
+  soulMode(): 'free' | 'tether' {
+    for (const enemy of this.active) {
+      const phase = enemy.def.phases?.[enemy.phase];
+      if (phase?.soul === 'tether') return 'tether';
+    }
+    return 'free';
   }
 
   attack(enemy: EnemyState, accuracy: number | null): AttackResult {

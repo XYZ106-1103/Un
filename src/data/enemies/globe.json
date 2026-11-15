@@ -1,0 +1,198 @@
+{
+ "id": "globe",
+ "name": "스노글로브",
+ "sprite": "enemy.globe",
+ "hp": 20,
+ "attack": 3,
+ "defense": 1,
+ "reward": {
+  "buttons": 6
+ },
+ "encounter": "스노글로브가 굴러온다. 안에서 눈보라가 몰아친다!",
+ "check": "기념품 가게에서 온 작은 겨울. 아무도 흔들어 주지 않았다.",
+ "vars": {
+  "shaken": 0,
+  "wild": 0,
+  "calm": 0
+ },
+ "acts": [
+  {
+   "id": "check",
+   "label": "관찰",
+   "text": [
+    {
+     "text": "유리 안 작은 집 창문에 불이 꺼져 있다."
+    }
+   ]
+  },
+  {
+   "id": "gentle",
+   "label": "살살 흔들기",
+   "set": {
+    "shaken": "+1"
+   },
+   "text": [
+    {
+     "text": [
+      "살살 흔들어 주었다.",
+      "유리 안에 고운 눈이 피어오른다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hard",
+   "label": "세게 흔들기",
+   "set": {
+    "wild": 1
+   },
+   "text": [
+    {
+     "text": [
+      "세게 흔들었다!",
+      "유리 안이 눈보라로 하얘졌다!"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wait",
+   "label": "기다려 주기",
+   "if": "var:wild >= 1",
+   "set": {
+    "wild": 0
+   },
+   "text": [
+    {
+     "text": [
+      "가만히 기다렸다.",
+      "눈보라가 조금씩 가라앉는다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "watch",
+   "label": "들여다보기",
+   "requires": "var:shaken >= 1 && var:wild < 1",
+   "deniedText": [
+    "눈이 너무 휘몰아쳐서 아무것도 보이지 않는다."
+   ],
+   "set": {
+    "calm": 1
+   },
+   "text": [
+    {
+     "text": [
+      "눈이 천천히 내려앉는 것을 들여다보았다.",
+      "작은 집 창문에… 불이 켜졌다."
+     ]
+    }
+   ]
+  }
+ ],
+ "spareWhen": "var:calm >= 1",
+ "flavor": [
+  {
+   "if": "var:calm >= 1",
+   "text": "작은 집에 불이 켜져 있다. 이제 놓아줄 수 있을 것 같다."
+  },
+  {
+   "if": "var:wild >= 1",
+   "text": "유리 안이 온통 눈보라다."
+  },
+  {
+   "text": "스노글로브 안에서 눈이 가라앉아 있다."
+  }
+ ],
+ "speech": [
+  {
+   "if": "var:calm >= 1",
+   "text": "…따뜻해."
+  },
+  {
+   "if": "var:wild >= 1",
+   "text": "우우우우웅—!"
+  },
+  {
+   "text": "아무도… 흔들어 주지 않았어…"
+  }
+ ],
+ "patterns": [
+  {
+   "id": "blizzard",
+   "if": "var:wild >= 1"
+  },
+  {
+   "id": "snow",
+   "if": "var:wild < 1"
+  }
+ ],
+ "patternDefs": {
+  "snow": {
+   "duration": 5000,
+   "box": {
+    "w": 130,
+    "h": 84
+   },
+   "emitters": [
+    {
+     "type": "fall",
+     "interval": 260,
+     "bullet": {
+      "frame": "snowflake",
+      "radius": 2.5,
+      "speed": 28,
+      "accel": 30
+     }
+    },
+    {
+     "type": "ring",
+     "start": 2500,
+     "interval": 1800,
+     "amount": 12,
+     "gap": 3,
+     "bullet": {
+      "frame": "snowflake",
+      "radius": 2.5,
+      "speed": 32
+     }
+    }
+   ]
+  },
+  "blizzard": {
+   "duration": 5400,
+   "box": {
+    "w": 130,
+    "h": 90
+   },
+   "emitters": [
+    {
+     "type": "spiral",
+     "from": "center",
+     "start": 500,
+     "interval": 200,
+     "amount": 3,
+     "rotate": -90,
+     "bullet": {
+      "frame": "snowflake",
+      "radius": 2.5,
+      "speed": 50
+     }
+    },
+    {
+     "type": "fall",
+     "interval": 400,
+     "bullet": {
+      "frame": "snowflake",
+      "radius": 2.5,
+      "speed": 40,
+      "accel": 40
+     }
+    }
+   ]
+  }
+ },
+ "sparedText": "스노글로브는 불 켜진 작은 집을 품은 채 조용히 굴러갔다.",
+ "clearedText": "유리에 금이 갔다. 눈이 더는 내리지 않는다."
+}

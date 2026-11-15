@@ -1,0 +1,31 @@
+{
+ "$comment": "Notes shown in the pause menu. activeIf/doneIf are conditions on the save.",
+ "find-pair": {
+  "title": "짝 찾기",
+  "description": "주머니 속 장갑 한 짝. 나머지 한 짝은 어디에 있을까?",
+  "activeIf": "flag:intro_done",
+  "doneIf": "flag:mitt_given || flag:mitt_kept",
+  "doneText": "장갑의 짝을 찾았다."
+ },
+ "mitt-letters": {
+  "title": "미트의 편지",
+  "description": "미트는 매일 아무 데도 이어지지 않는 우체통에 편지를 넣는다. 숲 끝까지 함께 가기로 했다.",
+  "activeIf": "flag:mitt_joined",
+  "doneIf": "flag:mitt_given || flag:mitt_kept",
+  "doneText": "편지는 이제 필요 없을지도 모른다."
+ },
+ "rain-tank": {
+  "title": "빗물 저장소",
+  "description": "빗물 저장소가 말라 있다. 밸브 세 개를 맞게 열고 닫으면 물이 찰지도 모른다.",
+  "activeIf": "flag:saw_tank",
+  "doneIf": "flag:tank_full",
+  "doneText": "저장소에 빗물이 찼다."
+ },
+ "brolly": {
+  "title": "길을 막는 기사",
+  "description": "브롤리 경이 다리를 막고 있다. 미트 말로는, 그는 비를 기다린다고 한다.",
+  "activeIf": "flag:met_brolly",
+  "doneIf": "flag:brolly_spared || flag:brolly_cleared",
+  "doneText": "다리를 건널 수 있게 되었다."
+ }
+}

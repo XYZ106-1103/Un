@@ -6,7 +6,58 @@
     "portrait": "portrait.ledger",
     "defaultFace": "neutral",
     "sprite": "char.ledger",
-    "voice": { "wave": "square", "pitch": 640, "variance": 70, "volume": 0.05, "every": 2 },
+    "voice": {
+      "wave": "square",
+      "pitch": 640,
+      "variance": 70,
+      "volume": 0.05,
+      "every": 2
+    },
     "notes": "The Lost & Found registry book. Anxious, meticulous, kind. Numbers everything ('등록 번호 4,112번'). Writes in ink, so it can't erase - it hates that and is proud of it. Polite 해요체, trails off with '…', apologises too much."
+  },
+  "mitt": {
+    "name": "미트",
+    "color": "mitten",
+    "portrait": "portrait.mitt",
+    "defaultFace": "neutral",
+    "sprite": "char.mitt",
+    "voice": {
+      "wave": "sine",
+      "pitch": 520,
+      "variance": 40,
+      "volume": 0.09,
+      "every": 2
+    },
+    "notes": "A hand-knitted right mitten, waiting for its owner. Gentle, quiet, a little formal (해요체). Writes a letter every day and posts it into a mailbox that goes nowhere. Its owner was the player's grandmother - it doesn't know that yet."
+  },
+  "hoopstud": {
+    "name": "후프 & 스터드",
+    "color": "lilac",
+    "portrait": "portrait.hoopstud",
+    "defaultFace": "neutral",
+    "sprite": "char.hoopstud",
+    "voice": {
+      "wave": "triangle",
+      "pitch": 700,
+      "variance": 160,
+      "volume": 0.07,
+      "every": 2
+    },
+    "notes": "Mismatched earring twins who run a stall. They finish each other's sentences - wrongly. Hoop is warm and loud, Stud is precise and dry."
+  },
+  "brolly": {
+    "name": "브롤리 경",
+    "color": "sock",
+    "portrait": "portrait.brolly",
+    "defaultFace": "proud",
+    "sprite": "char.brolly",
+    "voice": {
+      "wave": "square",
+      "pitch": 180,
+      "variance": 25,
+      "volume": 0.06,
+      "every": 2
+    },
+    "notes": "A black umbrella who knighted himself. Pompous archaic speech ('~하노라', '~이로다'), secretly terrified he is useless because it never rains underground."
   }
 }

@@ -11,6 +11,7 @@ import type { AudioSystem } from '@/systems/AudioSystem';
 import type { DisplaySystem } from '@/systems/DisplaySystem';
 import type { EventSystem } from '@/systems/EventSystem';
 import type { FontSystem } from '@/systems/FontSystem';
+import type { MetaSystem } from '@/systems/MetaSystem';
 import type { SaveSystem } from '@/systems/SaveSystem';
 import type { SettingsSystem } from '@/systems/SettingsSystem';
 import type { SafeStorage } from '@/systems/storage/SafeStorage';
@@ -23,6 +24,7 @@ export interface CoreServices {
   storage: SafeStorage;
   settings: SettingsSystem;
   saves: SaveSystem;
+  meta: MetaSystem;
   touch: VirtualControls;
   /** The playthrough in progress (null on the title screen). */
   session: GameSession | null;

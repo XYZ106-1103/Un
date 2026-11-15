@@ -115,6 +115,10 @@ export type CommandName =
   | 'npc.face'
   | 'npc.move'
   | 'player.face'
+  | 'shop'
+  | 'cinema'
+  | 'follower'
+  | 'ending'
   | 'end';
 
 export interface CommandNode {
@@ -168,6 +172,8 @@ export interface ObjectDef {
   if?: string;
   /** Optional art frame drawn at the object's tile. */
   sprite?: string;
+  /** Conditional frames (first match wins), re-evaluated after every script. */
+  sprites?: { if: string; frame: string }[];
   solid?: boolean;
 }
 
@@ -222,7 +228,7 @@ export interface MapDef {
   savePoints: SavePointDef[];
   encounters?: EncounterTable;
   /** Ambient effects. */
-  ambience?: { dust?: boolean; lightShaft?: { x: number; width: number } };
+  ambience?: { dust?: boolean; rain?: boolean; lightShaft?: { x: number; width: number } };
   /** Script run every time the map is entered (after fade-in). */
   onEnter?: string;
 }
@@ -244,7 +250,21 @@ export interface ActDef {
   deniedText?: string[];
   /** Variable changes, e.g. { "tangle": "-1" }. */
   set?: Record<string, FlagValue>;
+  /** Story flags written to the save when this act is performed. */
+  flags?: Record<string, FlagValue>;
+  /** Ends the battle right after the text (e.g. a boss letting you retreat). */
+  endBattle?: 'fled';
   text: CondText[];
+}
+
+/** Boss phase: entered once, in order, when its condition first holds. */
+export interface PhaseDef {
+  id: string;
+  if: string;
+  /** Lines shown when the phase begins. */
+  enter?: string[];
+  /** Soul rule while this phase is active. */
+  soul?: 'free' | 'tether';
 }
 
 export interface BulletSpec {
@@ -321,6 +341,40 @@ export interface EnemyDef {
   sparedText?: string;
   clearedText?: string;
   canFlee?: boolean;
+  /** Battle song override (bosses). */
+  music?: string;
+  phases?: PhaseDef[];
+}
+
+// ── Shops & quests ────────────────────────────────────────────────────────────
+
+export interface ShopDef {
+  id: string;
+  name: string;
+  keeper: string;
+  items: { id: string; price: number }[];
+  greeting: string[];
+  thanks: string[];
+  broke: string[];
+}
+
+export interface EndingDef {
+  id: string;
+  title: string;
+  music: string;
+  /** Pages shown before the credits; each entry may be conditional. */
+  pages: CondText[];
+  finalLine: string;
+}
+
+export interface QuestDef {
+  id: string;
+  title: string;
+  /** Shown while active. */
+  description: string;
+  activeIf: string;
+  doneIf: string;
+  doneText?: string;
 }
 
 // ── Music ─────────────────────────────────────────────────────────────────────

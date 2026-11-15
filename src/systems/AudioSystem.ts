@@ -89,6 +89,49 @@ export class AudioSystem {
     }
   }
 
+  private ambience: { id: string; src: AudioBufferSourceNode; gain: GainNode } | null = null;
+
+  /** Looping ambient bed (synthesised). `null` fades it out. */
+  playAmbience(id: 'rain' | null): void {
+    const ctx = this.ctx;
+    if (!ctx || !this.buses) return;
+    if (this.ambience?.id === id) return;
+    const old = this.ambience;
+    if (old) {
+      old.gain.gain.setTargetAtTime(0, ctx.currentTime, 0.3);
+      setTimeout(() => {
+        old.src.stop();
+        old.src.disconnect();
+        old.gain.disconnect();
+      }, 1500);
+      this.ambience = null;
+    }
+    if (id !== 'rain') return;
+    // Rain: two seconds of noise, band-limited to a soft hiss with a low rumble.
+    const buffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let brown = 0;
+    for (let i = 0; i < data.length; i++) {
+      const white = Math.random() * 2 - 1;
+      brown = (brown + 0.02 * white) / 1.02;
+      data[i] = white * 0.35 + brown * 2.5;
+    }
+    const src = ctx.createBufferSource();
+    src.buffer = buffer;
+    src.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 2400;
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    gain.gain.setTargetAtTime(0.18, ctx.currentTime, 0.6);
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.buses.music);
+    src.start();
+    this.ambience = { id, src, gain };
+  }
+
   get currentMusic(): string | null {
     return this.music?.currentId ?? this.pendingSong;
   }

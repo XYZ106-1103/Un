@@ -1,6 +1,6 @@
 # UNCLAIMED — 기술 아키텍처
 
-> 문서 버전 0.2 · PHASE 4 기준 · 코드와 어긋나면 코드를 기준으로 이 문서를 고칩니다.
+> 문서 버전 0.3 · v0.1.0 (PHASE 8, 0장+1장) 기준 · 코드와 어긋나면 코드를 기준으로 이 문서를 고칩니다.
 
 ## 1. 기술 스택 (확정)
 
@@ -12,14 +12,15 @@
 | 테스트 | Vitest (단위) + Playwright (브라우저 스모크) | 4.1.12 | 순수 로직은 Node에서, 렌더링·입력·배율은 실제 Chromium에서 |
 | 오디오 | Web Audio API (Phaser의 AudioContext 공유) | — | 합성 효과음·캐릭터 보이스 블립, 버스 단위 볼륨 |
 | 저장 | LocalStorage + 버전 봉투(envelope) | — | 손상·구버전·미래버전 데이터를 중단 없이 처리 |
-| 폰트 | Galmuri11 / Galmuri11 Bold / Galmuri9 (SIL OFL 1.1) | 2.40.3 | 한글 11,172자 전부 포함한 픽셀 폰트 |
+| 폰트 | Galmuri11 / Galmuri11 Bold / Galmuri9 (SIL OFL 1.1) | 2.40.3 | 한글 11,172자 전부 포함한 픽셀 폰트. 배포본은 서브셋(§2.2) |
 
 **추가 도입을 보류한 것과 이유**
 
 - **Howler.js** — Phaser가 이미 Web Audio 언락·디코딩을 처리합니다. 중복 레이어를 피합니다.
 - **GSAP** — Phaser Tweens로 충분합니다. 컷신 타임라인이 복잡해지는 PHASE 7에서 재검토합니다.
 - **Zustand** — 상태는 `GameState`(PHASE 2) + 타입 이벤트 버스로 관리합니다. React가 없으므로 이점이 작습니다.
-- **Tiled** — PHASE 2에서 도입합니다(맵 JSON 포맷). 런타임 의존성은 없고 에디터만 씁니다.
+- **Tiled** — 도입하지 않았습니다. 맵은 리뷰·diff가 쉬운 자체 ASCII 레이아웃 JSON(§5.1)입니다.
+- **GSAP** (재검토 결과) — 시네마 바·와이프·엔딩 연출 모두 Phaser Tweens와 async 스크립트 명령으로 충분했습니다.
 
 ## 2. 렌더링 원칙: 480×270 네이티브 픽셀
 
@@ -44,6 +45,12 @@
 5. 글자는 흰색, 색은 틴트. 큰 글씨는 폰트를 정수배(2x, 3x)로 확대.
 
 모든 게임 내 텍스트는 `PixelText`(`src/ui/PixelText.ts`)를 씁니다. `Phaser.Text`는 사용하지 않습니다.
+
+### 2.2 폰트 서브셋과 글리프 보증
+
+`scripts/subset-fonts.py`(fonttools)가 원본 Galmuri에서 쓰지 않는 블록(한자 약 6,400자 등)을 제거합니다: 1.1 MB → 484 KB.
+라틴·문장부호·화살표·도형·기호·가나·호환 자모·**완성형 한글 11,172자 전부**·전각 문자를 남깁니다(이름은 OS 입력기로 들어오므로 KS X 1001 2,350자로는 부족).
+스크립트는 남은 글리프 범위를 `src/assets/fonts/coverage.json`에 기록하고, `tests/unit/Fonts.test.ts`가 콘텐츠 전체·UI 문자열·**소스 코드의 모든 비ASCII 문자**를 그 범위와 대조합니다. 폰트에 없는 글자가 들어가면(예: `✓`) 테스트가 실패합니다.
 
 ## 3. 계층 구조
 
@@ -162,13 +169,22 @@ graph TD
 | `ui/MenuPanels.ts`, `NameEntryPanel.ts`, `PauseMenu.ts` | 확인·메시지·설정·슬롯·크레딧·이름·일시정지·저장 패널 | UI 키트 |
 | `ui/DialogueUI.ts`, `BattleUI.ts`, `TouchControls.ts` | 대화창, 전투 위젯, 터치 컨트롤 | UI 키트 |
 
-### 아직 없는 것 (해당 PHASE에서 실제 구현과 함께 추가)
+### PHASE 5–8에서 구현됨
 
-| 파일 | PHASE |
-|---|---|
-| `entities/Boss.ts` (페이즈·전용 연출) | 5 |
-| `systems/StorySystem.ts` (루트 판정, 세이브와 분리된 영구 기록) | 6 |
-| `scenes/EndingScene.ts` | 6 |
+| 파일 | 역할 | 의존 |
+|---|---|---|
+| `systems/StorySystem.ts` | 루트 판정(return/keep/clear), 공허해진 세계 판정, 퀘스트 상태 | 순수 |
+| `systems/MetaSystem.ts` | 세이브와 분리된 영구 기록: 본 엔딩, 마지막 치움 시각, "되돌리기" 감지 횟수, 시작 횟수 | VersionedStore |
+| `systems/Particles.ts` | 씬당 Graphics 1개, 풀 256개, 정수 좌표 픽셀 파티클 | Phaser |
+| `entities/Follower.ts` | 동료(발자취 추적, 일정 거리 유지) | Phaser |
+| `entities/Soul.ts` (확장) | 영혼 모드 `free` / `tether`(끈 묶임 진자) | Phaser |
+| `entities/Enemy.ts` (확장) | 페이즈별 애니메이션, 진정 프레임 | Phaser |
+| `systems/BattleSystem.ts` (확장) | 페이즈 진입 `advancePhases`, `soulMode`, ACT의 플래그 변경·전투 종료, `hp%` | 순수 |
+| `scenes/EndingScene.ts` | 루트별 엔딩(조건부 페이지) → 크레딧(Z로 빠르게) → 마지막 문장 → 타이틀 | StorySystem, MetaSystem |
+| `ui/ShopPanel.ts` | 상점(초상화, 인사·감사·잔액 부족 문구, 단추 결제) | UI 키트 |
+| `game/ErrorOverlay.ts` | 런타임 오류 알림: 같은 출처의 잡히지 않은 오류/거부된 Promise → 게임 루프 정지 + 새로고침/계속하기, 1회만 | DOM |
+
+> 별도의 `entities/Boss.ts`는 만들지 않았습니다. 보스는 일반 적 데이터에 `phases`(조건 → 스프라이트·영혼 모드·문구)와 전용 곡을 더한 것이고, 연출은 맵 스크립트 명령(`cinema`, `music`, `npc.move`)으로 처리합니다. 데이터로 충분해 클래스를 늘리지 않았습니다.
 
 ## 5.1 콘텐츠 데이터 형식
 
@@ -183,9 +199,12 @@ graph TD
 | `data/characters/*.json` | 이름, 이름표 색, 초상화·필드 스프라이트 에셋, 보이스(파형·음높이·변화폭·간격), 작가용 노트 |
 | `data/audio/songs/<id>.json` | BPM, 스텝/박, 채널(파형·볼륨·게이트·패턴: 음이름 / `.` 쉼 / `-` 지속 / 드럼 `k s x o`) |
 | `data/art/*.json` | 픽셀아트 문서(팔레트 인덱스 문자열 행, 파생 프레임, 애니메이션) |
-| `data/story/*.json` | 시작 위치·아이템, 이름 반응, 크레딧 |
+| `data/story/*.json` | 시작 위치·아이템, 이름 반응, 크레딧, `quests.json`(activeIf/doneIf 조건식), `endings.json`(루트별 제목·곡·조건부 페이지·마지막 문장) |
+| `data/shops/<id>.json` | 주인 캐릭터, 품목·가격, 인사·감사·잔액 부족 문구(무작위 선택) |
 
-조건 키: `flag:<id>`, `item:<id>`, `rel:<id>`, `met:/spared:/cleared:<enemy>`, `stat:<name>`, `hp`, `maxHp`, `buttons`, 전투 중 `var:<변수>`, `acted:<act>`, `hp%`, `turn`.
+조건 키: `flag:<id>`, `item:<id>`, `rel:<id>`, `met:/spared:/cleared:<enemy>`, `stat:<name>`, `hp`, `maxHp`, `buttons`, `map`, `meta:undoNotices`, 전투 중 `var:<변수>`, `acted:<act>`, `hp%`(= `var:hp%`), `turn`.
+
+스크립트 명령(전체): `sfx`, `music`, `shake`, `flash`, `wait`, `face`, `item.add/remove`, `buttons`, `heal`, `relation`, `battle`, `save`, `map`, `npc.hide/show/face/move`, `player.face`, `end`, `shop`, `cinema`, `follower`, `ending`.
 
 ## 6. 데이터 설계 원칙
 
@@ -195,22 +214,23 @@ graph TD
 
 ## 7. 성능 예산
 
-| 항목 | 목표 | 현재 (PHASE 1) |
+| 항목 | 목표 | 현재 (v0.1.0) |
 |---|---|---|
-| 프레임 | 60 FPS 고정 | 60 FPS (헤드리스 Chromium, WebGL) |
-| 초기 JS | Phaser 제외 < 150 KB gzip | 70 KB gzip, 아트·콘텐츠 포함 (+ Phaser 332 KB gzip, 별도 청크) |
-| 폰트 | < 1.2 MB | 1.1 MB (PHASE 8에서 사용 글자만 서브셋해 축소 예정) |
-| 탄막 | 동시 500발에서 60 FPS | 객체 풀(free-list) 구현. 현재 패턴은 동시 수십 발 수준. 500발 부하 측정은 PHASE 5 보스 패턴과 함께 |
-| 메모리 | 씬 왕복 시 증가 없음 | 스모크 테스트가 5회 왕복 후 리스너·객체 수 불변을 검사 |
+| 프레임 | 60 FPS 고정 | 60 FPS (헤드리스 Chromium, 소프트웨어 WebGL) |
+| 초기 JS | Phaser 제외 < 150 KB gzip | 102.6 KB gzip — 아트 24종·맵·대사·곡 데이터 포함 (+ Phaser 332 KB gzip, 별도 청크) |
+| 폰트 | < 1.2 MB | 484 KB (서브셋, §2.2) |
+| 탄막 | 동시 500발에서 60 FPS | `npm run bench`: 2,000발에서 60 FPS, `update` 0.09 ms/프레임 (소프트웨어 렌더링 하한값). 풀 재사용 확인 |
+| 메모리 | 씬 왕복 시 증가 없음 | 스모크 테스트가 왕복 후 리스너·객체 수 불변, 벤치마크가 정리 후 남은 탄 0을 검사 |
 
 ## 8. 테스트 전략
 
 | 명령 | 내용 |
 |---|---|
 | `npm run typecheck` | 앱(`tsconfig.json`)과 빌드 설정(`tsconfig.node.json`) 타입 검사 |
-| `npm test` | Vitest 단위 테스트 69개 (배율, 저장·슬롯, 설정, 이벤트, 조건식, 대화 VM, 전투 규칙, 인벤토리, 리치 텍스트·조사, 픽셀아트, 출하 콘텐츠 교차 검증) |
+| `npm test` | Vitest 단위 테스트 82개 (배율, 저장·슬롯, 설정, 이벤트, 조건식, 대화 VM, 전투 규칙·페이즈, 인벤토리, 리치 텍스트·조사, 픽셀아트, 루트·메타, 출하 콘텐츠 교차 검증, 폰트 글리프 커버리지) |
 | `npm run build` | 타입 검사 + 프로덕션 빌드 |
-| `npm run smoke` | Chromium에서 5개 화면 레이아웃 + 데스크톱 전체 플레이 여정 + 휴대폰 터치 여정 (ROADMAP의 완료 기준 참고) |
+| `npm run smoke` | Chromium 7개 구역: 레이아웃 5종, 데스크톱 0장 여정, 휴대폰 터치 여정, 1장 두 루트 전체 플레이, 저장소 손상, 기기 프로필 6종, 런타임 오류 알림 (`--only`로 일부 실행, ROADMAP 참고) |
+| `npm run bench` | 탄막 부하(동시 80~2,000발): FPS·프레임 시간·`update` 비용·풀 누수 |
 | `npm run assets:report` | 에셋 상태 목록. `-- --strict`는 플레이스홀더가 남아 있으면 실패 (출시 게이트) |
 
-새 기능은 이 다섯 가지를 모두 통과해야 "완료"입니다.
+새 기능은 이 항목들을 모두 통과해야 "완료"입니다.

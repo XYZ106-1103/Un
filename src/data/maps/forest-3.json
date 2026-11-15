@@ -1,0 +1,162 @@
+{
+ "id": "forest-3",
+ "name": "우산 기사의 다리",
+ "music": "forest",
+ "tileset": "tiles.forest",
+ "legend": {
+  "#": {
+   "tile": "wall-top",
+   "solid": true
+  },
+  "=": {
+   "tile": "wall-umbrellas",
+   "solid": true
+  },
+  ".": {
+   "tile": "moss-a"
+  },
+  ",": {
+   "tile": "moss-b"
+  },
+  "~": {
+   "tile": "moss-wet"
+  },
+  "o": {
+   "tile": "puddle"
+  },
+  ":": {
+   "tile": "path"
+  },
+  "f": {
+   "tile": "flowers"
+  },
+  "A": {
+   "tile": "moss-a",
+   "deco": "um-tl",
+   "over": true
+  },
+  "B": {
+   "tile": "moss-a",
+   "deco": "um-tr",
+   "over": true
+  },
+  "C": {
+   "tile": "moss-a",
+   "deco": "um-bl",
+   "over": true
+  },
+  "D": {
+   "tile": "moss-a",
+   "deco": "um-br",
+   "over": true
+  },
+  "E": {
+   "tile": "moss-a",
+   "deco": "shaft-l",
+   "solid": true
+  },
+  "F": {
+   "tile": "moss-a",
+   "deco": "shaft-r",
+   "solid": true
+  },
+  "W": {
+   "tile": "water",
+   "solid": true
+  },
+  "H": {
+   "tile": "bridge"
+  },
+  "L": {
+   "tile": "moss-a",
+   "deco": "lantern",
+   "solid": true
+  }
+ },
+ "layout": [
+  "##########################",
+  "#===========WWW==========#",
+  "#..AB.......WWW....f..L..#",
+  "#..CD.......WWW......f...#",
+  "#..EF.......WWW..........#",
+  ":::::::::::HHHHH::::::...#",
+  ":::::::::::WWWWW::::::...#",
+  "#...........WWW....,..f..#",
+  "#..AB..~....WWW..........#",
+  "#..CD.......WWW....AB....#",
+  "#..EF.......WWW....CD....#",
+  "#...........WWW....EF....#",
+  "#....,......WWW..........#",
+  "##########################"
+ ],
+ "spawns": {
+  "from-west": {
+   "x": 1,
+   "y": 5,
+   "facing": "right"
+  }
+ },
+ "npcs": [
+  {
+   "id": "brolly",
+   "character": "brolly",
+   "x": 13,
+   "y": 5,
+   "facing": "left",
+   "behavior": "idle",
+   "script": "forest.brolly.encounter",
+   "if": "!flag:brolly_spared && !flag:brolly_cleared"
+  },
+  {
+   "id": "brolly-aside",
+   "character": "brolly",
+   "x": 16,
+   "y": 3,
+   "facing": "down",
+   "behavior": "idle",
+   "script": "forest.brolly.talk",
+   "if": "flag:brolly_spared"
+  }
+ ],
+ "objects": [
+  {
+   "id": "lantern",
+   "x": 22,
+   "y": 2,
+   "script": "forest.lantern"
+  }
+ ],
+ "triggers": [
+  {
+   "id": "brolly",
+   "x": 9,
+   "y": 5,
+   "w": 1,
+   "h": 2,
+   "script": "forest.brolly.encounter",
+   "if": "!flag:brolly_spared && !flag:brolly_cleared"
+  },
+  {
+   "id": "grove",
+   "x": 20,
+   "y": 2,
+   "w": 1,
+   "h": 11,
+   "script": "forest.grove",
+   "once": true
+  }
+ ],
+ "exits": [
+  {
+   "x": 0,
+   "y": 5,
+   "h": 2,
+   "to": "forest-2",
+   "spawn": "from-east"
+  }
+ ],
+ "onEnter": "forest.mitt.leaves",
+ "ambience": {
+  "rain": true
+ }
+}

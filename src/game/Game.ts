@@ -7,12 +7,14 @@ import Phaser from 'phaser';
 import { BootScene } from '@/scenes/BootScene';
 import { BattleScene } from '@/scenes/BattleScene';
 import { DevRoomScene } from '@/scenes/DevRoomScene';
+import { EndingScene } from '@/scenes/EndingScene';
 import { GameOverScene } from '@/scenes/GameOverScene';
 import { OverlayScene } from '@/scenes/OverlayScene';
 import { PreloadScene } from '@/scenes/PreloadScene';
 import { WorldScene } from '@/scenes/WorldScene';
 import { MenuScene } from '@/scenes/MenuScene';
 import { EventSystem } from '@/systems/EventSystem';
+import { MetaSystem } from '@/systems/MetaSystem';
 import { SaveSystem } from '@/systems/SaveSystem';
 import { SettingsSystem } from '@/systems/SettingsSystem';
 import { VirtualControls } from '@/systems/VirtualControls';
@@ -22,7 +24,7 @@ import { createPhaserConfig } from './GameConfig';
 import { attachCoreServices, tryGetServices, type CoreServices } from './Services';
 
 /** Scene list order is render order: OverlayScene must stay last (drawn on top). */
-const SCENES = [BootScene, PreloadScene, MenuScene, WorldScene, BattleScene, GameOverScene, DevRoomScene, OverlayScene];
+const SCENES = [BootScene, PreloadScene, MenuScene, WorldScene, BattleScene, GameOverScene, EndingScene, DevRoomScene, OverlayScene];
 
 export class GameApp {
   readonly game: Phaser.Game;
@@ -40,7 +42,7 @@ export class GameApp {
     events.on('settings:changed', ({ settings: s, changed }) => {
       if (changed.includes('language')) applyLanguage(s.language);
     });
-    this.core = { root, events, storage, settings, saves, touch: new VirtualControls(), session: null };
+    this.core = { root, events, storage, settings, saves, meta: new MetaSystem(storage), touch: new VirtualControls(), session: null };
 
     this.game = new Phaser.Game(createPhaserConfig(root, SCENES));
     attachCoreServices(this.game, this.core);

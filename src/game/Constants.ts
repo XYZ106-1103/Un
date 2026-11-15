@@ -22,6 +22,7 @@ export const SCENE_KEYS = {
   World: 'World',
   Battle: 'Battle',
   GameOver: 'GameOver',
+  Ending: 'Ending',
   DevRoom: 'DevRoom',
   Overlay: 'Overlay',
 } as const;

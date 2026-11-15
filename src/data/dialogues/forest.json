@@ -1,0 +1,936 @@
+{
+ "$comment": "Umbrella Stand Forest (chapter 1, part 2).",
+ "meta.undo": [
+  {
+   "if": "meta:undoNotices >= 2",
+   "then": [
+    {
+     "say": [
+      "…또요?",
+      "저는 장부예요. 지우개가 아니고요."
+     ],
+     "who": "ledger",
+     "face": "sad"
+    },
+    {
+     "say": "그래도… 다시 시작하고 싶은 마음은, 알 것 같아요.",
+     "who": "ledger",
+     "face": "nervous"
+    }
+   ],
+   "else": [
+    {
+     "say": "…{w=300}잠깐만요.",
+     "who": "ledger",
+     "face": "surprised"
+    },
+    {
+     "say": [
+      "방금, 기록을 되돌리셨죠?",
+      "이미 적어 버렸는데요.{w=300} 잉크라서요."
+     ],
+     "who": "ledger",
+     "face": "sad"
+    },
+    {
+     "say": "…이번 한 번만, 못 본 척할게요.",
+     "who": "ledger",
+     "face": "nervous"
+    }
+   ]
+  },
+  {
+   "set": {
+    "meta_undo_seen": true
+   }
+  }
+ ],
+ "forest.enter": [
+  {
+   "if": "!flag:forest_seen",
+   "then": [
+    {
+     "say": [
+      "우산이 숲처럼 겹겹이 펼쳐져 있다.",
+      "이상하다. 지하인데… 빗소리가 들린다."
+     ]
+    },
+    {
+     "set": {
+      "forest_seen": true
+     }
+    }
+   ]
+  }
+ ],
+ "forest.mitt.meet": [
+  {
+   "do": "cinema",
+   "on": true
+  },
+  {
+   "say": "…",
+   "who": "mitt",
+   "face": "neutral"
+  },
+  {
+   "say": [
+    "아, 손님이네요. 놀라게 했다면 미안해요.",
+    "저는 미트예요. 장갑이에요. …오른쪽이요."
+   ],
+   "who": "mitt",
+   "face": "surprised"
+  },
+  {
+   "say": "편지를 부치던 중이었어요. 매일 한 통씩요.",
+   "who": "mitt",
+   "face": "neutral"
+  },
+  {
+   "choice": [
+    {
+     "text": "누구에게?",
+     "then": [
+      {
+       "say": [
+        "제 주인에게요.",
+        "이 우체통은 위로 올라간대요. …아무도 확인해 본 적은 없지만요."
+       ],
+       "who": "mitt",
+       "face": "sad"
+      }
+     ]
+    },
+    {
+     "text": "(장갑을 꺼내 보인다)",
+     "if": "item:left-mitten",
+     "then": [
+      {
+       "say": "…{w=400}그 무늬.",
+       "who": "mitt",
+       "face": "surprised"
+      },
+      {
+       "say": "아, 아니에요. 착각이겠죠. 비슷한 장갑은 아주 많으니까요.",
+       "who": "mitt",
+       "face": "neutral"
+      },
+      {
+       "set": {
+        "mitt_saw_mitten": true
+       }
+      }
+     ]
+    },
+    {
+     "text": "비가 오네.",
+     "then": [
+      {
+       "say": [
+        "이건 진짜 비가 아니에요. 천장 파이프에서 새는 물이죠.",
+        "그래도… 비 소리가 나면 덜 외로워요."
+       ],
+       "who": "mitt",
+       "face": "happy"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "say": [
+    "저기, 혹시 숲 끝까지 가세요?",
+    "끝에는 따뜻한 곳이 있대요. 짝 잃은 것들이 모이는 곳.",
+    "그런데 다리를 브롤리 경이 막고 있어서… 혼자서는 무서웠어요."
+   ],
+   "who": "mitt",
+   "face": "sad"
+  },
+  {
+   "choice": [
+    {
+     "text": "같이 가자.",
+     "then": [
+      {
+       "say": "…고마워요. 정말로요.",
+       "who": "mitt",
+       "face": "happy"
+      },
+      {
+       "do": "relation",
+       "id": "mitt",
+       "amount": 1
+      }
+     ]
+    },
+    {
+     "text": "…알았어.",
+     "then": [
+      {
+       "say": "네. 조용히 따라갈게요.",
+       "who": "mitt",
+       "face": "neutral"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "do": "npc.hide",
+   "id": "mitt"
+  },
+  {
+   "do": "follower",
+   "id": "mitt"
+  },
+  {
+   "set": {
+    "mitt_joined": true
+   }
+  },
+  {
+   "do": "cinema",
+   "on": false
+  }
+ ],
+ "follower.mitt": [
+  {
+   "if": "map == forest-2 && !flag:tank_full",
+   "then": [
+    {
+     "say": "저 저장소에 물이 차면… 진짜 비를 만들 수 있을지도 몰라요.",
+     "who": "mitt",
+     "face": "neutral"
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "if": "stat:cleared >= 2",
+   "then": [
+    {
+     "say": "……{w=400}괜찮아요. 저는 괜찮아요.",
+     "who": "mitt",
+     "face": "sad"
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "if": "rel:mitt >= 2",
+   "then": [
+    {
+     "say": "{player}와 걸으면, 편지를 안 써도 덜 외로워요.",
+     "who": "mitt",
+     "face": "happy"
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "say": "브롤리 경은 나쁜 분이 아니에요. 비를 기다리는 것뿐이에요.",
+   "who": "mitt",
+   "face": "neutral"
+  }
+ ],
+ "forest.mailbox": [
+  {
+   "say": [
+    "빨간 우체통. '위로 가는 우편'이라고 적혀 있다.",
+    "안에는 편지가 가득하다. 모두 같은 글씨다."
+   ]
+  }
+ ],
+ "forest.hint": [
+  {
+   "say": [
+    "[빗물 저장소 사용법]",
+    "노을(빨강)과 햇살(금색)은 열고,\n하늘(파랑)은 닫을 것."
+   ]
+  }
+ ],
+ "forest.valve.red": [
+  {
+   "if": "flag:tank_full",
+   "then": [
+    {
+     "say": "밸브가 굳게 고정되어 있다."
+    }
+   ],
+   "else": [
+    {
+     "do": "sfx",
+     "id": "ui-confirm"
+    },
+    {
+     "if": "flag:valve_red",
+     "then": [
+      {
+       "set": {
+        "valve_red": false
+       }
+      },
+      {
+       "say": "빨간 밸브를 잠갔다."
+      }
+     ],
+     "else": [
+      {
+       "set": {
+        "valve_red": true
+       }
+      },
+      {
+       "say": "빨간 밸브를 열었다."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "forest.valve.blue": [
+  {
+   "if": "flag:tank_full",
+   "then": [
+    {
+     "say": "밸브가 굳게 고정되어 있다."
+    }
+   ],
+   "else": [
+    {
+     "do": "sfx",
+     "id": "ui-confirm"
+    },
+    {
+     "if": "flag:valve_blue",
+     "then": [
+      {
+       "set": {
+        "valve_blue": false
+       }
+      },
+      {
+       "say": "파란 밸브를 잠갔다."
+      }
+     ],
+     "else": [
+      {
+       "set": {
+        "valve_blue": true
+       }
+      },
+      {
+       "say": "파란 밸브를 열었다."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "forest.valve.gold": [
+  {
+   "if": "flag:tank_full",
+   "then": [
+    {
+     "say": "밸브가 굳게 고정되어 있다."
+    }
+   ],
+   "else": [
+    {
+     "do": "sfx",
+     "id": "ui-confirm"
+    },
+    {
+     "if": "flag:valve_gold",
+     "then": [
+      {
+       "set": {
+        "valve_gold": false
+       }
+      },
+      {
+       "say": "금색 밸브를 잠갔다."
+      }
+     ],
+     "else": [
+      {
+       "set": {
+        "valve_gold": true
+       }
+      },
+      {
+       "say": "금색 밸브를 열었다."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "forest.tank": [
+  {
+   "set": {
+    "saw_tank": true
+   }
+  },
+  {
+   "if": "flag:tank_full",
+   "then": [
+    {
+     "if": "item:watering-can",
+     "then": [
+      {
+       "say": "저장소의 꼭지를 열어 물뿌리개에 빗물을 받았다."
+      },
+      {
+       "do": "item.remove",
+       "id": "watering-can"
+      },
+      {
+       "do": "item.add",
+       "id": "watering-can-full"
+      }
+     ],
+     "else": [
+      {
+       "say": "빗물이 가득 차 있다. 손을 넣으니 차갑고 깨끗하다."
+      }
+     ]
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "if": "flag:valve_red && flag:valve_gold && !flag:valve_blue",
+   "then": [
+    {
+     "do": "sfx",
+     "id": "title-start"
+    },
+    {
+     "do": "shake",
+     "intensity": 2,
+     "duration": 600
+    },
+    {
+     "say": "쿠르르릉… 파이프가 울리더니, 저장소에 빗물이 차오른다!"
+    },
+    {
+     "set": {
+      "tank_full": true
+     }
+    },
+    {
+     "if": "flag:follower == mitt",
+     "then": [
+      {
+       "say": "와… 진짜 물이에요! 이거면 비를 만들 수 있어요!",
+       "who": "mitt",
+       "face": "happy"
+      }
+     ]
+    }
+   ],
+   "else": [
+    {
+     "say": [
+      "말라붙은 빗물 저장소. 바닥에 이끼가 끼어 있다.",
+      "옆에 밸브 세 개가 있다."
+     ]
+    }
+   ]
+  }
+ ],
+ "forest.can": [
+  {
+   "if": "flag:got_can",
+   "then": [
+    {
+     "say": "저장소 뒤 빈자리. 동그란 녹 자국만 남아 있다."
+    }
+   ],
+   "else": [
+    {
+     "say": "저장소 뒤에 녹슨 물뿌리개가 굴러다닌다."
+    },
+    {
+     "do": "item.add",
+     "id": "watering-can"
+    },
+    {
+     "if": "item:watering-can",
+     "then": [
+      {
+       "set": {
+        "got_can": true
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "forest.shop": [
+  {
+   "if": "stat:cleared >= 3",
+   "then": [
+    {
+     "say": [
+      "가판대에 '임시 휴업'이라고 적혀 있다.",
+      "…안에서 수군거리는 소리가 들리다 멈췄다."
+     ]
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "if": "!flag:met_hoopstud",
+   "then": [
+    {
+     "say": "어서 와! …세요. 처음 보는 손님이네! …군요.",
+     "who": "hoopstud",
+     "face": "happy"
+    },
+    {
+     "say": [
+      "우린 귀걸이야. 짝은… 안 맞지만.",
+      "맞아. 안 맞아. 그래서 같이 장사해."
+     ],
+     "who": "hoopstud",
+     "face": "neutral"
+    },
+    {
+     "set": {
+      "met_hoopstud": true
+     }
+    }
+   ]
+  },
+  {
+   "do": "shop",
+   "id": "hoopstud"
+  },
+  {
+   "say": "또 와! …세요.",
+   "who": "hoopstud",
+   "face": "happy"
+  }
+ ],
+ "forest.sign.east": [
+  {
+   "say": "→ 우산 기사의 다리. 무단 통행 금지! (기사 직인)"
+  }
+ ],
+ "forest.brolly.encounter": [
+  {
+   "do": "cinema",
+   "on": true
+  },
+  {
+   "if": "!flag:met_brolly",
+   "then": [
+    {
+     "say": "멈춰라!",
+     "who": "brolly",
+     "face": "proud"
+    },
+    {
+     "say": [
+      "나는 우산꽂이 숲의 기사, 브롤리 경이로다!",
+      "이 다리를 건너려는 자는, 나의 우산살을 넘어야 하리라!"
+     ],
+     "who": "brolly",
+     "face": "proud"
+    },
+    {
+     "if": "flag:follower == mitt",
+     "then": [
+      {
+       "say": "브롤리 경… 저희는 숲 끝에 가고 싶을 뿐이에요.",
+       "who": "mitt",
+       "face": "sad"
+      },
+      {
+       "say": "아니 된다! 기사는… 기사는 무언가를 지켜야 하는 것이다!",
+       "who": "brolly",
+       "face": "flustered"
+      }
+     ]
+    },
+    {
+     "set": {
+      "met_brolly": true
+     }
+    }
+   ],
+   "else": [
+    {
+     "say": "또 왔느냐! 이번에는 물러서지 않겠지?",
+     "who": "brolly",
+     "face": "proud"
+    }
+   ]
+  },
+  {
+   "if": "flag:follower == mitt && !item:watering-can-full",
+   "then": [
+    {
+     "say": "(작은 목소리로) 브롤리 경은… 비가 오기를 기다려요. 펼쳐질 이유를요.",
+     "who": "mitt",
+     "face": "neutral"
+    }
+   ]
+  },
+  {
+   "do": "cinema",
+   "on": false
+  },
+  {
+   "do": "battle",
+   "enemies": [
+    "brolly"
+   ],
+   "canFlee": false
+  },
+  {
+   "if": "flag:last_battle == spared",
+   "then": "forest.brolly.spared"
+  },
+  {
+   "if": "flag:last_battle == cleared",
+   "then": "forest.brolly.cleared"
+  },
+  {
+   "if": "flag:last_battle == fled",
+   "then": [
+    {
+     "do": "player.face",
+     "facing": "left"
+    },
+    {
+     "say": "브롤리 경이 다리 한가운데서 꼿꼿이 서 있다."
+    }
+   ]
+  }
+ ],
+ "forest.brolly.spared": [
+  {
+   "set": {
+    "brolly_spared": true
+   }
+  },
+  {
+   "do": "cinema",
+   "on": true
+  },
+  {
+   "say": [
+    "비가… 이렇게 시원한 것이었구나.",
+    "나는 오늘에서야 기사가 되었노라. 무언가를 비로부터 지켰으니."
+   ],
+   "who": "brolly",
+   "face": "happy"
+  },
+  {
+   "say": "지나가거라, 작은 손님들. 비가 오면… 언제든 나를 부르거라.",
+   "who": "brolly",
+   "face": "proud"
+  },
+  {
+   "do": "npc.move",
+   "id": "brolly",
+   "x": 16,
+   "y": 3,
+   "speed": 40
+  },
+  {
+   "do": "cinema",
+   "on": false
+  }
+ ],
+ "forest.brolly.cleared": [
+  {
+   "set": {
+    "brolly_cleared": true
+   }
+  },
+  {
+   "do": "npc.hide",
+   "id": "brolly"
+  },
+  {
+   "say": "다리 위에 접힌 우산 하나가 놓여 있다."
+  },
+  {
+   "if": "flag:follower == mitt",
+   "then": [
+    {
+     "say": "……",
+     "who": "mitt",
+     "face": "sad"
+    }
+   ]
+  }
+ ],
+ "forest.brolly.talk": [
+  {
+   "if": "flag:brolly_spared",
+   "then": [
+    {
+     "say": "비가 그리우면 물뿌리개를 들고 오너라! 언제든 펼쳐 주마!",
+     "who": "brolly",
+     "face": "happy"
+    }
+   ],
+   "else": [
+    {
+     "say": "…",
+     "who": "brolly",
+     "face": "proud"
+    }
+   ]
+  }
+ ],
+ "forest.mitt.leaves": [
+  {
+   "if": "flag:follower == mitt && stat:cleared >= 3 && stat:spared < 1",
+   "then": [
+    {
+     "say": [
+      "…저, 여기서 기다릴게요.",
+      "{player}는… 너무 많은 걸 치워 버렸어요."
+     ],
+     "who": "mitt",
+     "face": "sad"
+    },
+    {
+     "do": "follower",
+     "id": null
+    },
+    {
+     "set": {
+      "mitt_left": true
+     }
+    }
+   ]
+  }
+ ],
+ "forest.grove": [
+  {
+   "do": "cinema",
+   "on": true
+  },
+  {
+   "do": "music",
+   "id": "ending",
+   "fade": 2
+  },
+  {
+   "say": [
+    "숲 끝. 작은 등불 하나가 따뜻하게 켜져 있다.",
+    "짝 잃은 것들이 모인다는 곳. …하지만 아무도 없다."
+   ]
+  },
+  {
+   "if": "flag:follower != mitt",
+   "then": [
+    {
+     "say": "주머니 속 장갑 한 짝이 차갑다."
+    },
+    {
+     "do": "wait",
+     "ms": 800
+    },
+    {
+     "do": "ending"
+    }
+   ]
+  },
+  {
+   "say": [
+    "여기가… 숲 끝이네요.",
+    "아무도 없어요. 제 주인도요."
+   ],
+   "who": "mitt",
+   "face": "sad"
+  },
+  {
+   "if": "item:left-mitten",
+   "then": [
+    {
+     "choice": [
+      {
+       "text": "(장갑을 꺼낸다)",
+       "then": "forest.grove.reveal"
+      },
+      {
+       "text": "(아무것도 하지 않는다)",
+       "then": [
+        {
+         "say": [
+          "…괜찮아요. 여기까지 함께 와 준 것만으로도요."
+         ],
+         "who": "mitt",
+         "face": "neutral"
+        },
+        {
+         "do": "wait",
+         "ms": 600
+        },
+        {
+         "do": "ending"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "else": [
+    {
+     "say": "그래도… 여기까지 함께 와 줘서 고마워요.",
+     "who": "mitt",
+     "face": "neutral"
+    },
+    {
+     "do": "ending"
+    }
+   ]
+  }
+ ],
+ "forest.grove.reveal": [
+  {
+   "say": "……{w=600}",
+   "who": "mitt",
+   "face": "surprised"
+  },
+  {
+   "say": [
+    "그 꽃 무늬…{w=300} 저랑 똑같아요.",
+    "실 끝을 세 번 감아 매듭짓는 버릇까지.{w=400} 제 주인이 뜬 거예요."
+   ],
+   "who": "mitt",
+   "face": "surprised"
+  },
+  {
+   "choice": [
+    {
+     "text": "할머니가 떠 주신 거야.",
+     "then": [
+      {
+       "say": [
+        "할머니… 그분이 {player}의 할머니셨군요.",
+        "…그럼 이제, 그분은 찾으러 오지 않으시겠네요."
+       ],
+       "who": "mitt",
+       "face": "teary"
+      }
+     ]
+    },
+    {
+     "text": "서랍에서 찾았어.",
+     "then": [
+      {
+       "say": [
+        "서랍 속에서… 한 짝만.",
+        "그분도 저를 잊지 않으셨던 거네요."
+       ],
+       "who": "mitt",
+       "face": "teary"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "say": "…{w=500}",
+   "who": "mitt",
+   "face": "sad"
+  },
+  {
+   "choice": [
+    {
+     "text": "(장갑을 돌려준다)",
+     "then": [
+      {
+       "do": "item.remove",
+       "id": "left-mitten",
+       "quiet": true
+      },
+      {
+       "set": {
+        "mitt_given": true
+       }
+      },
+      {
+       "do": "sfx",
+       "id": "tag-chime"
+      },
+      {
+       "say": [
+        "따뜻해요.{w=400} 오랫동안 주머니 속에 있었던 온기예요.",
+        "이제… 기다리지 않아도 되겠네요."
+       ],
+       "who": "mitt",
+       "face": "happy"
+      }
+     ]
+    },
+    {
+     "text": "(장갑을 간직한다)",
+     "then": [
+      {
+       "set": {
+        "mitt_kept": true
+       }
+      },
+      {
+       "say": [
+        "…그래도 괜찮아요.",
+        "누군가 그분을 기억해 준다면, 저는 그걸로 충분해요."
+       ],
+       "who": "mitt",
+       "face": "teary"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "do": "wait",
+   "ms": 800
+  },
+  {
+   "do": "ending"
+  }
+ ],
+ "forest.lantern": [
+  {
+   "say": "작은 등불. 누군가 매일 기름을 채우는 모양이다."
+  }
+ ],
+ "forest.desk": [
+  {
+   "say": "도장 책상이 여기에도 있다. 레저가 놓아둔 모양이다."
+  },
+  {
+   "if": "hp < maxHp",
+   "then": [
+    {
+     "say": "잉크 냄새에 기운이 난다."
+    }
+   ]
+  },
+  {
+   "do": "save"
+  }
+ ]
+}
