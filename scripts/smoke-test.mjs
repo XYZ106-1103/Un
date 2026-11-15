@@ -1083,10 +1083,15 @@ async function chapterTwo(h, page, route, f) {
   check(lit.length === 2 && lit.every((n) => n === 'lamp-top-on'), 'lamp sprites switch on', JSON.stringify(lit));
   await h.shot('festival-lit');
   if (route === 'return') {
-    await h.goTo(3, 10);
-    await h.press('ArrowUp');
-    await h.press('KeyZ', 300);
-    await f.idle();
+    // The postbox is at (3,9); a wandering resident may stand on one side, so try each side.
+    for (const [x, y, face] of [[3, 10, 'ArrowUp'], [4, 9, 'ArrowLeft'], [2, 9, 'ArrowRight'], [3, 8, 'ArrowDown']]) {
+      if ((await h.state()).inventory.includes('mitt-letter')) break;
+      const w = await h.goTo(x, y);
+      if (!w || Math.round((w.x - 8) / 16) !== x || Math.round((w.y - 14) / 16) !== y) continue;
+      await h.press(face);
+      await h.press('KeyZ', 300);
+      await f.idle();
+    }
     check((await h.state()).inventory.includes('mitt-letter'), 'a letter from Mitt waits in the postbox');
   }
   // Tumble in the drying yard.
