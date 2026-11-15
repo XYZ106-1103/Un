@@ -1,0 +1,179 @@
+{
+ "id": "lint",
+ "name": "보풀이",
+ "sprite": "enemy.lint",
+ "hp": 14,
+ "attack": 3,
+ "defense": 1,
+ "reward": {
+  "buttons": 5
+ },
+ "encounter": "보풀이가 솜털처럼 둥실 떠오른다.",
+ "check": "스웨터에서 떨어져 나온 보풀 뭉치. 다시 무언가의 일부가 되고 싶다.",
+ "vars": {
+  "petted": 0,
+  "pocketed": 0,
+  "blown": 0
+ },
+ "acts": [
+  {
+   "id": "check",
+   "label": "관찰",
+   "text": [
+    {
+     "text": "아주 부드럽다. 재채기가 나올 것 같다."
+    }
+   ]
+  },
+  {
+   "id": "pet",
+   "label": "쓰다듬기",
+   "set": {
+    "petted": "+1"
+   },
+   "text": [
+    {
+     "if": "var:petted >= 1",
+     "text": [
+      "또 쓰다듬었다. 보풀이가 골골거린다.",
+      "…에취! 보풀이가 재채기를 했다."
+     ]
+    },
+    {
+     "text": [
+      "살살 쓰다듬었다.",
+      "보풀이가 조금 더 동그래졌다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pocket",
+   "label": "주머니에 넣기",
+   "requires": "var:petted >= 1",
+   "deniedText": [
+    "보풀이가 경계하며 멀어진다. 먼저 친해져야 할 것 같다."
+   ],
+   "set": {
+    "pocketed": 1
+   },
+   "text": [
+    {
+     "text": [
+      "주머니를 열어 주었다.",
+      "보풀이가 쏙 들어왔다가… 다시 나왔다.",
+      "\"따뜻했어. 고마워.\" 그걸로 충분한 것 같다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "blow",
+   "label": "후 불기",
+   "set": {
+    "blown": 1
+   },
+   "text": [
+    {
+     "text": [
+      "후! 불었다.",
+      "보풀이가 사방으로 흩어졌다가 화를 내며 다시 뭉친다!"
+     ]
+    }
+   ]
+  }
+ ],
+ "spareWhen": "var:pocketed >= 1",
+ "flavor": [
+  {
+   "if": "var:pocketed >= 1",
+   "text": "보풀이가 만족스럽게 둥실 떠 있다."
+  },
+  {
+   "if": "var:blown >= 1",
+   "text": "보풀이가 잔뜩 부풀어 있다."
+  },
+  {
+   "text": "보풀이가 붙을 곳을 찾아 둥실거린다."
+  }
+ ],
+ "speech": [
+  {
+   "if": "var:pocketed >= 1",
+   "text": "포근…"
+  },
+  {
+   "if": "var:blown >= 1",
+   "text": "후 불지 마!!"
+  },
+  {
+   "text": "어디든… 붙고 싶어…"
+  }
+ ],
+ "patterns": [
+  {
+   "id": "drift",
+   "if": "var:blown < 1"
+  },
+  {
+   "id": "puff",
+   "if": "var:blown >= 1 || var:petted >= 2"
+  }
+ ],
+ "patternDefs": {
+  "drift": {
+   "duration": 5000,
+   "box": {
+    "w": 120,
+    "h": 80
+   },
+   "emitters": [
+    {
+     "type": "fall",
+     "interval": 420,
+     "amount": 2,
+     "bullet": {
+      "frame": "fluff",
+      "radius": 2,
+      "speed": 32
+     }
+    },
+    {
+     "type": "linear",
+     "from": "left",
+     "angle": 8,
+     "interval": 1100,
+     "amount": 1,
+     "bullet": {
+      "frame": "fluff",
+      "radius": 2,
+      "speed": 40
+     }
+    }
+   ]
+  },
+  "puff": {
+   "duration": 5000,
+   "box": {
+    "w": 120,
+    "h": 84
+   },
+   "emitters": [
+    {
+     "type": "radial",
+     "from": "center",
+     "interval": 1250,
+     "amount": 10,
+     "bullet": {
+      "frame": "fluff",
+      "radius": 2,
+      "speed": 46
+     },
+     "start": 300
+    }
+   ]
+  }
+ },
+ "sparedText": "보풀이는 바람을 타고 둥실둥실 날아갔다.",
+ "clearedText": "보풀 몇 가닥이 바닥에 흩어져 있다."
+}

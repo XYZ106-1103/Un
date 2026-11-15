@@ -5,7 +5,7 @@
 
 import { applyFlagChanges, encounterRecord, stateResolver, type GameState } from '@/game/GameState';
 import type { SeededRandom } from '@/utils/MathUtils';
-import type { ActDef, CondText, EnemyDef, FlagValue, PatternDef, PhaseDef } from './content/types';
+import type { ActDef, CondText, EnemyDef, FlagValue, PatternDef, PhaseDef, SoulMode } from './content/types';
 import type { InventorySystem, UseResult } from './InventorySystem';
 import { format } from './LocaleSystem';
 import { evaluateCondition, type ConditionValue, type Resolver } from './script/Condition';
@@ -146,11 +146,11 @@ export class BattleModel {
     return entered;
   }
 
-  /** Soul rule for this enemy turn: tethered if any boss phase says so. */
-  soulMode(): 'free' | 'tether' {
+  /** Soul rule for this enemy turn: the first active boss phase that sets one wins. */
+  soulMode(): SoulMode {
     for (const enemy of this.active) {
       const phase = enemy.def.phases?.[enemy.phase];
-      if (phase?.soul === 'tether') return 'tether';
+      if (phase?.soul && phase.soul !== 'free') return phase.soul;
     }
     return 'free';
   }

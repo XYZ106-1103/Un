@@ -1,0 +1,39 @@
+{
+ "id": "spool",
+ "name": "실타래 할머니의 수선집",
+ "keeper": "spool",
+ "items": [
+  {
+   "id": "festival-cookie",
+   "price": 7
+  },
+  {
+   "id": "warm-towel",
+   "price": 10
+  },
+  {
+   "id": "lint-candy",
+   "price": 4
+  },
+  {
+   "id": "thimble",
+   "price": 22
+  },
+  {
+   "id": "patched-sock",
+   "price": 24
+  }
+ ],
+ "greeting": [
+  "어서 오렴. 구멍 난 건 꿰매 주고, 풀린 건 감아 준단다.",
+  "천천히 보렴. 실도 사람도, 서두르면 엉키는 법이란다."
+ ],
+ "thanks": [
+  "고맙구나. 잘 쓰렴.",
+  "그래, 그래. 그건 오래 갈 거란다."
+ ],
+ "broke": [
+  "어머, 단추가 조금 모자라구나.",
+  "단추가 부족하네… 늙은이도 장사는 해야 해서 말이야."
+ ]
+}

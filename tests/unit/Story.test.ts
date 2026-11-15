@@ -26,6 +26,29 @@ describe('StorySystem', () => {
     expect(evaluateRoute(s)).toBe('keep');
   });
 
+  it('chapter 2 return also needs Tumble spared after the festival was lit', () => {
+    const s = fresh();
+    Object.assign(s.flags, { brolly_spared: true, mitt_given: true });
+    expect(evaluateRoute(s, 1)).toBe('return');
+    expect(evaluateRoute(s, 2)).toBe('keep');
+    s.flags.tumble_spared = true;
+    expect(evaluateRoute(s, 2)).toBe('keep'); // spared some other way, festival still dark
+    s.flags.festival_lit = true;
+    expect(evaluateRoute(s, 2)).toBe('return');
+    s.stats.cleared = 1;
+    expect(evaluateRoute(s, 2)).toBe('keep');
+  });
+
+  it('chapter 2 clear needs both bosses cleared and no mercy at all', () => {
+    const s = fresh();
+    s.flags.brolly_cleared = true;
+    s.stats.cleared = 9;
+    expect(evaluateRoute(s, 1)).toBe('clear');
+    expect(evaluateRoute(s, 2)).toBe('keep');
+    s.flags.tumble_cleared = true;
+    expect(evaluateRoute(s, 2)).toBe('clear');
+  });
+
   it('the world turns hollow only after many clears and no mercy', () => {
     const s = fresh();
     s.stats.cleared = 3;

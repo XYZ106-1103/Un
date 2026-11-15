@@ -59,5 +59,104 @@
       "every": 2
     },
     "notes": "A black umbrella who knighted himself. Pompous archaic speech ('~하노라', '~이로다'), secretly terrified he is useless because it never rains underground."
+  },
+  "clack": {
+    "name": "클랙",
+    "color": "ember",
+    "portrait": "portrait.clack",
+    "defaultFace": "neutral",
+    "sprite": "char.clack",
+    "voice": {
+      "wave": "square",
+      "pitch": 420,
+      "variance": 140,
+      "volume": 0.045,
+      "every": 1
+    },
+    "notes": "A set of false teeth, stand-up comic in the lounge. Terrible puns, clacking laugh (딱딱). Upper and lower plates came from different owners; jokes about being the only 'matched pair' in town. Secretly the wisest person here: the festival order is hidden in his jokes."
+  },
+  "spool": {
+    "name": "실타래 할머니",
+    "color": "amber",
+    "portrait": "portrait.spool",
+    "defaultFace": "neutral",
+    "sprite": "char.spool",
+    "voice": {
+      "wave": "triangle",
+      "pitch": 300,
+      "variance": 30,
+      "volume": 0.06,
+      "every": 2
+    },
+    "notes": "Wooden thread spool who runs the mending shop. Warm, a little forgetful ('my memory unravels like a thread end'). Speaks in gentle 반말 to the child (~란다, ~구나)."
+  },
+  "pip": {
+    "name": "핍",
+    "color": "sky",
+    "portrait": "portrait.pip",
+    "defaultFace": "neutral",
+    "sprite": "char.pip",
+    "voice": {
+      "wave": "sine",
+      "pitch": 520,
+      "variance": 70,
+      "volume": 0.06,
+      "every": 2
+    },
+    "notes": "Blue striped ankle sock, the town's self-appointed greeter. Chatty, cheerful, quick to laugh at herself; hasn't seen her right sock in years and pretends that's fine."
+  },
+  "sock-mint": {
+    "name": "민트",
+    "color": "moss",
+    "sprite": "char.sock-mint",
+    "voice": {
+      "wave": "sine",
+      "pitch": 610,
+      "variance": 60,
+      "volume": 0.05,
+      "every": 2
+    },
+    "notes": "Mint polka-dot sock. Bubbly, optimistic."
+  },
+  "sock-plum": {
+    "name": "자두",
+    "color": "lilac",
+    "sprite": "char.sock-plum",
+    "voice": {
+      "wave": "sine",
+      "pitch": 460,
+      "variance": 50,
+      "volume": 0.05,
+      "every": 2
+    },
+    "notes": "Plum sock with gold heel. Shy romantic."
+  },
+  "lonesock": {
+    "name": "외짝 양말",
+    "color": "sock",
+    "sprite": "char.lonesock",
+    "voice": {
+      "wave": "triangle",
+      "pitch": 380,
+      "variance": 60,
+      "volume": 0.06,
+      "every": 2
+    },
+    "notes": "The Single Sock from chapter 1. Appears only if the player spared it there."
+  },
+  "tumble": {
+    "name": "텀블",
+    "color": "mist",
+    "portrait": "portrait.tumble",
+    "defaultFace": "neutral",
+    "sprite": "char.tumble",
+    "voice": {
+      "wave": "triangle",
+      "pitch": 110,
+      "variance": 18,
+      "volume": 0.07,
+      "every": 2
+    },
+    "notes": "Old front-loading dryer in the abandoned laundromat. Everyone says it eats socks. Speaks in short, low sentences; believes pairs fall apart because of it."
   }
 }

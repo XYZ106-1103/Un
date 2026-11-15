@@ -27,5 +27,26 @@
   "activeIf": "flag:met_brolly",
   "doneIf": "flag:brolly_spared || flag:brolly_cleared",
   "doneText": "다리를 건널 수 있게 되었다."
+ },
+ "festival-lights": {
+  "title": "축제 등불",
+  "description": "광장의 큰 빨랫줄에 축제 양말 네 짝을 순서대로 걸면 등불이 켜진다고 한다. 게시판의 규칙은 반쯤 번져 있다.",
+  "activeIf": "flag:met_pip || flag:read_board",
+  "doneIf": "flag:festival_lit",
+  "doneText": "등불이 켜졌다."
+ },
+ "clack-show": {
+  "title": "클랙의 쇼",
+  "description": "라운지의 코미디언 클랙은 뭐든 농담으로 기억한다고 한다.",
+  "activeIf": "flag:lounge_seen",
+  "doneIf": "flag:clack_spared || flag:clack_cleared",
+  "doneText": "쇼가 끝났다."
+ },
+ "tumble": {
+  "title": "양말을 먹는 건조기",
+  "description": "마을 사람들은 건조장의 텀블이 양말을 먹는다고 한다. 정말일까?",
+  "activeIf": "flag:met_tumble || flag:festival_lit",
+  "doneIf": "flag:tumble_spared || flag:tumble_cleared",
+  "doneText": "건조장의 덜컹거림이 멈췄다."
  }
 }

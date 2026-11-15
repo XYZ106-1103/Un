@@ -751,7 +751,8 @@
      "ms": 800
     },
     {
-     "do": "ending"
+     "do": "ending",
+     "chapter": 1
     }
    ]
   },
@@ -787,7 +788,8 @@
          "ms": 600
         },
         {
-         "do": "ending"
+         "do": "ending",
+         "chapter": 1
         }
        ]
       }
@@ -801,7 +803,8 @@
      "face": "neutral"
     },
     {
-     "do": "ending"
+     "do": "ending",
+     "chapter": 1
     }
    ]
   }
@@ -909,7 +912,8 @@
    "ms": 800
   },
   {
-   "do": "ending"
+   "do": "ending",
+   "chapter": 1
   }
  ],
  "forest.lantern": [

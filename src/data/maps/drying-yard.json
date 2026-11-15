@@ -1,0 +1,152 @@
+{
+ "id": "drying-yard",
+ "name": "버려진 건조장",
+ "music": "town-hollow",
+ "tileset": "tiles.town",
+ "legend": {
+  "#": {
+   "tile": "wall-top",
+   "solid": true
+  },
+  "D": {
+   "tile": "dryer-wall",
+   "solid": true
+  },
+  "W": {
+   "tile": "washer-wall",
+   "solid": true
+  },
+  "H": {
+   "tile": "dryer-wall-warm",
+   "solid": true
+  },
+  "o": {
+   "tile": "lino-a"
+  },
+  "O": {
+   "tile": "lino-b"
+  },
+  "%": {
+   "tile": "lino-lint"
+  },
+  "L": {
+   "tile": "lino-a",
+   "deco": "lint-pile",
+   "solid": true
+  },
+  "k": {
+   "tile": "lino-a",
+   "deco": "basket",
+   "solid": true
+  }
+ },
+ "layout": [
+  "##############################",
+  "#DWDDDDWDDDDWDDDDWDDDDWDDDDWD#",
+  "#o%%oOoooooooooooo%o%ooooooo%#",
+  "#ooooOoLoOoooo%ooooooOoOLOoOO#",
+  "#oooO%%%o%ooooOoLoOOoo%oO%oOo#",
+  "#oo%oO%o%oooooOOoooO%oOOOoooo#",
+  "ooooOoooOoo%oOo%%o%oooooooooo#",
+  "ooo%o%oooooooO%oo%oOOooOo%oo%#",
+  "#%ooo%%ooooooo%OOo%oooo%Ooooo#",
+  "#ooook%oOoOoLoOooo%%oooo%%ooo#",
+  "#O%oooOooLoOooooOooLOo%ooLooo#",
+  "#oooooooo%oooOoooOoooooooooo%#",
+  "##############################"
+ ],
+ "spawns": {
+  "from-square": {
+   "x": 1,
+   "y": 6,
+   "facing": "right"
+  }
+ },
+ "npcs": [
+  {
+   "id": "tumble",
+   "character": "tumble",
+   "x": 26,
+   "y": 6,
+   "facing": "left",
+   "behavior": "idle",
+   "script": "yard.tumble.encounter",
+   "if": "!flag:tumble_spared && !flag:tumble_cleared"
+  }
+ ],
+ "objects": [
+  {
+   "id": "dryer-a",
+   "x": 6,
+   "y": 1,
+   "script": "yard.dryer"
+  },
+  {
+   "id": "washer",
+   "x": 12,
+   "y": 1,
+   "script": "yard.washer"
+  },
+  {
+   "id": "basket",
+   "x": 5,
+   "y": 9,
+   "script": "yard.basket"
+  },
+  {
+   "id": "lone-sock",
+   "x": 26,
+   "y": 6,
+   "script": "yard.leftover",
+   "if": "flag:tumble_cleared",
+   "sprite": "gl-empty"
+  }
+ ],
+ "exits": [
+  {
+   "x": 0,
+   "y": 6,
+   "h": 2,
+   "to": "town-square",
+   "spawn": "from-yard"
+  }
+ ],
+ "triggers": [
+  {
+   "id": "tumble",
+   "x": 22,
+   "y": 2,
+   "h": 10,
+   "script": "yard.tumble.encounter",
+   "if": "!flag:tumble_spared && !flag:tumble_cleared"
+  }
+ ],
+ "savePoints": [
+  {
+   "id": "desk-yard",
+   "x": 3,
+   "y": 3,
+   "script": "yard.desk"
+  }
+ ],
+ "encounters": {
+  "steps": 26,
+  "groups": [
+   [
+    "lint"
+   ],
+   [
+    "hanger"
+   ],
+   [
+    "lint",
+    "clothespin"
+   ],
+   [
+    "lint",
+    "lint"
+   ]
+  ]
+ },
+ "onEnter": "yard.enter"
+}

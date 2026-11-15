@@ -257,6 +257,12 @@ export interface ActDef {
   text: CondText[];
 }
 
+/**
+ * Soul rules: `free` moves in eight directions; `tether` swings from a pin (Sir Brolly);
+ * `spin` is pushed by a slowly rotating current the player has to steer against (Tumble).
+ */
+export type SoulMode = 'free' | 'tether' | 'spin';
+
 /** Boss phase: entered once, in order, when its condition first holds. */
 export interface PhaseDef {
   id: string;
@@ -264,7 +270,7 @@ export interface PhaseDef {
   /** Lines shown when the phase begins. */
   enter?: string[];
   /** Soul rule while this phase is active. */
-  soul?: 'free' | 'tether';
+  soul?: SoulMode;
 }
 
 export interface BulletSpec {
@@ -359,12 +365,19 @@ export interface ShopDef {
 }
 
 export interface EndingDef {
+  /** `ch<chapter>.<route>`, e.g. `ch1.return`. */
   id: string;
   title: string;
   music: string;
-  /** Pages shown before the credits; each entry may be conditional. */
+  /** Pages shown before the credits (or before the next chapter card); each may be conditional. */
   pages: CondText[];
   finalLine: string;
+  /**
+   * Chapter interlude: instead of credits, show a chapter card and continue the same
+   * game on `map`/`spawn`. `set` applies flag changes at the hand-over (e.g. a companion
+   * staying behind). Without `next` this is the game's current final ending.
+   */
+  next?: { label: string; title: string; map: string; spawn: string; set?: Record<string, FlagValue> };
 }
 
 export interface QuestDef {

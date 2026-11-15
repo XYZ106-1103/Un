@@ -13,10 +13,13 @@
  *     backup, garbage settings/meta → boots, reports, recovers, loads.
  *  5. Device profiles (iPhone, Pixel, iPad, Galaxy Tab; Chromium with each device's
  *     viewport, pixel ratio, user agent and touch): fit, no scrolling, tap to start.
- *  6. Chapter 1, two routes from the forest entrance: "return" (Mitt joins, valve puzzle,
- *     shop, Brolly praised → tether phase → rain → spared, mitten given back, ending) and
- *     "clear" (hollow world: name plates, closed shop, Mitt stays behind, Brolly cleared,
- *     ending, title loses its tag).
+ *  6. Story, two routes, played continuously from the forest entrance to the final ending:
+ *     "return" — ch1: Mitt joins, valve puzzle, shop, Brolly praised → tether phase → rain
+ *     → spared, mitten given back → interlude card → ch2: Pip, Granny Spool's shop, Clack's
+ *     show (laugh ×3), wrong then right festival order, Mitt's letter, Tumble (listen →
+ *     spin phase → festival → spared) → festival → ending → credits → title keeps its tag;
+ *     "clear" — hollow world in both chapters: "(물품)" plates, closed shops, Mitt stays
+ *     behind, everyone cleared → endings → title loses its tag.
  *  7. Runtime crash notice: an injected error pauses the game behind a notice once;
  *     "keep playing" resumes it.
  *
@@ -25,7 +28,7 @@
  *   npm run smoke -- --url http://localhost:5173     # test a running dev server
  *   npm run smoke -- --shots                         # save screenshots to ./screenshots
  *   npm run smoke -- --only damaged,devices          # run some sections (layout, desktop,
- *                                                    # phone, chapter1, damaged, devices, crash)
+ *                                                    # phone, story, damaged, devices, crash)
  *
  * Requires the `playwright` package (npm i -D playwright && npx playwright install chromium).
  */
@@ -151,6 +154,48 @@ function helpers(page, shotPrefix) {
     await wait(150);
     return world();
   }
+  /** Shortest walkable path (BFS over legend solids, solid objects and NPCs), walked tile by tile. */
+  async function goTo(tx, ty, timeout = 15000) {
+    const path = await W(([tx, ty]) => {
+      const s = window.__unclaimed.game.scene.getScene('World');
+      const m = s.map;
+      const H = m.layout.length;
+      const Wd = m.layout[0].length;
+      const solid = (x, y) => {
+        if (x < 0 || y < 0 || x >= Wd || y >= H) return true;
+        if (m.legend[m.layout[y][x]]?.solid) return true;
+        if (s.objects.some((o) => o.solid && o.def.x === x && o.def.y === y)) return true;
+        return s.npcs.some((n) => !n.hidden && Math.floor(n.sprite.x / 16) === x && Math.floor((n.sprite.y - 2) / 16) === y);
+      };
+      const sx = Math.floor(s.player.x / 16);
+      const sy = Math.floor((s.player.y - 2) / 16);
+      const key = (x, y) => y * Wd + x;
+      const prev = new Map([[key(sx, sy), null]]);
+      const queue = [[sx, sy]];
+      while (queue.length) {
+        const [x, y] = queue.shift();
+        if (x === tx && y === ty) break;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (prev.has(key(nx, ny)) || (solid(nx, ny) && !(nx === tx && ny === ty))) continue;
+          prev.set(key(nx, ny), [x, y]);
+          queue.push([nx, ny]);
+        }
+      }
+      if (!prev.has(key(tx, ty))) return null;
+      const out = [];
+      for (let c = [tx, ty]; c; c = prev.get(key(c[0], c[1]))) out.unshift(c);
+      return out;
+    }, [tx, ty]);
+    if (!path) return walkTo(tx, ty, 3000);
+    const t0 = Date.now();
+    for (const [x, y] of path.slice(1)) {
+      const w = await walkTo(x, y, 2500);
+      if (!w || w.busy || Date.now() - t0 > timeout) return w;
+    }
+    return world();
+  }
   async function tapGame(x, y) {
     const r = await W(() => {
       const b = document.querySelector('#game-stage canvas').getBoundingClientRect();
@@ -159,7 +204,7 @@ function helpers(page, shotPrefix) {
     await page.touchscreen.tap(r.left + (x / BASE_W) * r.w, r.top + (y / BASE_H) * r.h);
     await wait(200);
   }
-  return { W, wait, press, isActive, waitScene, world, state, shot, advanceWhile, idle, walkTo, tapGame };
+  return { W, wait, press, isActive, waitScene, world, state, shot, advanceWhile, idle, walkTo, goTo, tapGame };
 }
 
 async function newContext(browser, vp) {
@@ -646,13 +691,13 @@ async function deviceProfiles(browser, url) {
   }
 }
 
-// ── 6. Chapter 1: both ends of the moral spectrum ─────────────────────────────
+// ── 6. Story: chapters 1–2, both ends of the moral spectrum ───────────────────
 // Starts each route at the forest entrance with chapter 0 already played (chapter 0 is
 // covered by the desktop journey) and random encounters off, so runs are deterministic.
 
 async function chapterOne(browser, url) {
   for (const route of ['return', 'clear']) {
-    console.log(`\n[chapter 1: ${route} route]`);
+    console.log(`\n[story: ${route} route]`);
     const { context, page, errors } = await newContext(browser, VIEWPORTS[0]);
     const h = helpers(page, `ch1-${route}`);
     const W = h.W;
@@ -894,35 +939,241 @@ async function chapterOne(browser, url) {
       await h.press('KeyZ', 300);
     }
     for (let i = 0; i < 25 && !(await h.isActive('Ending')); i++) await h.press('KeyZ', 350);
-    check(await h.isActive('Ending'), 'chapter ending plays');
+    check(await h.isActive('Ending'), 'chapter 1 ending plays');
     await h.wait(4000);
     await h.shot('ending');
-    const meta = await W(() => ({ last: window.__unclaimed.core.meta.lastEnding }));
-    check(meta.last === route, `"${route}" ending is remembered across saves`, JSON.stringify(meta));
-    // Pages advance with Z; holding Z speeds up the credits; Z on the final line exits.
-    let sawCredits = false;
-    for (let i = 0; i < 120 && !(await h.isActive('Menu')); i++) {
-      const stage = await W(() => window.__unclaimed.game.scene.getScene('Ending').stage);
-      if (stage === 'credits') {
-        sawCredits = true;
-        await page.keyboard.down('KeyZ');
-        await h.wait(500);
-        continue;
+    check((await W(() => window.__unclaimed.core.meta.lastEnding)) === null, 'a chapter interlude is not recorded as a game ending');
+    // Interlude: pages → closing line → chapter card → the same game continues in chapter 2.
+    let sawCard = false;
+    for (let i = 0; i < 60 && !(await h.isActive('World')); i++) {
+      const stage = await W(() => window.__unclaimed.game.scene.getScene('Ending')?.stage);
+      if (stage === 'card' && !sawCard) {
+        sawCard = true;
+        await h.wait(900);
+        await h.shot('chapter-card');
       }
-      await page.keyboard.up('KeyZ');
       if (stage === 'final') await h.wait(1600);
-      await h.press('KeyZ', 500);
+      await h.press('KeyZ', 450);
     }
-    await page.keyboard.up('KeyZ');
-    check(sawCredits, 'credits roll after the ending pages');
-    check(await h.isActive('Menu'), 'ending returns to the title');
+    check(sawCard, 'the "제2장 양말 마을" card is shown (no credits yet)');
+    await h.waitScene('World', 10000);
     await h.wait(1500);
-    const tag = await W(() => window.__unclaimed.game.scene.getScene('Menu').tag?.visible);
-    check(tag === (route !== 'clear'), `title ${route === 'clear' ? 'loses' : 'keeps'} the claim tag`, String(tag));
-    await h.shot('title-after');
-    check(errors.length === 0, 'no console errors in chapter 1', errors.join(' | '));
+    s = await h.state();
+    check(s.location.map === 'town-gate', 'chapter 2 starts at the town gate with the same save', s.location.map);
+    check(!s.flags.follower, 'Mitt stays behind in the forest', String(s.flags.follower));
+    const auto = await W(() => window.__unclaimed.core.saves.summaries()[0]);
+    check(auto.status === 'ok' && auto.map === 'town-gate', 'arriving in chapter 2 autosaves', JSON.stringify(auto));
+    await chapterTwo(h, page, route, { untilChoice, idle, battle, toCommands, command, pick, act });
+    check(errors.length === 0, 'no console errors in chapters 1–2', errors.join(' | '));
     await context.close();
   }
+}
+
+/** Chapter 2 from the town gate to the final ending, continuing the chapter 1 save. */
+async function chapterTwo(h, page, route, f) {
+  const W = h.W;
+  const ow = await W(() => (window.__unclaimed.game.scene.getScene('World').checkEncounter = () => false));
+  void ow;
+  await f.idle();
+  await h.shot('town-gate');
+  const plateSeen = async () => W(() => window.__unclaimed.game.scene.getScene('World').dialogue.nameText?.text ?? '');
+  if (route === 'return') {
+    await h.goTo(4, 6);
+    await h.wait(400);
+    check(await f.untilChoice(), 'Pip greets you at the gate (choice)');
+    await h.press('KeyZ', 300);
+    await f.idle();
+    check((await h.state()).flags.met_pip === true, 'meeting Pip is remembered');
+  } else {
+    const pip = await W(() => window.__unclaimed.game.scene.getScene('World').npcs.some((n) => n.def.id === 'pip'));
+    check(pip === false, 'nobody greets you in a hollow town');
+  }
+  await h.goTo(26, 6);
+  await h.walkTo(27, 6, 3000);
+  await h.wait(1400);
+  await f.idle();
+  check((await h.world())?.map === 'town-square', 'the square loads');
+  const residents = await W(() => window.__unclaimed.game.scene.getScene('World').npcs.map((n) => n.def.id));
+  if (route === 'return') check(residents.includes('spool') && residents.includes('pip'), 'the square is lively', residents.join(','));
+  else check(!residents.includes('spool') && !residents.includes('mint'), 'the hollow square is empty', residents.join(','));
+  // Board, then Granny Spool's shop.
+  await h.goTo(3, 5);
+  await h.press('ArrowUp');
+  await h.press('KeyZ', 300);
+  await f.idle();
+  await h.goTo(22, 5);
+  await h.press('ArrowUp');
+  await h.press('KeyZ', 300);
+  for (let i = 0; i < 16 && (await h.world()).ui === 0 && (await h.world()).busy; i++) {
+    if ((await h.world()).choice) await h.press('KeyZ', 300);
+    else await h.press('KeyZ', 280);
+  }
+  if (route === 'return') {
+    check((await h.world()).ui > 0, 'Granny Spool’s shop opens');
+    await h.shot('spool-shop');
+    await h.press('KeyX', 300);
+  } else check((await h.world()).ui === 0, 'the shop is closed in a hollow town');
+  await f.idle();
+  // Clack's show in the lounge.
+  await h.goTo(6, 2);
+  await h.walkTo(6, 1, 3000);
+  await h.wait(1400);
+  await f.idle();
+  check((await h.world())?.map === 'clack-lounge', 'the lounge loads');
+  await h.goTo(9, 3);
+  await h.press('ArrowUp');
+  await h.press('KeyZ', 300);
+  if (route === 'clear') check((await plateSeen()).includes('물품'), 'Clack’s name plate reads "(물품)" too', await plateSeen());
+  check(await f.untilChoice(), 'Clack offers a show');
+  await h.press('KeyZ', 300);
+  for (let i = 0; i < 20 && !(await h.isActive('Battle')); i++) await h.press('KeyZ', 300);
+  check(await h.isActive('Battle'), 'the show is a battle');
+  await h.wait(800);
+  await f.toCommands();
+  if (route === 'return') {
+    for (let r = 0; r < 3; r++) {
+      await f.act('laugh');
+      if (r === 0) {
+        for (let i = 0; i < 30 && !(await f.battle()).dodging; i++) await h.press('KeyZ', 220);
+        await h.wait(1400);
+        await h.shot('clack-show');
+      }
+      await f.toCommands();
+    }
+    await f.command(3);
+    await f.pick(0);
+  } else {
+    for (let r = 0; r < 20; r++) {
+      if (!(await f.toCommands())) break;
+      await f.command(0);
+      await h.wait(400);
+      await h.press('KeyZ', 1300);
+      if ((await f.battle()).enemies?.[0]?.status === 'cleared') break;
+    }
+  }
+  for (let i = 0; i < 25 && (await h.isActive('Battle')); i++) await h.press('KeyZ', 350);
+  await h.wait(800);
+  await f.idle();
+  let s = await h.state();
+  if (route === 'return') check(s.flags.clack_spared && s.flags.clack_hint, 'laughing three times spares Clack, who tells the order');
+  else check(s.flags.clack_cleared === true, 'Clack cleared');
+  await h.goTo(8, 9);
+  await h.walkTo(8, 10, 2500);
+  await h.wait(1400);
+  await f.idle();
+  // The Great Line: sunset, sea, star, grass. Try a wrong order first.
+  const setPin = async (i, option) => {
+    await h.goTo(11 + i, 5);
+    await h.press('ArrowUp');
+    await h.press('KeyZ', 300);
+    if (await f.untilChoice()) {
+      for (let k = 0; k < option; k++) await h.press('ArrowDown', 110);
+      await h.press('KeyZ', 300);
+    }
+    await f.idle();
+  };
+  for (const [i, o] of [[1, 0], [2, 2], [3, 1], [4, 3]]) await setPin(i, o);
+  s = await h.state();
+  check(!s.flags.festival_lit && s.flags.pins_wrong === 1, 'a wrong order does nothing (and is counted)');
+  await setPin(2, 1);
+  await setPin(3, 2);
+  s = await h.state();
+  check(s.flags.festival_lit === true, 'the right order lights the festival lamps');
+  const lit = await W(() => window.__unclaimed.game.scene.getScene('World').objects.filter((o) => o.def.id.startsWith('lamp')).map((o) => o.sprite?.frame?.name));
+  check(lit.length === 2 && lit.every((n) => n === 'lamp-top-on'), 'lamp sprites switch on', JSON.stringify(lit));
+  await h.shot('festival-lit');
+  if (route === 'return') {
+    await h.goTo(3, 10);
+    await h.press('ArrowUp');
+    await h.press('KeyZ', 300);
+    await f.idle();
+    check((await h.state()).inventory.includes('mitt-letter'), 'a letter from Mitt waits in the postbox');
+  }
+  // Tumble in the drying yard.
+  await h.goTo(28, 8);
+  await h.walkTo(29, 8, 3000);
+  await h.wait(1400);
+  await f.idle();
+  check((await h.world())?.map === 'drying-yard', 'the drying yard loads');
+  // The bot never dodges; full HP keeps this about the story flow, not bot survival.
+  await W(() => {
+    const st = window.__unclaimed.core.session.state;
+    st.hp = st.maxHp;
+  });
+  await h.goTo(22, 6);
+  await h.wait(400);
+  for (let i = 0; i < 30 && !(await h.isActive('Battle')); i++) await h.press('KeyZ', 330);
+  check(await h.isActive('Battle'), 'Tumble’s battle starts');
+  await h.wait(900);
+  await f.toCommands();
+  if (route === 'return') {
+    await f.act('listen');
+    await f.toCommands();
+    await f.act('listen');
+    let spun = false;
+    for (let i = 0; i < 40 && !spun; i++) {
+      const b = await f.battle();
+      spun = b.dodging && b.soul === 'spin';
+      if (!b.dodging) await h.press('KeyZ', 220);
+      else await h.wait(150);
+    }
+    check(spun, 'phase 2 spins the soul in a rotating current');
+    await h.wait(1200);
+    await h.shot('tumble-spin');
+    await f.toCommands();
+    await f.act('festival');
+    await f.toCommands();
+    check((await f.battle()).enemies[0].vars.told === 1, 'telling Tumble about the lit festival calms it');
+    await f.command(3);
+    await f.pick(0);
+  } else {
+    for (let r = 0; r < 25; r++) {
+      if (!(await f.toCommands())) break;
+      await f.command(0);
+      await h.wait(400);
+      await h.press('KeyZ', 1300);
+      if ((await f.battle()).enemies?.[0]?.status === 'cleared') break;
+    }
+  }
+  for (let i = 0; i < 25 && (await h.isActive('Battle')); i++) await h.press('KeyZ', 350);
+  await h.wait(800);
+  await f.idle(30);
+  s = await h.state();
+  if (route === 'return') check(s.flags.tumble_spared === true, 'Tumble spared');
+  else {
+    check(s.flags.tumble_cleared === true, 'Tumble cleared');
+    await h.goTo(1, 6);
+    await h.walkTo(0, 6, 3000);
+    await h.wait(1400);
+  }
+  for (let i = 0; i < 40 && !(await h.isActive('Ending')); i++) {
+    await h.press('KeyZ', 350);
+    if (i === 6) await h.shot(route === 'return' ? 'festival' : 'aftermath');
+  }
+  check(await h.isActive('Ending'), 'chapter 2 ending plays');
+  await h.wait(4000);
+  await h.shot('ending');
+  check((await W(() => window.__unclaimed.core.meta.lastEnding)) === route, `"${route}" ending is remembered across saves`);
+  let sawCredits = false;
+  for (let i = 0; i < 140 && !(await h.isActive('Menu')); i++) {
+    const stage = await W(() => window.__unclaimed.game.scene.getScene('Ending').stage);
+    if (stage === 'credits') {
+      sawCredits = true;
+      await page.keyboard.down('KeyZ');
+      await h.wait(500);
+      continue;
+    }
+    await page.keyboard.up('KeyZ');
+    if (stage === 'final') await h.wait(1600);
+    await h.press('KeyZ', 500);
+  }
+  await page.keyboard.up('KeyZ');
+  check(sawCredits, 'credits roll after the final chapter');
+  check(await h.isActive('Menu'), 'the ending returns to the title');
+  await h.wait(1500);
+  const tag = await W(() => window.__unclaimed.game.scene.getScene('Menu').tag?.visible);
+  check(tag === (route !== 'clear'), `title ${route === 'clear' ? 'loses' : 'keeps'} the claim tag`, String(tag));
+  await h.shot('title-after');
 }
 
 // ── 7. Runtime crash notice ───────────────────────────────────────────────────
@@ -972,7 +1223,7 @@ async function run() {
   if (saveShots) await mkdir('screenshots', { recursive: true });
   const browser = await chromium.launch();
   try {
-    const sections = { layout: layoutChecks, desktop: desktopJourney, phone: phoneJourney, chapter1: chapterOne, damaged: damagedStorage, devices: deviceProfiles, crash: crashNotice };
+    const sections = { layout: layoutChecks, desktop: desktopJourney, phone: phoneJourney, story: chapterOne, damaged: damagedStorage, devices: deviceProfiles, crash: crashNotice };
     const only = argValue('--only')?.split(',');
     for (const [name, fn] of Object.entries(sections)) if (!only || only.includes(name)) await fn(browser, url);
   } finally {

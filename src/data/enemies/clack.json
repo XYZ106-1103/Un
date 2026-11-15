@@ -1,0 +1,233 @@
+{
+ "id": "clack",
+ "name": "클랙",
+ "sprite": "enemy.clack",
+ "hp": 40,
+ "attack": 2,
+ "defense": 1,
+ "reward": {
+  "buttons": 10
+ },
+ "music": "lounge",
+ "canFlee": true,
+ "encounter": "클랙: \"레이디스 앤 젠틀양말! 오늘의 쇼를 시작합니다!\" 딱딱!",
+ "check": "틀니 한 벌. 위아래 주인이 다르다. 농담 실력은… 판단은 관객의 몫.",
+ "vars": {
+  "laughs": 0,
+  "boos": 0
+ },
+ "acts": [
+  {
+   "id": "check",
+   "label": "관찰",
+   "text": [
+    {
+     "text": "이가 반짝인다. 매일 밤 컵에 담가 닦는다고 한다."
+    }
+   ]
+  },
+  {
+   "id": "laugh",
+   "label": "웃기",
+   "set": {
+    "laughs": "+1"
+   },
+   "text": [
+    {
+     "if": "var:laughs >= 2",
+     "text": [
+      "클랙: \"마지막 농담! 바다랑 별이 줄을 섰어. 누가 앞이게?\"",
+      "클랙: \"바다! 별은 늘 바다가 어두워진 다음에 뜨거든!\" 딱딱!",
+      "…이건 좀 웃기다. 진심으로 웃었다."
+     ]
+    },
+    {
+     "if": "var:laughs >= 1",
+     "text": [
+      "클랙: \"양말이 왜 축제에 안 갔게? 발이 안 떨어져서!\"",
+      "…웃어 주었다. 클랙의 이가 더 반짝인다."
+     ]
+    },
+    {
+     "text": [
+      "클랙: \"내가 왜 코미디언이 됐게? 이가 빠져서! …위아래 둘 다!\"",
+      "…예의상 웃어 주었다. 클랙이 신났다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "clap",
+   "label": "박수",
+   "text": [
+    {
+     "if": "acted:clap >= 2",
+     "text": [
+      "짝짝짝. 클랙: \"박수는 고마운데, 웃음이 더 고파!\""
+     ]
+    },
+    {
+     "text": [
+      "짝짝짝! 클랙이 꾸벅 인사한다. \"감사합니다, 감사합니다!\""
+     ]
+    }
+   ]
+  },
+  {
+   "id": "boo",
+   "label": "야유",
+   "set": {
+    "boos": 1
+   },
+   "text": [
+    {
+     "text": [
+      "\"우우—\"",
+      "클랙: \"야유도 관심이지! 더 센 걸로 간다!\" 딱딱딱딱!"
+     ]
+    }
+   ]
+  }
+ ],
+ "spareWhen": "var:laughs >= 3",
+ "flavor": [
+  {
+   "if": "var:laughs >= 3",
+   "text": "클랙이 땀을 닦으며 활짝 웃고 있다. 최고의 관객을 만났다."
+  },
+  {
+   "if": "var:boos >= 1",
+   "text": "클랙이 오기로 가득 차 딱딱거린다."
+  },
+  {
+   "if": "var:laughs >= 1",
+   "text": "클랙이 다음 농담을 고르고 있다."
+  },
+  {
+   "text": "클랙이 마이크를 톡톡 두드린다. \"이거 켜져 있나?\""
+  }
+ ],
+ "speech": [
+  {
+   "if": "var:laughs >= 3",
+   "text": "딱딱딱! 오늘 최고야!"
+  },
+  {
+   "if": "var:boos >= 1",
+   "text": "이 정도로 물러날 내가 아니지!"
+  },
+  {
+   "if": "var:laughs >= 1",
+   "text": "웃었지? 웃었다!"
+  },
+  {
+   "text": "딱딱! 이거 켜져 있나?"
+  }
+ ],
+ "patterns": [
+  {
+   "id": "kk",
+   "if": "var:boos < 1 && var:laughs < 2"
+  },
+  {
+   "id": "haha",
+   "if": "var:boos < 1"
+  },
+  {
+   "id": "heckle",
+   "if": "var:boos >= 1"
+  },
+  {
+   "id": "encore",
+   "if": "var:laughs >= 2"
+  }
+ ],
+ "patternDefs": {
+  "kk": {
+   "duration": 5000,
+   "box": {
+    "w": 130,
+    "h": 80
+   },
+   "emitters": [
+    {
+     "type": "stream",
+     "from": "enemy",
+     "interval": 170,
+     "spread": 46,
+     "bullet": {
+      "frame": "kk",
+      "radius": 3,
+      "speed": 68
+     }
+    }
+   ]
+  },
+  "haha": {
+   "duration": 5200,
+   "box": {
+    "w": 120,
+    "h": 84
+   },
+   "emitters": [
+    {
+     "type": "ring",
+     "interval": 1350,
+     "amount": 14,
+     "gap": 3,
+     "bullet": {
+      "frame": "hh",
+      "radius": 3,
+      "speed": 36
+     }
+    }
+   ]
+  },
+  "heckle": {
+   "duration": 5400,
+   "box": {
+    "w": 120,
+    "h": 84
+   },
+   "emitters": [
+    {
+     "type": "spiral",
+     "from": "center",
+     "interval": 190,
+     "amount": 3,
+     "rotate": 140,
+     "bullet": {
+      "frame": "kk",
+      "radius": 3,
+      "speed": 58
+     },
+     "start": 300
+    }
+   ]
+  },
+  "encore": {
+   "duration": 4200,
+   "box": {
+    "w": 120,
+    "h": 76
+   },
+   "emitters": [
+    {
+     "type": "linear",
+     "from": "top",
+     "angle": 90,
+     "spread": 70,
+     "amount": 4,
+     "interval": 820,
+     "bullet": {
+      "frame": "note",
+      "radius": 3,
+      "speed": 40
+     }
+    }
+   ]
+  }
+ },
+ "sparedText": "클랙이 무대 위에서 깊이 인사했다. 딱!",
+ "clearedText": "틀니 한 벌이 무대 위에 떨어졌다. 더 이상 딱딱거리지 않는다."
+}

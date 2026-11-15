@@ -391,13 +391,27 @@ export function validateContent(): string[] {
     cond(`quest ${q.id}.activeIf`, q.activeIf);
     cond(`quest ${q.id}.doneIf`, q.doneIf);
   }
-  for (const route of ['return', 'keep', 'clear']) if (!endings.has(route)) err('endings', `missing ending "${route}"`);
+  // Every chapter that has an ending has all three routes; interludes lead to a real spawn.
+  const chapters = new Set([...endings.keys()].map((id) => /^ch(\d+)\./.exec(id)?.[1] ?? '?'));
+  if (chapters.has('?')) err('endings', 'ending ids must look like "ch<chapter>.<route>"');
+  for (const ch of chapters) {
+    if (ch === '?') continue;
+    for (const route of ['return', 'keep', 'clear']) if (!endings.has(`ch${ch}.${route}`)) err('endings', `missing ending "ch${ch}.${route}"`);
+  }
   for (const e of endings.values()) {
     if (!songs.has(e.music)) err(`ending ${e.id}`, `unknown song "${e.music}"`);
     condTexts(`ending ${e.id} pages`, e.pages);
+    if (e.next) {
+      const m = maps.get(e.next.map);
+      if (!m) err(`ending ${e.id}`, `next map "${e.next.map}" does not exist`);
+      else if (!m.spawns[e.next.spawn]) err(`ending ${e.id}`, `next spawn "${e.next.spawn}" not in ${e.next.map}`);
+    }
   }
   for (const e of enemies.values()) {
-    for (const ph of e.phases ?? []) cond(`enemy ${e.id} phase ${ph.id}`, ph.if);
+    for (const ph of e.phases ?? []) {
+      cond(`enemy ${e.id} phase ${ph.id}`, ph.if);
+      if (ph.soul && !['free', 'tether', 'spin'].includes(ph.soul)) err(`enemy ${e.id} phase ${ph.id}`, `unknown soul rule "${ph.soul}"`);
+    }
     if (e.music && !songs.has(e.music)) err(`enemy ${e.id}`, `unknown song "${e.music}"`);
   }
 

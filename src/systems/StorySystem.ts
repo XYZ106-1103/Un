@@ -2,31 +2,33 @@
  * Story rules derived from the game state: which route the player is on, whether the
  * world has gone "hollow", and quest progress. Pure logic.
  *
- * Routes (chapter 1):
- *   return — nothing cleared, Sir Brolly let go with rain, the mitten given back
- *   clear  — Brolly cleared and nothing ever spared
+ * Routes are judged at the end of each chapter from everything done so far:
+ *   return — nothing ever cleared, and each chapter's key soul let go the kind way
+ *            (ch1: Sir Brolly spared with rain and the mitten given back;
+ *             ch2: Tumble spared after seeing the festival lit)
+ *   clear  — every chapter boss cleared and nothing ever spared
  *   keep   — everything in between
  */
 
-import { stateResolver, type GameState } from '@/game/GameState';
+import { isHollowState, stateResolver, type GameState } from '@/game/GameState';
 import type { QuestDef } from './content/types';
 import { evaluateCondition } from './script/Condition';
 
 export type Route = 'return' | 'keep' | 'clear';
 
-export function evaluateRoute(state: GameState): Route {
+export function evaluateRoute(state: GameState, chapter = 1): Route {
   const f = state.flags;
-  if (state.stats.cleared === 0 && f.brolly_spared === true && f.mitt_given === true) return 'return';
-  if (f.brolly_cleared === true && state.stats.spared === 0) return 'clear';
+  const ch1Return = f.brolly_spared === true && f.mitt_given === true;
+  const ch2Return = f.tumble_spared === true && f.festival_lit === true;
+  if (state.stats.cleared === 0 && ch1Return && (chapter < 2 || ch2Return)) return 'return';
+  const bossesCleared = f.brolly_cleared === true && (chapter < 2 || f.tumble_cleared === true);
+  if (bossesCleared && state.stats.spared === 0) return 'clear';
   return 'keep';
 }
 
-/**
- * The world goes quiet when the player clears everything they meet: name plates read
- * "(물품)", songs lose instruments, shops close.
- */
+/** See `isHollowState` (kept in GameState so conditions can use `hollow`). */
 export function isHollow(state: GameState): boolean {
-  return state.stats.cleared >= 4 && state.stats.spared === 0;
+  return isHollowState(state);
 }
 
 export type QuestStatus = 'hidden' | 'active' | 'done';

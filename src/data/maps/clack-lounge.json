@@ -1,0 +1,127 @@
+{
+ "id": "clack-lounge",
+ "name": "틀니 라운지",
+ "music": "lounge",
+ "tileset": "tiles.town",
+ "legend": {
+  "#": {
+   "tile": "wall-top",
+   "solid": true
+  },
+  "C": {
+   "tile": "curtain",
+   "solid": true
+  },
+  "s": {
+   "tile": "stage"
+  },
+  "m": {
+   "tile": "stage",
+   "deco": "mic",
+   "solid": true
+  },
+  "e": {
+   "tile": "stage-edge"
+  },
+  ".": {
+   "tile": "lounge-floor"
+  },
+  "T": {
+   "tile": "lounge-floor",
+   "deco": "table",
+   "solid": true
+  },
+  "h": {
+   "tile": "lounge-floor",
+   "deco": "chair",
+   "solid": true
+  },
+  "W": {
+   "tile": "lounge-wall",
+   "solid": true
+  },
+  "r": {
+   "tile": "rug"
+  }
+ },
+ "layout": [
+  "##################",
+  "#CCCCCCCCCCCCCCCC#",
+  "#CssssssmsssssssC#",
+  "#eeeeeeeeeeeeeeee#",
+  "#................#",
+  "#.hT...T...T..T..#",
+  "#................#",
+  "#....T...Th..T...#",
+  "#................#",
+  "#................#",
+  "#WWWWWWWrrWWWWWWW#",
+  "##################"
+ ],
+ "spawns": {
+  "from-square": {
+   "x": 8,
+   "y": 9,
+   "facing": "up"
+  }
+ },
+ "npcs": [
+  {
+   "id": "clack",
+   "character": "clack",
+   "x": 9,
+   "y": 2,
+   "facing": "down",
+   "behavior": "idle",
+   "script": "lounge.clack",
+   "if": "!flag:clack_cleared"
+  },
+  {
+   "id": "mint",
+   "character": "sock-mint",
+   "x": 3,
+   "y": 6,
+   "facing": "up",
+   "behavior": "idle",
+   "script": "lounge.mint",
+   "if": "!hollow && !flag:clack_cleared"
+  },
+  {
+   "id": "plum",
+   "character": "sock-plum",
+   "x": 12,
+   "y": 8,
+   "facing": "up",
+   "behavior": "idle",
+   "script": "lounge.plum",
+   "if": "!hollow && !flag:clack_cleared"
+  }
+ ],
+ "objects": [
+  {
+   "id": "dentures",
+   "x": 9,
+   "y": 2,
+   "script": "lounge.dentures",
+   "if": "flag:clack_cleared"
+  },
+  {
+   "id": "mic",
+   "x": 8,
+   "y": 2,
+   "script": "lounge.mic"
+  }
+ ],
+ "exits": [
+  {
+   "x": 8,
+   "y": 10,
+   "w": 2,
+   "to": "town-square",
+   "spawn": "from-lounge"
+  }
+ ],
+ "triggers": [],
+ "savePoints": [],
+ "onEnter": "lounge.enter"
+}

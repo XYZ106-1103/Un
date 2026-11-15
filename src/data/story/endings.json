@@ -1,6 +1,6 @@
 {
- "$comment": "Chapter 1 endings by route (see systems/StorySystem.ts). Pages may be conditional.",
- "return": {
+ "$comment": "Endings by chapter and route (systems/StorySystem.ts). ids are ch<chapter>.<route>. An ending with `next` is a chapter interlude: pages, closing line, chapter card, then the game continues on next.map. Without `next` it is the current final ending: credits, then the title screen. Pages may be conditional.",
+ "ch1.return": {
   "title": "돌려주기",
   "music": "ending",
   "pages": [
@@ -31,9 +31,18 @@
     ]
    }
   ],
-  "finalLine": "찾았다고 해서 돌려받은 것은 아니지만,\n돌려준 것은 분명히 돌아갔다."
+  "finalLine": "찾았다고 해서 돌려받은 것은 아니지만,\n돌려준 것은 분명히 돌아갔다.",
+  "next": {
+   "label": "제2장",
+   "title": "양말 마을",
+   "map": "town-gate",
+   "spawn": "start",
+   "set": {
+    "follower": false
+   }
+  }
  },
- "keep": {
+ "ch1.keep": {
   "title": "간직하기",
   "music": "ending",
   "pages": [
@@ -78,9 +87,18 @@
     ]
    }
   ],
-  "finalLine": "기억하는 것과 놓아주는 것 사이 어딘가에서,\n아이는 계속 걷는다."
+  "finalLine": "기억하는 것과 놓아주는 것 사이 어딘가에서,\n아이는 계속 걷는다.",
+  "next": {
+   "label": "제2장",
+   "title": "양말 마을",
+   "map": "town-gate",
+   "spawn": "start",
+   "set": {
+    "follower": false
+   }
+  }
  },
- "clear": {
+ "ch1.clear": {
   "title": "치우기",
   "music": "lost",
   "pages": [
@@ -100,6 +118,145 @@
     ]
    }
   ],
-  "finalLine": "…정리가 끝났습니다."
+  "finalLine": "…정리가 끝났습니다.",
+  "next": {
+   "label": "제2장",
+   "title": "양말 마을",
+   "map": "town-gate",
+   "spawn": "start",
+   "set": {
+    "follower": false
+   }
+  }
+ },
+ "ch2.return": {
+  "title": "돌려주기",
+  "music": "ending",
+  "pages": [
+   {
+    "text": [
+     "짝 찾기 축제는 밤새 이어졌다."
+    ]
+   },
+   {
+    "text": [
+     "텀블은 이제 건조장이 아니라 광장 한쪽에 산다.\n비 오는 날이면 모두의 양말을 말려 준다."
+    ]
+   },
+   {
+    "if": "flag:lonesock_paired",
+    "text": [
+     "줄무늬 양말과 물방울 양말은 짝이 맞지 않는다.\n둘 다 그게 마음에 든다고 한다."
+    ]
+   },
+   {
+    "if": "flag:clack_spared",
+    "text": [
+     "클랙의 쇼는 매진이다.\n세 번째 농담은 여전히 제일 웃기다."
+    ]
+   },
+   {
+    "if": "flag:letter_replied",
+    "text": [
+     "숲 끝의 등불 아래로 답장이 한 통 도착했다.\n미트는 그 편지를 장갑 두 짝으로 꼭 쥐었다."
+    ]
+   },
+   {
+    "text": [
+     "레저의 장부에는 이렇게 적혔다.\n'등록 번호 4,112번. 상태: 돌아가는 중.'"
+    ]
+   },
+   {
+    "text": [
+     "마을 아래쪽 어딘가에서, 열쇠들이 짤랑거린다."
+    ]
+   },
+   {
+    "text": [
+     "— 3장 「열쇠 도시」에서 계속 —"
+    ]
+   }
+  ],
+  "finalLine": "짝이 맞지 않아도 함께일 수 있다는 걸,\n오늘 밤 마을 전체가 배웠다."
+ },
+ "ch2.keep": {
+  "title": "간직하기",
+  "music": "ending",
+  "pages": [
+   {
+    "if": "flag:festival_done",
+    "text": [
+     "축제는 열렸다.\n등불 아래에서 몇몇 양말들이 짝을 찾았다."
+    ]
+   },
+   {
+    "if": "!flag:festival_done && flag:festival_lit",
+    "text": [
+     "등불은 켜졌지만 축제는 열리지 않았다.\n젖은 현수막은 아직 광장에 걸려 있다."
+    ]
+   },
+   {
+    "if": "!flag:festival_lit",
+    "text": [
+     "광장의 등불은 끝내 켜지지 않았다."
+    ]
+   },
+   {
+    "if": "flag:tumble_spared",
+    "text": [
+     "텀블은 가끔 광장에 나와 따뜻한 바람을 분다.\n아직은 조금 쑥스러워하면서."
+    ]
+   },
+   {
+    "if": "flag:tumble_cleared",
+    "text": [
+     "건조장은 조용하다.\n이제는 아무도 양말이 어디로 사라지는지 묻지 않는다."
+    ]
+   },
+   {
+    "if": "flag:clack_cleared",
+    "text": [
+     "라운지의 무대는 비어 있다.\n누구도 세 번째 농담을 알지 못한다."
+    ]
+   },
+   {
+    "text": [
+     "레저의 장부에는 이렇게 적혔다.\n'등록 번호 4,112번. 상태: 간직함. 비고: 계속 걷는 중.'"
+    ]
+   },
+   {
+    "text": [
+     "— 3장 「열쇠 도시」에서 계속 —"
+    ]
+   }
+  ],
+  "finalLine": "무엇을 놓아주고 무엇을 지웠는지,\n마을은 조용히 기억한다."
+ },
+ "ch2.clear": {
+  "title": "치우기",
+  "music": "lost",
+  "pages": [
+   {
+    "text": [
+     "마을은 아주 조용해졌다."
+    ]
+   },
+   {
+    "text": [
+     "빨랫줄에는 양말 대신 빈 집게만 걸려 있다.\n딸깍거리는 소리도, 웃음소리도 없다."
+    ]
+   },
+   {
+    "text": [
+     "장부의 이름들 위로 줄이 그어졌다.\n'물품. 물품. 물품. 물품.'"
+    ]
+   },
+   {
+    "text": [
+     "— 3장 「열쇠 도시」에서 계속 —"
+    ]
+   }
+  ],
+  "finalLine": "…정리가 계속됩니다."
  }
 }

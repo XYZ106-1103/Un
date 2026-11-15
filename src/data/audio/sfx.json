@@ -194,5 +194,50 @@
         "slideTo": 300
       }
     ]
+  },
+  "rimshot": {
+    "wave": "square",
+    "volume": 0.1,
+    "release": 0.12,
+    "steps": [
+      {
+        "freq": 150,
+        "duration": 0.05
+      },
+      {
+        "freq": 0,
+        "duration": 0.05
+      },
+      {
+        "freq": 120,
+        "duration": 0.06
+      },
+      {
+        "freq": 0,
+        "duration": 0.07
+      },
+      {
+        "freq": 2600,
+        "duration": 0.16,
+        "slideTo": 2100
+      }
+    ]
+  },
+  "spin": {
+    "wave": "triangle",
+    "volume": 0.12,
+    "release": 0.1,
+    "steps": [
+      {
+        "freq": 260,
+        "duration": 0.22,
+        "slideTo": 820
+      },
+      {
+        "freq": 820,
+        "duration": 0.22,
+        "slideTo": 260
+      }
+    ]
   }
 }

@@ -1,0 +1,289 @@
+{
+ "id": "tumble",
+ "name": "텀블",
+ "sprite": "enemy.tumble",
+ "hp": 70,
+ "attack": 4,
+ "defense": 2,
+ "reward": {
+  "buttons": 25
+ },
+ "music": "tumble",
+ "canFlee": false,
+ "encounter": "텀블이 덜컹덜컹 돌기 시작한다! \"오지 말라고 했잖아!\"",
+ "check": "버려진 빨래방의 건조기. 모두가 양말을 먹는다고 한다. 문 안쪽이 차갑다.",
+ "vars": {
+  "listened": 0,
+  "soothed": 0,
+  "told": 0
+ },
+ "phases": [
+  {
+   "id": "spin",
+   "if": "var:hp% <= 60 || var:listened >= 2",
+   "enter": [
+    "텀블이 덜컹거리며 탈수를 시작한다!",
+    "\"다 날아가 버려! 나처럼!\"",
+    "(드럼이 돈다. 물살을 거슬러 움직이자. 물살은 3초마다 방향을 바꾼다.)"
+   ],
+   "soul": "spin"
+  }
+ ],
+ "acts": [
+  {
+   "id": "check",
+   "label": "관찰",
+   "text": [
+    {
+     "text": "드럼 안에 양말 몇 짝이 굴러다닌다. 꺼내 가지 않은, 짝 잃은 양말들이다."
+    }
+   ]
+  },
+  {
+   "id": "listen",
+   "label": "이야기 듣기",
+   "set": {
+    "listened": "+1"
+   },
+   "text": [
+    {
+     "if": "var:listened >= 1",
+     "text": [
+      "\"…하지만 내 안에서, 짝들이 떨어졌어. 꼬박꼬박. 빨래가 끝날 때마다.\"",
+      "\"한 짝은 문에 걸리고, 한 짝은 바람에 날아가고.\"",
+      "\"그러니 내 탓이지. 다들 맞는 말을 하는 거야.\""
+     ]
+    },
+    {
+     "text": [
+      "\"나는… 양말을 먹은 적 없어.\"",
+      "\"정말이야. 나는 그냥 돌았을 뿐이야.\""
+     ]
+    }
+   ]
+  },
+  {
+   "id": "soothe",
+   "label": "달래기",
+   "set": {
+    "soothed": "+1"
+   },
+   "text": [
+    {
+     "if": "var:listened < 1",
+     "text": [
+      "\"괜찮아.\"",
+      "\"…뭘 안다고!\" 텀블이 더 세게 돈다."
+     ]
+    },
+    {
+     "text": [
+      "\"네 탓이 아니야.\"",
+      "텀블의 덜컹거림이 아주 조금 느려졌다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "festival",
+   "label": "축제 이야기",
+   "if": "flag:festival_lit",
+   "requires": "var:phase >= 1 && var:listened >= 1",
+   "deniedText": [
+    "지금은 들을 것 같지 않다. 먼저 텀블의 이야기를 들어야 할 것 같다."
+   ],
+   "set": {
+    "told": 1
+   },
+   "flags": {
+    "tumble_told": true
+   },
+   "text": [
+    {
+     "text": [
+      "광장 이야기를 했다. 등불이 켜졌다고. 짝이 안 맞는 양말들이 서로 짝이 될 거라고.",
+      "\"…짝이 안 맞아도…\"{w=400} \"…짝이 될 수 있어?\"",
+      "덜컹거림이 멈춘다. 드럼 안의 양말들이 천천히 내려앉는다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "retreat",
+   "label": "물러나기",
+   "endBattle": "fled",
+   "text": [
+    {
+     "text": [
+      "뒷걸음질로 건조장 입구까지 물러났다.",
+      "텀블은 쫓아오지 않는다. 그 자리에서 계속 돌 뿐이다."
+     ]
+    }
+   ]
+  }
+ ],
+ "spareWhen": "var:told >= 1",
+ "flavor": [
+  {
+   "if": "var:told >= 1",
+   "text": "텀블의 문 안쪽에서 따뜻한 바람이 새어 나온다."
+  },
+  {
+   "if": "var:phase >= 1",
+   "text": "텀블이 미친 듯이 돌고 있다. 드럼 속 양말들이 소용돌이친다."
+  },
+  {
+   "if": "var:listened >= 1",
+   "text": "텀블이 무언가 말하려다 삼킨다."
+  },
+  {
+   "text": "텀블이 덜컹, 덜컹, 같은 자리에서 돌고 있다."
+  }
+ ],
+ "speech": [
+  {
+   "if": "var:told >= 1",
+   "text": "…따뜻해."
+  },
+  {
+   "if": "var:phase >= 1",
+   "text": "다 날아가! 다!"
+  },
+  {
+   "if": "var:listened >= 1",
+   "text": "…내 탓이야."
+  },
+  {
+   "text": "오지 마…"
+  }
+ ],
+ "patterns": [
+  {
+   "id": "socks",
+   "if": "var:phase < 1"
+  },
+  {
+   "id": "lintstorm",
+   "if": "var:phase < 1"
+  },
+  {
+   "id": "drum",
+   "if": "var:phase >= 1 && var:told < 1"
+  },
+  {
+   "id": "warm",
+   "if": "var:told >= 1"
+  }
+ ],
+ "patternDefs": {
+  "socks": {
+   "duration": 5600,
+   "box": {
+    "w": 130,
+    "h": 84
+   },
+   "emitters": [
+    {
+     "type": "fall",
+     "interval": 300,
+     "amount": 1,
+     "bullet": {
+      "frame": "sock",
+      "radius": 3,
+      "speed": 72,
+      "spin": 120
+     }
+    },
+    {
+     "type": "linear",
+     "from": "right",
+     "angle": 180,
+     "interval": 1300,
+     "amount": 1,
+     "bullet": {
+      "frame": "steam",
+      "radius": 3,
+      "speed": 50
+     }
+    }
+   ]
+  },
+  "lintstorm": {
+   "duration": 5600,
+   "box": {
+    "w": 120,
+    "h": 90
+   },
+   "emitters": [
+    {
+     "type": "spiral",
+     "from": "center",
+     "interval": 210,
+     "amount": 2,
+     "rotate": 110,
+     "bullet": {
+      "frame": "fluff",
+      "radius": 2,
+      "speed": 52
+     },
+     "start": 300
+    }
+   ]
+  },
+  "drum": {
+   "duration": 6400,
+   "box": {
+    "w": 136,
+    "h": 100
+   },
+   "emitters": [
+    {
+     "type": "ring",
+     "interval": 1900,
+     "amount": 14,
+     "gap": 4,
+     "bullet": {
+      "frame": "sock",
+      "radius": 3,
+      "speed": 34,
+      "spin": 160
+     }
+    },
+    {
+     "type": "radial",
+     "from": "center",
+     "interval": 1500,
+     "amount": 5,
+     "bullet": {
+      "frame": "steam",
+      "radius": 3,
+      "speed": 48
+     },
+     "start": 900
+    }
+   ]
+  },
+  "warm": {
+   "duration": 4200,
+   "box": {
+    "w": 120,
+    "h": 80
+   },
+   "emitters": [
+    {
+     "type": "fall",
+     "interval": 650,
+     "amount": 1,
+     "bullet": {
+      "frame": "steam",
+      "radius": 2,
+      "speed": 30,
+      "damage": 1
+     }
+    }
+   ]
+  }
+ },
+ "sparedText": "텀블의 문이 천천히 열렸다. 안쪽이, 처음으로 따뜻하다.",
+ "clearedText": "…덜컹거림이 멈췄다. 그냥 낡은 건조기다."
+}

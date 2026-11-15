@@ -1,22 +1,26 @@
 /**
- * Chapter ending: route title, conditional pages, a credits roll and a final line.
- * The route was already recorded in MetaSystem; the title screen changes afterwards.
+ * Chapter ending: route title, conditional pages and a closing line.
+ *  - Interlude (ending has `next`): closing line → chapter card → the same game continues
+ *    on the next chapter's map (WorldScene autosaves on arrival).
+ *  - Final ending (no `next`): credits roll → closing line → title screen. The route was
+ *    already recorded in MetaSystem, so the title screen changes afterwards.
  */
 
 import Phaser from 'phaser';
 import { BASE_HEIGHT, BASE_WIDTH, DEPTH, PALETTE, SCENE_KEYS } from '@/game/Constants';
 import { getServices } from '@/game/Services';
-import { stateResolver } from '@/game/GameState';
+import { applyFlagChanges, stateResolver } from '@/game/GameState';
 import { content } from '@/systems/content/ContentDB';
 import { InputSystem } from '@/systems/InputSystem';
 import { format } from '@/systems/LocaleSystem';
 import { evaluateCondition } from '@/systems/script/Condition';
+import type { EndingDef } from '@/systems/content/types';
 import type { Route } from '@/systems/StorySystem';
 import { addPixelShadow, PixelText } from '@/ui/PixelText';
 import { fadeIn, fadeToScene } from '@/utils/AnimationUtils';
 import creditsData from '@/data/story/credits.json';
 
-type Stage = 'title' | 'pages' | 'credits' | 'final' | 'done';
+type Stage = 'title' | 'pages' | 'credits' | 'final' | 'card' | 'done';
 
 export class EndingScene extends Phaser.Scene {
   private input$!: InputSystem;
@@ -30,12 +34,13 @@ export class EndingScene extends Phaser.Scene {
   private motes!: Phaser.GameObjects.Graphics;
   private dots: { x: number; y: number; s: number }[] = [];
   private route: Route = 'keep';
+  private next: EndingDef['next'] = undefined;
 
   constructor() {
     super(SCENE_KEYS.Ending);
   }
 
-  create(data: { route: Route }): void {
+  create(data: { id: string; route: Route }): void {
     const services = getServices(this.game);
     this.input$ = new InputSystem(this);
     this.route = data.route;
@@ -43,7 +48,8 @@ export class EndingScene extends Phaser.Scene {
     this.pageIndex = 0;
     this.elapsed = 0;
     services.events.emit('scene:entered', { key: SCENE_KEYS.Ending });
-    const ending = content.ending(data.route) ?? content.ending('keep');
+    const ending = content.ending(data.id) ?? content.ending(`ch1.${data.route}`);
+    this.next = ending?.next;
     if (!ending) {
       this.scene.start(SCENE_KEYS.Menu);
       return;
@@ -106,13 +112,23 @@ export class EndingScene extends Phaser.Scene {
       this.credits.y -= (delta / 1000) * (this.input$.isDown('confirm') ? 60 : 18);
       if (this.credits.y + this.credits.height < 0) this.showFinal();
     } else if (this.stage === 'final' && pressed && this.elapsed > 1500) {
-      this.stage = 'done';
-      getServices(this.game).session = null;
-      fadeToScene(this, SCENE_KEYS.Menu, {}, 2000);
+      if (this.next) this.showCard(this.next);
+      else {
+        this.stage = 'done';
+        getServices(this.game).session = null;
+        fadeToScene(this, SCENE_KEYS.Menu, {}, 2000);
+      }
+    } else if (this.stage === 'card' && (pressed || this.elapsed > 4200) && this.elapsed > 1200 && this.next) {
+      this.continueTo(this.next);
     }
   }
 
   private showPage(): void {
+    if (this.pageIndex >= this.pages.length && this.next) {
+      this.text.setVisible(false);
+      this.showFinal();
+      return;
+    }
     if (this.pageIndex >= this.pages.length) {
       this.stage = 'credits';
       this.text.setVisible(false);
@@ -134,6 +150,32 @@ export class EndingScene extends Phaser.Scene {
       const tag = this.add.image(BASE_WIDTH / 2, BASE_HEIGHT / 2 + 30, 'soul.tag').setDepth(DEPTH.ui).setAlpha(0);
       this.tweens.add({ targets: tag, alpha: 1, duration: 1500, delay: 800 });
     }
+  }
+
+  /** "제2장 / 양말 마을": the next chapter's card. */
+  private showCard(next: NonNullable<EndingDef['next']>): void {
+    this.stage = 'card';
+    this.elapsed = 0;
+    this.children.list.filter((c) => c !== this.motes).forEach((c) => this.tweens.add({ targets: c, alpha: 0, duration: 500 }));
+    const label = new PixelText(this, BASE_WIDTH / 2, BASE_HEIGHT / 2 - 24, next.label, { color: PALETTE.mist, originX: 0.5 }).setDepth(DEPTH.ui).setAlpha(0);
+    const title = new PixelText(this, BASE_WIDTH / 2, BASE_HEIGHT / 2 - 6, next.title, { font: 'bold', scale: 2, color: PALETTE.paper, originX: 0.5 })
+      .setDepth(DEPTH.ui)
+      .setAlpha(0);
+    addPixelShadow(title, PALETTE.ink);
+    this.tweens.add({ targets: [label, title], alpha: 1, duration: 900, delay: 600 });
+    getServices(this.game).audio.playMusic(null, 2);
+  }
+
+  /** Hands the same session over to the next chapter's first map. */
+  private continueTo(next: NonNullable<EndingDef['next']>): void {
+    this.stage = 'done';
+    const session = getServices(this.game).session;
+    if (!session) {
+      fadeToScene(this, SCENE_KEYS.Menu, {}, 1500);
+      return;
+    }
+    if (next.set) applyFlagChanges(session.state.flags, next.set);
+    fadeToScene(this, SCENE_KEYS.World, { map: next.map, spawn: next.spawn }, 1500);
   }
 
   private drawMotes(delta: number): void {

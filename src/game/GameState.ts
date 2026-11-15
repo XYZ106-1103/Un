@@ -147,6 +147,14 @@ export function encounterRecord(state: GameState, enemyId: string): EncounterRec
  *   stat:<name>  hp  maxHp  buttons  name
  * Unknown keys are passed to `extra` (battle variables, script locals).
  */
+/**
+ * The world goes quiet when the player clears everything they meet: name plates read
+ * "(물품)", songs lose instruments, shops close. Content can test it as `hollow`.
+ */
+export function isHollowState(state: GameState): boolean {
+  return state.stats.cleared >= 4 && state.stats.spared === 0;
+}
+
 export function stateResolver(state: GameState, extra?: Resolver): Resolver {
   return (key: string): ConditionValue => {
     const sep = key.indexOf(':');
@@ -175,6 +183,8 @@ export function stateResolver(state: GameState, extra?: Resolver): Resolver {
         return state.buttons;
       case 'name':
         return state.name;
+      case 'hollow':
+        return isHollowState(state);
       default:
         return extra ? extra(key) : undefined;
     }

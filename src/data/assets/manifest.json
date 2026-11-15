@@ -85,7 +85,7 @@
       "source": "bullets.json",
       "status": "wip",
       "usage": "Bullet frames for all enemy patterns.",
-      "brief": "8x8: dot, wires, plug, note, spark, receipt digits, paper scrap, raindrop, rib, fluff, bubble, snowflake, button."
+      "brief": "8x8: dot, wires, plug, note, spark, receipt digits, paper scrap, raindrop, rib, fluff, bubble, snowflake, button, ㅋ, ㅎ, clothespin, hanger, sock, steam."
     },
     {
       "key": "tiles.basement",
@@ -206,6 +206,142 @@
       "status": "wip",
       "usage": "Battle sprite: Snow Globe (idle + calm).",
       "brief": "Glass dome with a tiny red house."
+    },
+    {
+      "key": "tiles.town",
+      "kind": "pixelart",
+      "source": "tiles-town.json",
+      "status": "wip",
+      "usage": "Tileset for Sock Town, Clack's lounge and the drying yard: cobbles, knitted houses, laundry lines (drawn over characters), lamps (lit/unlit), the Great Line pins, stage, dryers.",
+      "brief": "Next: animated lamp glow, more house variants."
+    },
+    {
+      "key": "char.clack",
+      "kind": "pixelart",
+      "source": "clack.json",
+      "status": "wip",
+      "usage": "Clack's overworld sprite (chattering idle).",
+      "brief": "A set of false teeth with googly eyes. Next: hop walk."
+    },
+    {
+      "key": "portrait.clack",
+      "kind": "pixelart",
+      "source": "portrait-clack.json",
+      "status": "wip",
+      "usage": "Clack portrait: neutral, laugh, smug, sad.",
+      "brief": "Next: talking frames."
+    },
+    {
+      "key": "enemy.clack",
+      "kind": "pixelart",
+      "source": "enemy-clack.json",
+      "status": "wip",
+      "usage": "Battle sprite: Clack on his stool with a mic (idle chatter, laughing calm).",
+      "brief": "Next: bow frame."
+    },
+    {
+      "key": "char.spool",
+      "kind": "pixelart",
+      "source": "spool.json",
+      "status": "wip",
+      "usage": "Granny Spool's overworld sprite (idle bob).",
+      "brief": "Wooden thread spool with round glasses and a needle cane."
+    },
+    {
+      "key": "portrait.spool",
+      "kind": "pixelart",
+      "source": "portrait-spool.json",
+      "status": "wip",
+      "usage": "Granny Spool portrait: neutral, happy, worried.",
+      "brief": "Next: talking frames."
+    },
+    {
+      "key": "char.pip",
+      "kind": "pixelart",
+      "source": "pip.json",
+      "status": "wip",
+      "usage": "Pip, the blue striped sock who greets you in town.",
+      "brief": "Next: walk cycle."
+    },
+    {
+      "key": "char.sock-mint",
+      "kind": "pixelart",
+      "source": "sock-mint.json",
+      "status": "wip",
+      "usage": "Town resident: mint polka-dot sock.",
+      "brief": "Palette/pattern variant of the town sock."
+    },
+    {
+      "key": "char.sock-plum",
+      "kind": "pixelart",
+      "source": "sock-plum.json",
+      "status": "wip",
+      "usage": "Town resident: plum sock with gold heel and toe.",
+      "brief": "Palette/pattern variant of the town sock."
+    },
+    {
+      "key": "char.lonesock",
+      "kind": "pixelart",
+      "source": "lonesock.json",
+      "status": "wip",
+      "usage": "The chapter 1 Single Sock, overworld version (cameo when spared).",
+      "brief": "Red-and-white striped."
+    },
+    {
+      "key": "portrait.pip",
+      "kind": "pixelart",
+      "source": "portrait-pip.json",
+      "status": "wip",
+      "usage": "Pip portrait: neutral, happy, sad, surprised.",
+      "brief": "Next: talking frames."
+    },
+    {
+      "key": "char.tumble",
+      "kind": "pixelart",
+      "source": "tumble.json",
+      "status": "wip",
+      "usage": "Tumble's overworld sprite (rumbling idle).",
+      "brief": "Old front-loading dryer with eyes in the porthole."
+    },
+    {
+      "key": "portrait.tumble",
+      "kind": "pixelart",
+      "source": "portrait-tumble.json",
+      "status": "wip",
+      "usage": "Tumble portrait: neutral, sad, happy, angry.",
+      "brief": "Next: steam effects."
+    },
+    {
+      "key": "enemy.tumble",
+      "kind": "pixelart",
+      "source": "enemy-tumble.json",
+      "status": "wip",
+      "usage": "Boss battle sprite: idle (socks tumbling), spin cycle (phase 2), calm (door open, warm light).",
+      "brief": "Next: more spin frames."
+    },
+    {
+      "key": "enemy.clothespin",
+      "kind": "pixelart",
+      "source": "enemy-clothespin.json",
+      "status": "wip",
+      "usage": "Battle sprite: Clothespin (snapping idle + calm, holding a tiny sock).",
+      "brief": "Next: snap frame."
+    },
+    {
+      "key": "enemy.hanger",
+      "kind": "pixelart",
+      "source": "enemy-hanger.json",
+      "status": "wip",
+      "usage": "Battle sprite: Bent Hanger (kinked idle + straightened calm).",
+      "brief": "Next: twist frame."
+    },
+    {
+      "key": "enemy.lint",
+      "kind": "pixelart",
+      "source": "enemy-lint.json",
+      "status": "wip",
+      "usage": "Battle sprite: Lint (fluffy idle + content calm).",
+      "brief": "Next: puff frame."
     }
   ]
 }

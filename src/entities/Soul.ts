@@ -6,11 +6,39 @@
 
 import type Phaser from 'phaser';
 import { DEPTH, PALETTE } from '@/game/Constants';
+import type { SoulMode } from '@/systems/content/types';
 import type { Rect } from '@/systems/VirtualControls';
 import { pixelLine } from '@/utils/AnimationUtils';
 
 /** Pendulum tuning for the tethered mode. */
 const TETHER = { gravity: 520, push: 9, damping: 0.6, minLength: 18, reel: 50, maxAngle: 1.35 };
+
+/** Dryer-drum current for the spin mode (Tumble). */
+export const SPIN = { strength: 58, reverseMs: 3000, rampMs: 450, outward: 0.25 };
+
+/**
+ * Velocity (px/s) the spin current adds at (x, y) after `t` ms: a swirl around the box
+ * centre, weak near the middle and strongest at the edge, with a slight outward pull.
+ * The drum reverses every `reverseMs`, easing in over `rampMs` so each turn is readable.
+ * Always slower than the soul itself, so it can be steered against.
+ */
+export function spinDrift(x: number, y: number, cx: number, cy: number, radius: number, t: number): { vx: number; vy: number } {
+  const dx = x - cx;
+  const dy = y - cy;
+  const r = Math.hypot(dx, dy);
+  if (r < 0.001) return { vx: 0, vy: 0 };
+  const cycle = Math.floor(t / SPIN.reverseMs);
+  const dir = cycle % 2 === 0 ? 1 : -1;
+  const into = t - cycle * SPIN.reverseMs;
+  const ramp = Math.min(1, into / SPIN.rampMs);
+  const ease = ramp * ramp * (3 - 2 * ramp);
+  const reach = Math.min(1, Math.max(0.35, r / radius));
+  const k = SPIN.strength * reach * ease;
+  const ux = dx / r;
+  const uy = dy / r;
+  // Tangent (counter-clockwise for dir = 1 on a y-down screen) plus a little outward.
+  return { vx: (-uy * dir + ux * SPIN.outward) * k, vy: (ux * dir + uy * SPIN.outward) * k };
+}
 
 const SPEED = 96;
 const SLOW = 48;
@@ -23,8 +51,10 @@ export class Soul {
   x = 0;
   y = 0;
   private invulnerable = 0;
-  /** 'tether': hangs from a pin and swings (left/right push, up/down reel). */
-  mode: 'free' | 'tether' = 'free';
+  /** 'tether': hangs from a pin and swings (left/right push, up/down reel). 'spin': pushed by a swirl. */
+  mode: SoulMode = 'free';
+  private spinCenter = { x: 0, y: 0, radius: 40 };
+  private spinTime = 0;
   private pin = { x: 0, y: 0 };
   private length = 40;
   private angle = 0;
@@ -42,6 +72,13 @@ export class Soul {
     this.length = Math.min(box.h - 10, Math.max(TETHER.minLength, this.y - this.pin.y));
     this.angle = 0;
     this.omega = 0;
+  }
+
+  /** Switches to the spin rule: a swirl around the centre of the box. */
+  spin(box: Rect): void {
+    this.mode = 'spin';
+    this.spinCenter = { x: box.x + box.w / 2, y: box.y + box.h / 2, radius: Math.max(box.w, box.h) / 2 };
+    this.spinTime = 0;
   }
 
   free(): void {
@@ -84,9 +121,20 @@ export class Soul {
       pixelLine(this.string, this.pin.x, this.pin.y, this.x - 3, this.y - 1);
       this.string.fillStyle(PALETTE.paper).fillRect(this.pin.x - 1, this.pin.y - 1, 3, 3);
     } else {
-      const speed = (slow ? SLOW : SPEED) * (delta / 1000);
-      this.x = Math.min(Math.max(this.x + axis.x * speed, box.x + hw + 1), box.x + box.w - hw - 1);
-      this.y = Math.min(Math.max(this.y + axis.y * speed, box.y + hh + 1), box.y + box.h - hh - 1);
+      const dt = delta / 1000;
+      const speed = (slow ? SLOW : SPEED) * dt;
+      let driftX = 0;
+      let driftY = 0;
+      if (this.mode === 'spin') {
+        this.spinTime += delta;
+        const c = this.spinCenter;
+        const d = spinDrift(this.x, this.y, c.x, c.y, c.radius, this.spinTime);
+        driftX = d.vx * dt;
+        driftY = d.vy * dt;
+      }
+      this.x = Math.min(Math.max(this.x + axis.x * speed + driftX, box.x + hw + 1), box.x + box.w - hw - 1);
+      this.y = Math.min(Math.max(this.y + axis.y * speed + driftY, box.y + hh + 1), box.y + box.h - hh - 1);
+      if (this.mode === 'spin') this.drawWake(driftX / Math.max(dt, 0.001), driftY / Math.max(dt, 0.001));
     }
     this.sprite.setPosition(Math.round(this.x), Math.round(this.y));
     if (this.invulnerable > 0) {
@@ -100,5 +148,20 @@ export class Soul {
 
   hurt(): void {
     this.invulnerable = INVULNERABLE_MS;
+  }
+
+  /** Three trailing pixels opposite the current so its direction and strength read at a glance. */
+  private drawWake(vx: number, vy: number): void {
+    const g = this.string.clear();
+    const v = Math.hypot(vx, vy);
+    if (v < 4) return;
+    const ux = vx / v;
+    const uy = vy / v;
+    const gap = 3 + (v / SPIN.strength) * 3;
+    const colors = [PALETTE.mist, PALETTE.fog, PALETTE.slate];
+    for (let i = 0; i < 3; i++) {
+      const d = 7 + i * gap;
+      g.fillStyle(colors[i] ?? PALETTE.slate).fillRect(Math.round(this.x - ux * d), Math.round(this.y - uy * d), 1, 1);
+    }
   }
 }

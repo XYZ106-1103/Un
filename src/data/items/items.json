@@ -116,5 +116,54 @@
     "useText": [
       "물이 찰랑거린다. 비가 필요한 누군가에게 주고 싶다."
     ]
+  },
+  "festival-cookie": {
+    "name": "축제 쿠키",
+    "description": "양말 모양 쿠키. 짝이 안 맞게 구워졌다.\nHP 14 회복.",
+    "kind": "consumable",
+    "heal": 14,
+    "useText": [
+      "{name|을/를} 먹었다. 왼쪽 오른쪽 맛이 조금 다르다."
+    ],
+    "price": 7
+  },
+  "warm-towel": {
+    "name": "따뜻한 수건",
+    "description": "막 건조기에서 나온 것처럼 따뜻하다.\nHP 22 회복.",
+    "kind": "consumable",
+    "heal": 22,
+    "useText": [
+      "{name|을/를} 얼굴에 대었다. 포근하다."
+    ],
+    "price": 10
+  },
+  "thimble": {
+    "name": "골무",
+    "description": "손가락을 지켜 주는 작은 쇠 모자. 콕콕 찌르기 좋다.\n공격 +4.",
+    "kind": "weapon",
+    "attack": 4,
+    "useText": [
+      "{name|을/를} 손가락에 끼웠다. 딸깍."
+    ],
+    "price": 22
+  },
+  "patched-sock": {
+    "name": "기운 양말",
+    "description": "여러 번 기운 양말. 기운 자리가 제일 튼튼하다.\n방어 +3.",
+    "kind": "armor",
+    "defense": 3,
+    "useText": [
+      "{name|을/를} 신었다. 발끝이 따뜻하다."
+    ],
+    "price": 24
+  },
+  "mitt-letter": {
+    "name": "미트의 편지",
+    "description": "숲 끝에서 온 편지. 장갑 무늬 우표가 붙어 있다.",
+    "kind": "key",
+    "useText": [
+      "편지를 다시 읽었다.",
+      "'…이제는 기다리는 편지 대신, 보내는 편지를 써요.'"
+    ]
   }
 }

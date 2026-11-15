@@ -119,6 +119,9 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
     this.dialogue.nameFilter = isHollow(state) ? () => t('hollow.name') : null;
     this.cinema = null;
     this.particles = new Particles(this, DEPTH.worldOverlay + 3);
+    // The scene object outlives each run: drop the previous run's follower (its sprite was
+    // destroyed with the old display list) before deciding whether one walks with us now.
+    this.follower = null;
     this.spawnFollower();
     this.resetEncounterCounter();
 
@@ -637,11 +640,15 @@ export class WorldScene extends Phaser.Scene implements DialogueHost {
         return;
       }
       case 'ending': {
-        const route = evaluateRoute(this.session.state);
-        getServices(this.game).meta.recordEnding(route);
+        // Chapter endings: an interlude (with `next`) continues the game; the last
+        // available chapter's ending rolls the credits and is remembered by MetaSystem.
+        const chapter = num('chapter', 1);
+        const route = evaluateRoute(this.session.state, chapter);
+        const id = `ch${chapter}.${route}`;
+        if (!content.ending(id)?.next) getServices(this.game).meta.recordEnding(route);
         this.runner?.abort();
         getServices(this.game).audio.playAmbience(null);
-        fadeToScene(this, SCENE_KEYS.Ending, { route }, 1500);
+        fadeToScene(this, SCENE_KEYS.Ending, { id, route }, 1500);
         return;
       }
       case 'player.face':

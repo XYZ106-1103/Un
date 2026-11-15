@@ -1,7 +1,7 @@
 {
   "name": "unclaimed",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "UNCLAIMED (working title) - a story-driven 2D pixel RPG for the web.",
   "type": "module",
   "engines": {

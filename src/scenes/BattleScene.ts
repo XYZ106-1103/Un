@@ -299,7 +299,9 @@ export class BattleScene extends Phaser.Scene {
     this.focus = null;
     await this.box.resize(target);
     this.soul.place(target.x + w / 2, target.y + h / 2);
-    if (this.model.soulMode() === 'tether') this.soul.tether(target);
+    const rule = this.model.soulMode();
+    if (rule === 'tether') this.soul.tether(target);
+    else if (rule === 'spin') this.soul.spin(target);
     else this.soul.free();
     this.bullets.start(patterns.map((p) => ({ pattern: p.pattern, owner: p.enemy.index })));
     getServices(this.game).events.emit('touch:context', { mode: 'dpad' });

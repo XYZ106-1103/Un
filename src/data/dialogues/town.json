@@ -1,0 +1,1763 @@
+{
+ "town.arrive": [
+  {
+   "if": "!flag:ch2_arrived",
+   "then": [
+    {
+     "set": {
+      "ch2_arrived": true
+     }
+    },
+    {
+     "do": "cinema",
+     "on": true
+    },
+    {
+     "say": [
+      "숲 너머로 따뜻한 바람이 분다.",
+      "빨랫줄마다 짝이 안 맞는 양말들이 깃발처럼 펄럭인다."
+     ]
+    },
+    {
+     "if": "flag:mitt_given",
+     "then": [
+      {
+       "say": "주머니가 조금 가볍다. 장갑 한 짝이 있던 자리다."
+      }
+     ]
+    },
+    {
+     "if": "flag:mitt_kept",
+     "then": [
+      {
+       "say": "주머니 속 장갑 한 짝이, 바람에 조금 따뜻해진다."
+      }
+     ]
+    },
+    {
+     "if": "hollow",
+     "then": [
+      {
+       "say": "…바람 말고는, 아무 소리도 나지 않는다."
+      }
+     ]
+    },
+    {
+     "do": "cinema",
+     "on": false
+    }
+   ]
+  }
+ ],
+ "town.pip.meet": [
+  {
+   "do": "cinema",
+   "on": true
+  },
+  {
+   "say": "어머! 손님이다! 진짜 손님이야!",
+   "who": "pip",
+   "face": "surprised"
+  },
+  {
+   "say": [
+    "양말 마을에 온 걸 환영해! 나는 핍.",
+    "보시다시피 왼쪽이야. …아마도."
+   ],
+   "who": "pip",
+   "face": "happy"
+  },
+  {
+   "say": "오른쪽은 몇 년째 소식이 없어. 뭐, 흔한 일이지!",
+   "who": "pip",
+   "face": "neutral"
+  },
+  {
+   "choice": [
+    {
+     "text": "여긴 어떤 곳이야?",
+     "then": [
+      {
+       "say": [
+        "짝 잃은 양말들이 사는 마을!",
+        "그리고 원래 오늘이 '짝 찾기 축제' 날이었어."
+       ],
+       "who": "pip",
+       "face": "happy"
+      }
+     ]
+    },
+    {
+     "text": "오른쪽은 어디 갔는데?",
+     "then": [
+      {
+       "say": [
+        "건조기가 먹었대. 다들 그렇게 말해.",
+        "…나는 잘 모르겠지만."
+       ],
+       "who": "pip",
+       "face": "sad"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "say": [
+    "그런데 축제를 못 열고 있어.",
+    "광장의 큰 빨랫줄 등불이 안 켜지거든."
+   ],
+   "who": "pip",
+   "face": "sad"
+  },
+  {
+   "say": [
+    "축제 양말 네 짝을 순서대로 걸어야 켜지는데…",
+    "그 순서를 아무도 기억을 못 해! 하하… 하…"
+   ],
+   "who": "pip",
+   "face": "sad"
+  },
+  {
+   "say": "광장 게시판에 규칙이 있긴 한데, 지난 홍수 때 번져 버렸어.",
+   "who": "pip",
+   "face": "neutral"
+  },
+  {
+   "say": [
+    "아, 그리고 동쪽 건조장엔 가지 마.",
+    "텀블이 있어. 양말을 먹는 건조기."
+   ],
+   "who": "pip",
+   "face": "surprised"
+  },
+  {
+   "say": "광장에서 봐!",
+   "who": "pip",
+   "face": "happy"
+  },
+  {
+   "set": {
+    "met_pip": true
+   }
+  },
+  {
+   "do": "npc.move",
+   "id": "pip",
+   "x": 27,
+   "y": 5,
+   "speed": 70
+  },
+  {
+   "do": "npc.hide",
+   "id": "pip"
+  },
+  {
+   "do": "cinema",
+   "on": false
+  }
+ ],
+ "town.pip.gate": [
+  {
+   "say": "광장은 동쪽이야! 빨랫줄을 따라가면 돼.",
+   "who": "pip",
+   "face": "happy"
+  }
+ ],
+ "town.tub": [
+  {
+   "say": [
+    "빨래통에 비누 거품이 남아 있다.",
+    "누군가 축제 전에 몸단장을 한 모양이다."
+   ]
+  }
+ ],
+ "town.gate.sign": [
+  {
+   "say": "'양말 마을 — 짝 없는 분 환영. 짝 있는 분도 환영.'"
+  }
+ ],
+ "town.lines": [
+  {
+   "say": [
+    "빨랫줄에 양말들이 널려 있다.",
+    "어느 것도 옆의 것과 짝이 맞지 않는다. 그래도 사이좋게 흔들린다."
+   ]
+  }
+ ],
+ "town.square.enter": [
+  {
+   "if": "flag:tumble_spared && !flag:festival_done",
+   "then": "town.festival"
+  },
+  {
+   "if": "flag:tumble_cleared && !flag:ch2_done",
+   "then": "town.aftermath"
+  },
+  {
+   "if": "flag:festival_lit",
+   "then": [
+    {
+     "do": "music",
+     "id": "festival",
+     "fade": 1
+    }
+   ]
+  },
+  {
+   "if": "!flag:square_seen",
+   "then": [
+    {
+     "set": {
+      "square_seen": true
+     }
+    },
+    {
+     "say": [
+      "광장 한가운데 커다란 빨랫줄이 걸려 있다.",
+      "집게 네 개가 텅 빈 채로 흔들린다."
+     ]
+    }
+   ]
+  }
+ ],
+ "town.board": [
+  {
+   "set": {
+    "read_board": true
+   }
+  },
+  {
+   "say": "[짝 찾기 축제 — 등불 규칙]"
+  },
+  {
+   "say": "'첫째 집게엔 노을을, 넷째 집게엔 풀밭을 걸 것.'"
+  },
+  {
+   "say": [
+    "가운데 두 줄은 물에 번져 읽을 수 없다.",
+    "…'별'이라는 글자 하나만 겨우 보인다."
+   ]
+  },
+  {
+   "if": "!flag:clack_hint && !hollow",
+   "then": [
+    {
+     "say": "(마을 사람들에게 물어보면 나머지를 알 수 있을지도 모른다.)"
+    }
+   ]
+  }
+ ],
+ "town.basket": [
+  {
+   "set": {
+    "saw_basket": true
+   }
+  },
+  {
+   "say": [
+    "축제용 양말 네 짝이 바구니에 담겨 있다.",
+    "노을빛 줄무늬, 바다색 물방울, 금빛 별, 풀밭 초록."
+   ]
+  },
+  {
+   "say": "빨랫줄의 집게에 하나씩 걸 수 있을 것 같다."
+  }
+ ],
+ "town.lamp": [
+  {
+   "if": "flag:festival_lit",
+   "then": [
+    {
+     "say": "등불이 따뜻하게 빛나고 있다."
+    }
+   ],
+   "else": [
+    {
+     "say": "불 꺼진 등이다. 심지가 빨랫줄로 이어져 있다."
+    }
+   ]
+  }
+ ],
+ "town.pin.1": [
+  {
+   "if": "flag:festival_lit",
+   "then": [
+    {
+     "say": "양말이 등불 아래에서 기분 좋게 흔들린다."
+    }
+   ],
+   "else": [
+    {
+     "say": "첫째 집게다."
+    },
+    {
+     "choice": [
+      {
+       "text": "노을 양말 (빨간 줄무늬)",
+       "then": [
+        {
+         "set": {
+          "pin1": "red"
+         }
+        }
+       ]
+      },
+      {
+       "text": "바다 양말 (파란 물방울)",
+       "then": [
+        {
+         "set": {
+          "pin1": "blue"
+         }
+        }
+       ]
+      },
+      {
+       "text": "별 양말 (금빛 별)",
+       "then": [
+        {
+         "set": {
+          "pin1": "gold"
+         }
+        }
+       ]
+      },
+      {
+       "text": "풀밭 양말 (초록)",
+       "then": [
+        {
+         "set": {
+          "pin1": "green"
+         }
+        }
+       ]
+      },
+      {
+       "text": "비워 둔다",
+       "then": [
+        {
+         "set": {
+          "pin1": false
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "do": "sfx",
+     "id": "ui-confirm"
+    },
+    {
+     "call": "town.pins.check"
+    }
+   ]
+  }
+ ],
+ "town.pin.2": [
+  {
+   "if": "flag:festival_lit",
+   "then": [
+    {
+     "say": "양말이 등불 아래에서 기분 좋게 흔들린다."
+    }
+   ],
+   "else": [
+    {
+     "say": "둘째 집게다."
+    },
+    {
+     "choice": [
+      {
+       "text": "노을 양말 (빨간 줄무늬)",
+       "then": [
+        {
+         "set": {
+          "pin2": "red"
+         }
+        }
+       ]
+      },
+      {
+       "text": "바다 양말 (파란 물방울)",
+       "then": [
+        {
+         "set": {
+          "pin2": "blue"
+         }
+        }
+       ]
+      },
+      {
+       "text": "별 양말 (금빛 별)",
+       "then": [
+        {
+         "set": {
+          "pin2": "gold"
+         }
+        }
+       ]
+      },
+      {
+       "text": "풀밭 양말 (초록)",
+       "then": [
+        {
+         "set": {
+          "pin2": "green"
+         }
+        }
+       ]
+      },
+      {
+       "text": "비워 둔다",
+       "then": [
+        {
+         "set": {
+          "pin2": false
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "do": "sfx",
+     "id": "ui-confirm"
+    },
+    {
+     "call": "town.pins.check"
+    }
+   ]
+  }
+ ],
+ "town.pin.3": [
+  {
+   "if": "flag:festival_lit",
+   "then": [
+    {
+     "say": "양말이 등불 아래에서 기분 좋게 흔들린다."
+    }
+   ],
+   "else": [
+    {
+     "say": "셋째 집게다."
+    },
+    {
+     "choice": [
+      {
+       "text": "노을 양말 (빨간 줄무늬)",
+       "then": [
+        {
+         "set": {
+          "pin3": "red"
+         }
+        }
+       ]
+      },
+      {
+       "text": "바다 양말 (파란 물방울)",
+       "then": [
+        {
+         "set": {
+          "pin3": "blue"
+         }
+        }
+       ]
+      },
+      {
+       "text": "별 양말 (금빛 별)",
+       "then": [
+        {
+         "set": {
+          "pin3": "gold"
+         }
+        }
+       ]
+      },
+      {
+       "text": "풀밭 양말 (초록)",
+       "then": [
+        {
+         "set": {
+          "pin3": "green"
+         }
+        }
+       ]
+      },
+      {
+       "text": "비워 둔다",
+       "then": [
+        {
+         "set": {
+          "pin3": false
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "do": "sfx",
+     "id": "ui-confirm"
+    },
+    {
+     "call": "town.pins.check"
+    }
+   ]
+  }
+ ],
+ "town.pin.4": [
+  {
+   "if": "flag:festival_lit",
+   "then": [
+    {
+     "say": "양말이 등불 아래에서 기분 좋게 흔들린다."
+    }
+   ],
+   "else": [
+    {
+     "say": "넷째 집게다."
+    },
+    {
+     "choice": [
+      {
+       "text": "노을 양말 (빨간 줄무늬)",
+       "then": [
+        {
+         "set": {
+          "pin4": "red"
+         }
+        }
+       ]
+      },
+      {
+       "text": "바다 양말 (파란 물방울)",
+       "then": [
+        {
+         "set": {
+          "pin4": "blue"
+         }
+        }
+       ]
+      },
+      {
+       "text": "별 양말 (금빛 별)",
+       "then": [
+        {
+         "set": {
+          "pin4": "gold"
+         }
+        }
+       ]
+      },
+      {
+       "text": "풀밭 양말 (초록)",
+       "then": [
+        {
+         "set": {
+          "pin4": "green"
+         }
+        }
+       ]
+      },
+      {
+       "text": "비워 둔다",
+       "then": [
+        {
+         "set": {
+          "pin4": false
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "do": "sfx",
+     "id": "ui-confirm"
+    },
+    {
+     "call": "town.pins.check"
+    }
+   ]
+  }
+ ],
+ "town.pins.check": [
+  {
+   "if": "flag:pin1 == red && flag:pin2 == blue && flag:pin3 == gold && flag:pin4 == green",
+   "then": "town.festival.light"
+  },
+  {
+   "if": "flag:pin1 && flag:pin2 && flag:pin3 && flag:pin4",
+   "then": [
+    {
+     "set": {
+      "pins_wrong": "+1"
+     }
+    },
+    {
+     "say": "…아무 일도 일어나지 않는다. 순서가 틀린 것 같다."
+    }
+   ]
+  }
+ ],
+ "town.festival.light": [
+  {
+   "do": "cinema",
+   "on": true
+  },
+  {
+   "do": "sfx",
+   "id": "tag-chime"
+  },
+  {
+   "set": {
+    "festival_lit": true
+   }
+  },
+  {
+   "say": [
+    "탁. 탁. 탁. 탁.",
+    "빨랫줄을 따라 등불이 하나씩 켜진다."
+   ]
+  },
+  {
+   "do": "music",
+   "id": "festival",
+   "fade": 1.5
+  },
+  {
+   "if": "hollow",
+   "then": [
+    {
+     "say": [
+      "등불이 켜졌다.",
+      "…광장에는 아무도 없다."
+     ]
+    }
+   ],
+   "else": [
+    {
+     "say": "켜졌다아아아!",
+     "who": "pip",
+     "face": "surprised"
+    },
+    {
+     "say": "올해는… 올해는 축제를 할 수 있겠구나.",
+     "who": "spool",
+     "face": "happy"
+    },
+    {
+     "say": [
+      "그런데 현수막이 아직 축축하네.",
+      "따뜻한 바람만 있으면 바로 시작할 텐데…"
+     ],
+     "who": "pip",
+     "face": "sad"
+    },
+    {
+     "say": "따뜻한 바람이라면 건조장에… 아니야, 아무것도.",
+     "who": "pip",
+     "face": "neutral"
+    }
+   ]
+  },
+  {
+   "do": "cinema",
+   "on": false
+  }
+ ],
+ "town.postbox": [
+  {
+   "if": "!flag:letter_read && flag:mitt_given",
+   "then": [
+    {
+     "say": [
+      "양말 모양 우체통에 편지가 한 통 꽂혀 있다.",
+      "받는 사람: {player}. 보낸 사람: 미트."
+     ]
+    },
+    {
+     "do": "item.add",
+     "id": "mitt-letter"
+    },
+    {
+     "set": {
+      "letter_read": true
+     }
+    },
+    {
+     "say": "'{player}에게. 숲 끝의 등불 아래는 따뜻해요.'"
+    },
+    {
+     "say": "'이제는 기다리는 편지 대신, 보내는 편지를 써요.'"
+    },
+    {
+     "say": "'장갑 한 켤레가 된 기분은요… 손이 하나 더 생긴 기분이에요.'"
+    },
+    {
+     "say": "'축제에 꼭 가 보세요. 짝이 없어도 괜찮은 축제래요. — 미트'"
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "if": "!flag:letter_read && flag:mitt_kept",
+   "then": [
+    {
+     "say": [
+      "양말 모양 우체통에 편지가 한 통 꽂혀 있다.",
+      "받는 사람: {player}. 보낸 사람: 미트."
+     ]
+    },
+    {
+     "do": "item.add",
+     "id": "mitt-letter"
+    },
+    {
+     "set": {
+      "letter_read": true
+     }
+    },
+    {
+     "say": "'{player}에게. 장갑 한 짝을 간직해 줘서 고마워요.'"
+    },
+    {
+     "say": "'저도 이 등불 아래에서, 그분을 간직하고 있어요.'"
+    },
+    {
+     "say": "'우리 둘 다 한 짝씩이지만, 그래도 꽤 따뜻하죠? — 미트'"
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "if": "!flag:letter_read && flag:mitt_joined && !flag:mitt_left",
+   "then": [
+    {
+     "say": "우체통에 짧은 쪽지가 들어 있다."
+    },
+    {
+     "do": "item.add",
+     "id": "mitt-letter"
+    },
+    {
+     "set": {
+      "letter_read": true
+     }
+    },
+    {
+     "say": "'숲 끝까지 함께 와 줘서 고마웠어요. 잘 지내요. — 미트'"
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "if": "flag:letter_read && !flag:letter_replied",
+   "then": [
+    {
+     "say": "우체통이 비어 있다. 답장을 넣어 볼까?"
+    },
+    {
+     "choice": [
+      {
+       "text": "(답장을 쓴다)",
+       "then": [
+        {
+         "say": [
+          "'잘 지내.'",
+          "짧게 적어 넣었다. 우체통이 덜컹, 하고 기뻐한 것 같다."
+         ]
+        },
+        {
+         "set": {
+          "letter_replied": true
+         }
+        }
+       ]
+      },
+      {
+       "text": "(그냥 둔다)",
+       "then": [
+        {
+         "say": "우체통 입구가 조금 서운해 보인다."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "say": [
+    "우체통이 비어 있다.",
+    "누군가의 편지를 기다리는 것 같지는 않다."
+   ]
+  }
+ ],
+ "town.spool": [
+  {
+   "if": "hollow",
+   "then": [
+    {
+     "say": [
+      "가판대에 '임시 휴업'이라고 적혀 있다.",
+      "안에서 바늘 소리가 들리다가, 멈췄다."
+     ]
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "if": "!flag:met_spool",
+   "then": [
+    {
+     "set": {
+      "met_spool": true
+     }
+    },
+    {
+     "say": "어서 오렴. 실타래 할머니의 수선집이란다.",
+     "who": "spool",
+     "face": "happy"
+    },
+    {
+     "say": [
+      "구멍 난 건 꿰매 주고, 풀린 건 감아 준단다.",
+      "마음은… 그건 좀 어렵고."
+     ],
+     "who": "spool",
+     "face": "neutral"
+    }
+   ]
+  },
+  {
+   "if": "item:thread && !flag:spool_mended",
+   "then": [
+    {
+     "say": "어머, 그 실… 숲에서 왔구나. 좋은 무명실이야.",
+     "who": "spool",
+     "face": "neutral"
+    },
+    {
+     "choice": [
+      {
+       "text": "(실을 드린다)",
+       "then": [
+        {
+         "do": "item.remove",
+         "id": "thread"
+        },
+        {
+         "set": {
+          "spool_mended": true
+         }
+        },
+        {
+         "say": [
+          "고맙구나. 답례로 이걸 주마.",
+          "기운 양말이란다. 기운 자리가 제일 튼튼하지."
+         ],
+         "who": "spool",
+         "face": "happy"
+        },
+        {
+         "do": "item.add",
+         "id": "patched-sock"
+        }
+       ]
+      },
+      {
+       "text": "(그냥 둔다)",
+       "then": [
+        {
+         "say": "그래, 그래. 아끼는 실이면 간직하렴.",
+         "who": "spool",
+         "face": "neutral"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "if": "!flag:festival_lit",
+   "then": [
+    {
+     "say": [
+      "축제 순서? 가운데가… 파란 게 먼저였던가,",
+      "반짝이는 게 먼저였던가…"
+     ],
+     "who": "spool",
+     "face": "worried"
+    },
+    {
+     "say": "늙으니 실 끝처럼 기억도 풀리는구나. 라운지의 클랙이라면 알 텐데.",
+     "who": "spool",
+     "face": "neutral"
+    }
+   ]
+  },
+  {
+   "do": "shop",
+   "id": "spool"
+  }
+ ],
+ "town.pip.talk": [
+  {
+   "if": "flag:festival_lit",
+   "then": [
+    {
+     "say": [
+      "등불, 봤지? 봤지?!",
+      "이제 현수막만 마르면 돼. 따뜻한 바람이 있어야 하는데…"
+     ],
+     "who": "pip",
+     "face": "happy"
+    },
+    {
+     "if": "!flag:met_tumble",
+     "then": [
+      {
+       "say": "…건조장에 가 볼 거야? 조심해.",
+       "who": "pip",
+       "face": "sad"
+      }
+     ]
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "if": "flag:pins_wrong >= 2",
+   "then": [
+    {
+     "say": [
+      "순서를 바꿔 가며 걸어 봐!",
+      "첫째랑 넷째는 게시판에 적혀 있으니까, 가운데만 맞추면 돼."
+     ],
+     "who": "pip",
+     "face": "neutral"
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "say": [
+    "게시판을 봤어? 첫째랑 넷째는 읽을 수 있대.",
+    "가운데 둘은… 클랙 아저씨라면 알지도 몰라."
+   ],
+   "who": "pip",
+   "face": "neutral"
+  },
+  {
+   "say": "그 아저씨는 뭐든 농담으로 기억하거든. 라운지는 광장 북쪽 빨간 문이야!",
+   "who": "pip",
+   "face": "happy"
+  }
+ ],
+ "town.mint": [
+  {
+   "if": "flag:festival_lit",
+   "then": [
+    {
+     "say": "등불 봤어? 예쁘다… 현수막만 마르면 축제야!",
+     "who": "sock-mint"
+    }
+   ],
+   "else": [
+    {
+     "say": [
+      "축제 못 하면 올해도 혼자야.",
+      "…뭐, 작년에도 혼자였지만!"
+     ],
+     "who": "sock-mint"
+    }
+   ]
+  }
+ ],
+ "town.plum": [
+  {
+   "if": "flag:met_tumble && !flag:tumble_spared",
+   "then": [
+    {
+     "say": [
+      "텀블을 만났어? 정말 양말을 먹어?",
+      "…다들 그렇다니까 그런 줄 알았는데."
+     ],
+     "who": "sock-plum"
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "say": [
+    "나는 축제에서 발목 양말이랑 짝을 맺을 거야.",
+    "길이가 안 맞으면 어때?"
+   ],
+   "who": "sock-plum"
+  },
+  {
+   "say": "…아직 고백은 못 했어.",
+   "who": "sock-plum"
+  }
+ ],
+ "town.lonesock": [
+  {
+   "if": "flag:festival_lit",
+   "then": [
+    {
+     "say": "등불이 켜졌어! 두근거려…",
+     "who": "lonesock"
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "if": "!flag:lonesock_met",
+   "then": [
+    {
+     "set": {
+      "lonesock_met": true
+     }
+    },
+    {
+     "say": "어! 숲에서 만났던… 나 기억해?",
+     "who": "lonesock"
+    },
+    {
+     "say": [
+      "네가 놓아준 덕분에 여기까지 왔어.",
+      "짝을 찾으러."
+     ],
+     "who": "lonesock"
+    },
+    {
+     "say": "축제가 열리면… 나도 누군가랑 짝이 될 수 있을까?",
+     "who": "lonesock"
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "say": "줄무늬랑 어울리는 무늬는 뭘까? 줄무늬? …너무 뻔한가?",
+   "who": "lonesock"
+  }
+ ],
+ "town.brolly": [
+  {
+   "say": "오오, 작은 손님! 나도 왔노라!",
+   "who": "brolly",
+   "face": "proud"
+  },
+  {
+   "say": [
+    "축제 날 비가 오면 큰일 아니겠느냐.",
+    "그래서 경비를 서러 왔도다."
+   ],
+   "who": "brolly",
+   "face": "proud"
+  },
+  {
+   "say": "…비는 안 오지만. 안 오지만 말이다!",
+   "who": "brolly",
+   "face": "flustered"
+  }
+ ],
+ "town.tumble": [
+  {
+   "say": "…따뜻한 바람, 아직 남아 있어. 필요하면 말해.",
+   "who": "tumble",
+   "face": "happy"
+  }
+ ],
+ "town.desk": [
+  {
+   "say": "도장 책상이다. 레저의 글씨로 '양말 마을 출장소'라고 적혀 있다."
+  },
+  {
+   "if": "hp < maxHp",
+   "then": [
+    {
+     "say": "잉크 냄새에 기운이 난다."
+    }
+   ]
+  },
+  {
+   "do": "save"
+  }
+ ],
+ "lounge.enter": [
+  {
+   "if": "!flag:lounge_seen",
+   "then": [
+    {
+     "set": {
+      "lounge_seen": true
+     }
+    },
+    {
+     "say": "어둑한 라운지. 무대 조명 아래 틀니 한 벌이 서 있다."
+    },
+    {
+     "if": "hollow",
+     "then": [
+      {
+       "say": "…객석은 텅 비어 있다."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "lounge.mint": [
+  {
+   "if": "flag:clack_spared",
+   "then": [
+    {
+     "say": "오늘 쇼 최고였지? 세 번째 농담이 진짜야.",
+     "who": "sock-mint"
+    }
+   ],
+   "else": [
+    {
+     "say": "쉿, 곧 클랙 아저씨 쇼 시작해!",
+     "who": "sock-mint"
+    }
+   ]
+  }
+ ],
+ "lounge.plum": [
+  {
+   "say": [
+    "클랙 농담은 세 번째부터 웃겨.",
+    "첫 번째랑 두 번째는… 음. 예의상 웃어 줘."
+   ],
+   "who": "sock-plum"
+  }
+ ],
+ "lounge.mic": [
+  {
+   "say": "마이크다. 손잡이가 침으로… 아니, 틀니 세척액으로 반질반질하다."
+  }
+ ],
+ "lounge.dentures": [
+  {
+   "say": [
+    "틀니 한 벌이 무대 위에 놓여 있다.",
+    "더 이상 딱딱거리지 않는다."
+   ]
+  }
+ ],
+ "lounge.clack": [
+  {
+   "if": "flag:clack_spared",
+   "then": [
+    {
+     "if": "flag:festival_lit",
+     "then": [
+      {
+       "say": "등불 켜는 거 봤어? 내 농담이 세상을 밝혔군! 딱딱!",
+       "who": "clack",
+       "face": "smug"
+      }
+     ],
+     "else": [
+      {
+       "say": [
+        "순서 기억나? 노을, 바다, 별, 풀밭!",
+        "내 틀니만큼 완벽하지."
+       ],
+       "who": "clack",
+       "face": "smug"
+      }
+     ]
+    },
+    {
+     "do": "end"
+    }
+   ]
+  },
+  {
+   "if": "!flag:met_clack",
+   "then": [
+    {
+     "set": {
+      "met_clack": true
+     }
+    },
+    {
+     "say": "딱딱! 어서 와, 어서 와!",
+     "who": "clack",
+     "face": "laugh"
+    },
+    {
+     "say": [
+      "나는 클랙. 틀니 한 벌이지.",
+      "위아래로 한 쌍! 이 마을에서 유일하게 짝이 맞는 녀석이야."
+     ],
+     "who": "clack",
+     "face": "smug"
+    },
+    {
+     "say": "…농담이야. 사실 위아래 주인이 달라.",
+     "who": "clack",
+     "face": "neutral"
+    }
+   ]
+  },
+  {
+   "if": "hollow",
+   "then": [
+    {
+     "say": [
+      "오늘은… 웃어 줄 사람이 없네.",
+      "그래도 무대는 지켜야지. 쇼는 계속된다, 딱딱."
+     ],
+     "who": "clack",
+     "face": "sad"
+    }
+   ]
+  },
+  {
+   "say": "자, 쇼 타임! 웃기면 웃고, 안 웃기면… 웃어 줘.",
+   "who": "clack",
+   "face": "laugh"
+  },
+  {
+   "choice": [
+    {
+     "text": "(쇼를 본다)",
+     "then": [
+      {
+       "do": "battle",
+       "enemies": [
+        "clack"
+       ],
+       "canFlee": true
+      },
+      {
+       "if": "flag:last_battle == spared",
+       "then": "lounge.clack.spared"
+      },
+      {
+       "if": "flag:last_battle == cleared",
+       "then": "lounge.clack.cleared"
+      },
+      {
+       "if": "flag:last_battle == fled",
+       "then": [
+        {
+         "say": "벌써 가? 앙코르는?",
+         "who": "clack",
+         "face": "sad"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "(나중에)",
+     "then": [
+      {
+       "say": "언제든! 무대는 늘 열려 있어.",
+       "who": "clack",
+       "face": "neutral"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "lounge.clack.spared": [
+  {
+   "set": {
+    "clack_spared": true,
+    "clack_hint": true
+   }
+  },
+  {
+   "do": "sfx",
+   "id": "rimshot"
+  },
+  {
+   "say": "최고의 관객이야! 딱딱딱!",
+   "who": "clack",
+   "face": "laugh"
+  },
+  {
+   "say": "답례로 비밀 하나 알려 주지. 축제 순서 말이야.",
+   "who": "clack",
+   "face": "smug"
+  },
+  {
+   "say": [
+    "노을이 지면 바다가 어두워지고,",
+    "바다가 어두워져야 별이 뜨지. 그리고 아침이 오면 풀밭!"
+   ],
+   "who": "clack",
+   "face": "neutral"
+  },
+  {
+   "say": [
+    "그러니까 노을, 바다, 별, 풀밭.",
+    "농담 같지? 아니, 이건 진짜야."
+   ],
+   "who": "clack",
+   "face": "neutral"
+  }
+ ],
+ "lounge.clack.cleared": [
+  {
+   "set": {
+    "clack_cleared": true
+   }
+  },
+  {
+   "do": "npc.hide",
+   "id": "clack"
+  },
+  {
+   "say": [
+    "틀니 한 벌이 무대 위에 덩그러니 놓여 있다.",
+    "더 이상 딱딱거리지 않는다."
+   ]
+  },
+  {
+   "if": "!hollow",
+   "then": [
+    {
+     "do": "npc.hide",
+     "id": "mint"
+    },
+    {
+     "do": "npc.hide",
+     "id": "plum"
+    },
+    {
+     "say": "객석의 양말들이 슬금슬금 자리를 떴다."
+    }
+   ]
+  }
+ ],
+ "yard.enter": [
+  {
+   "if": "!flag:yard_seen",
+   "then": [
+    {
+     "set": {
+      "yard_seen": true
+     }
+    },
+    {
+     "say": [
+      "버려진 빨래방. 고장 난 건조기들이 줄지어 서 있다.",
+      "어디선가 덜컹… 덜컹… 하는 소리가 들린다."
+     ]
+    }
+   ]
+  }
+ ],
+ "yard.desk": [
+  {
+   "say": "도장 책상이다. 보풀이 조금 붙어 있다."
+  },
+  {
+   "if": "hp < maxHp",
+   "then": [
+    {
+     "say": "잉크 냄새에 기운이 난다."
+    }
+   ]
+  },
+  {
+   "do": "save"
+  }
+ ],
+ "yard.dryer": [
+  {
+   "say": [
+    "고장 난 건조기다. 문 안에 보풀만 가득하다.",
+    "누군가 '양말 도둑'이라고 낙서해 두었다."
+   ]
+  }
+ ],
+ "yard.washer": [
+  {
+   "say": "세탁기 창 너머로 물이 고여 있다. 거품 하나가 천천히 터졌다."
+  }
+ ],
+ "yard.basket": [
+  {
+   "say": [
+    "빨래 바구니에 양말이 잔뜩 쌓여 있다.",
+    "전부 한 짝씩이다. 누군가 꺼내 와서 모아 둔 것 같다."
+   ]
+  }
+ ],
+ "yard.leftover": [
+  {
+   "say": [
+    "낡은 건조기 문 안쪽에 양말 한 짝이 걸려 있다.",
+    "…누구의 것이었을까."
+   ]
+  }
+ ],
+ "yard.tumble.encounter": [
+  {
+   "do": "cinema",
+   "on": true
+  },
+  {
+   "if": "!flag:met_tumble",
+   "then": [
+    {
+     "set": {
+      "met_tumble": true
+     }
+    },
+    {
+     "say": "…오지 마.",
+     "who": "tumble",
+     "face": "sad"
+    },
+    {
+     "say": "가까이 오면… 너도 짝을 잃을 거야.",
+     "who": "tumble",
+     "face": "angry"
+    },
+    {
+     "say": "다들 그러잖아. 텀블이 양말을 먹는다고.",
+     "who": "tumble",
+     "face": "sad"
+    },
+    {
+     "if": "flag:festival_lit",
+     "then": [
+      {
+       "say": "(광장의 등불 이야기를 해 주고 싶다.)"
+      }
+     ]
+    }
+   ],
+   "else": [
+    {
+     "say": "또 왔어? …돌아가.",
+     "who": "tumble",
+     "face": "sad"
+    }
+   ]
+  },
+  {
+   "do": "cinema",
+   "on": false
+  },
+  {
+   "do": "battle",
+   "enemies": [
+    "tumble"
+   ],
+   "canFlee": false
+  },
+  {
+   "if": "flag:last_battle == spared",
+   "then": "yard.tumble.spared"
+  },
+  {
+   "if": "flag:last_battle == cleared",
+   "then": "yard.tumble.cleared"
+  },
+  {
+   "if": "flag:last_battle == fled",
+   "then": [
+    {
+     "do": "player.face",
+     "facing": "right"
+    },
+    {
+     "say": "텀블이 덜컹거리며 제자리에서 돌고 있다."
+    }
+   ]
+  }
+ ],
+ "yard.tumble.spared": [
+  {
+   "do": "cinema",
+   "on": true
+  },
+  {
+   "set": {
+    "tumble_spared": true
+   }
+  },
+  {
+   "say": "…따뜻해.",
+   "who": "tumble",
+   "face": "happy"
+  },
+  {
+   "say": [
+    "나, 오랫동안 내 안이 차갑다고 생각했어.",
+    "아무것도 지키지 못하는 차가운 통이라고."
+   ],
+   "who": "tumble",
+   "face": "sad"
+  },
+  {
+   "say": "광장에… 가 봐도 될까? 현수막, 내가 말려 줄 수 있어.",
+   "who": "tumble",
+   "face": "neutral"
+  },
+  {
+   "do": "wait",
+   "ms": 500
+  },
+  {
+   "do": "map",
+   "to": "town-square",
+   "spawn": "from-yard"
+  }
+ ],
+ "yard.tumble.cleared": [
+  {
+   "set": {
+    "tumble_cleared": true
+   }
+  },
+  {
+   "do": "npc.hide",
+   "id": "tumble"
+  },
+  {
+   "say": [
+    "덜컹거리던 소리가 멈췄다.",
+    "…그냥 낡은 건조기다. 문 안쪽에 양말 한 짝이 걸려 있다."
+   ]
+  },
+  {
+   "if": "!hollow",
+   "then": [
+    {
+     "say": "누구의 것이었을까."
+    }
+   ]
+  }
+ ],
+ "town.festival": [
+  {
+   "do": "cinema",
+   "on": true
+  },
+  {
+   "set": {
+    "festival_done": true
+   }
+  },
+  {
+   "do": "music",
+   "id": "festival",
+   "fade": 1
+  },
+  {
+   "say": "텀블이 광장 한가운데로 덜컹덜컹 들어선다."
+  },
+  {
+   "if": "!hollow",
+   "then": [
+    {
+     "say": "텀, 텀블이다!",
+     "who": "pip",
+     "face": "surprised"
+    },
+    {
+     "say": "양말 먹는 건조기!",
+     "who": "sock-plum"
+    }
+   ]
+  },
+  {
+   "say": "…현수막을, 말려 주러 왔어.",
+   "who": "tumble",
+   "face": "sad"
+  },
+  {
+   "do": "sfx",
+   "id": "spin"
+  },
+  {
+   "say": [
+    "후우웅—",
+    "따뜻한 바람이 광장을 한 바퀴 돈다. 젖어 있던 현수막이 펄럭이며 마른다."
+   ]
+  },
+  {
+   "if": "hollow",
+   "then": [
+    {
+     "say": [
+      "등불 아래로 아무도 오지 않는다.",
+      "텀블과 둘이서, 마른 현수막을 바라본다."
+     ]
+    }
+   ],
+   "else": [
+    {
+     "say": [
+      "…따뜻해.",
+      "텀블, 너… 양말을 먹은 게 아니었구나?"
+     ],
+     "who": "pip",
+     "face": "happy"
+    },
+    {
+     "say": [
+      "나는 돌았을 뿐이야.",
+      "짝들이 떨어진 건… 그냥, 그렇게 된 거야."
+     ],
+     "who": "tumble",
+     "face": "neutral"
+    },
+    {
+     "say": "떨어진 짝은 다시 꿰매면 그만이란다.",
+     "who": "spool",
+     "face": "happy"
+    },
+    {
+     "if": "spared:sock >= 1",
+     "then": [
+      {
+       "say": "외짝 양말이 민트색 물방울 양말 앞에서 머뭇거린다."
+      },
+      {
+       "say": "저, 저기… 줄무늬랑 물방울도… 짝이 될 수 있을까?",
+       "who": "lonesock"
+      },
+      {
+       "say": "…해 보면 알겠지!",
+       "who": "sock-mint"
+      },
+      {
+       "set": {
+        "lonesock_paired": true
+       }
+      }
+     ]
+    },
+    {
+     "if": "flag:brolly_spared",
+     "then": [
+      {
+       "say": "축하하노라! 비가 오면 내가 막아 주겠도다!",
+       "who": "brolly",
+       "face": "happy"
+      }
+     ]
+    },
+    {
+     "if": "flag:clack_spared",
+     "then": [
+      {
+       "say": [
+        "자, 짝 찾기 축제를 시작합니다!",
+        "짝이 없는 분은 저랑 하시면 됩니다. 저는 원래 위아래가 따로라서요!"
+       ],
+       "who": "clack",
+       "face": "laugh"
+      },
+      {
+       "do": "sfx",
+       "id": "rimshot"
+      }
+     ]
+    },
+    {
+     "say": "등불 아래에서, 짝이 맞지 않는 양말들이 하나둘 손을 잡는다."
+    },
+    {
+     "say": "…고마워. 처음으로, 내가 무언가를 맞춰 준 것 같아.",
+     "who": "tumble",
+     "face": "happy"
+    }
+   ]
+  },
+  {
+   "do": "wait",
+   "ms": 900
+  },
+  {
+   "do": "ending",
+   "chapter": 2
+  }
+ ],
+ "town.aftermath": [
+  {
+   "do": "cinema",
+   "on": true
+  },
+  {
+   "set": {
+    "ch2_done": true
+   }
+  },
+  {
+   "if": "flag:festival_lit",
+   "then": [
+    {
+     "say": "등불은 켜졌지만, 현수막은 젖은 채로 축 늘어져 있다."
+    }
+   ],
+   "else": [
+    {
+     "say": "광장은 여전히 어둡다."
+    }
+   ]
+  },
+  {
+   "if": "!hollow",
+   "then": [
+    {
+     "say": [
+      "건조장이 조용해졌대.",
+      "…축제는, 내년에 하자."
+     ],
+     "who": "pip",
+     "face": "sad"
+    }
+   ]
+  },
+  {
+   "say": "따뜻한 바람은 불지 않았다."
+  },
+  {
+   "do": "wait",
+   "ms": 900
+  },
+  {
+   "do": "ending",
+   "chapter": 2
+  }
+ ]
+}

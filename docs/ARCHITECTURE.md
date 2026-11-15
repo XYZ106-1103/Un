@@ -1,6 +1,6 @@
 # UNCLAIMED — 기술 아키텍처
 
-> 문서 버전 0.3 · v0.1.0 (PHASE 8, 0장+1장) 기준 · 코드와 어긋나면 코드를 기준으로 이 문서를 고칩니다.
+> 문서 버전 0.4 · v0.2.0 (0장+1장+2장) 기준 · 코드와 어긋나면 코드를 기준으로 이 문서를 고칩니다.
 
 ## 1. 기술 스택 (확정)
 
@@ -173,14 +173,14 @@ graph TD
 
 | 파일 | 역할 | 의존 |
 |---|---|---|
-| `systems/StorySystem.ts` | 루트 판정(return/keep/clear), 공허해진 세계 판정, 퀘스트 상태 | 순수 |
+| `systems/StorySystem.ts` | 장별 루트 판정 `evaluateRoute(state, chapter)`, 공허 판정(`GameState.isHollowState`, 조건식 키 `hollow`), 퀘스트 상태 | 순수 |
 | `systems/MetaSystem.ts` | 세이브와 분리된 영구 기록: 본 엔딩, 마지막 치움 시각, "되돌리기" 감지 횟수, 시작 횟수 | VersionedStore |
 | `systems/Particles.ts` | 씬당 Graphics 1개, 풀 256개, 정수 좌표 픽셀 파티클 | Phaser |
 | `entities/Follower.ts` | 동료(발자취 추적, 일정 거리 유지) | Phaser |
-| `entities/Soul.ts` (확장) | 영혼 모드 `free` / `tether`(끈 묶임 진자) | Phaser |
+| `entities/Soul.ts` (확장) | 영혼 모드 `free` / `tether`(끈 묶임 진자) / `spin`(상자 중심을 도는 물살, 순수 함수 `spinDrift`로 단위 테스트) | Phaser |
 | `entities/Enemy.ts` (확장) | 페이즈별 애니메이션, 진정 프레임 | Phaser |
 | `systems/BattleSystem.ts` (확장) | 페이즈 진입 `advancePhases`, `soulMode`, ACT의 플래그 변경·전투 종료, `hp%` | 순수 |
-| `scenes/EndingScene.ts` | 루트별 엔딩(조건부 페이지) → 크레딧(Z로 빠르게) → 마지막 문장 → 타이틀 | StorySystem, MetaSystem |
+| `scenes/EndingScene.ts` | 루트별 엔딩(조건부 페이지) → 막간이면 장 카드 후 다음 장 맵으로, 마지막 장이면 크레딧(Z로 빠르게) → 마지막 문장 → 타이틀 | StorySystem, MetaSystem |
 | `ui/ShopPanel.ts` | 상점(초상화, 인사·감사·잔액 부족 문구, 단추 결제) | UI 키트 |
 | `game/ErrorOverlay.ts` | 런타임 오류 알림: 같은 출처의 잡히지 않은 오류/거부된 Promise → 게임 루프 정지 + 새로고침/계속하기, 1회만 | DOM |
 
@@ -199,12 +199,14 @@ graph TD
 | `data/characters/*.json` | 이름, 이름표 색, 초상화·필드 스프라이트 에셋, 보이스(파형·음높이·변화폭·간격), 작가용 노트 |
 | `data/audio/songs/<id>.json` | BPM, 스텝/박, 채널(파형·볼륨·게이트·패턴: 음이름 / `.` 쉼 / `-` 지속 / 드럼 `k s x o`) |
 | `data/art/*.json` | 픽셀아트 문서(팔레트 인덱스 문자열 행, 파생 프레임, 애니메이션) |
-| `data/story/*.json` | 시작 위치·아이템, 이름 반응, 크레딧, `quests.json`(activeIf/doneIf 조건식), `endings.json`(루트별 제목·곡·조건부 페이지·마지막 문장) |
+| `data/story/*.json` | 시작 위치·아이템, 이름 반응, 크레딧, `quests.json`(activeIf/doneIf 조건식), `endings.json`(id `ch<장>.<루트>`: 제목·곡·조건부 페이지·마지막 문장, 막간이면 `next: {label, title, map, spawn, set}`) |
 | `data/shops/<id>.json` | 주인 캐릭터, 품목·가격, 인사·감사·잔액 부족 문구(무작위 선택) |
 
-조건 키: `flag:<id>`, `item:<id>`, `rel:<id>`, `met:/spared:/cleared:<enemy>`, `stat:<name>`, `hp`, `maxHp`, `buttons`, `map`, `meta:undoNotices`, 전투 중 `var:<변수>`, `acted:<act>`, `hp%`(= `var:hp%`), `turn`.
+조건 키: `flag:<id>`, `item:<id>`, `rel:<id>`, `met:/spared:/cleared:<enemy>`, `stat:<name>`, `hp`, `maxHp`, `buttons`, `hollow`, `map`, `meta:undoNotices`, 전투 중 `var:<변수>`, `acted:<act>`, `hp%`(= `var:hp%`), `turn`.
 
-스크립트 명령(전체): `sfx`, `music`, `shake`, `flash`, `wait`, `face`, `item.add/remove`, `buttons`, `heal`, `relation`, `battle`, `save`, `map`, `npc.hide/show/face/move`, `player.face`, `end`, `shop`, `cinema`, `follower`, `ending`.
+스크립트 명령(전체): `sfx`, `music`, `shake`, `flash`, `wait`, `face`, `item.add/remove`, `buttons`, `heal`, `relation`, `battle`, `save`, `map`(`to`, `spawn`), `npc.hide/show/face/move`, `player.face`, `end`, `shop`, `cinema`, `follower`, `ending`(`chapter`).
+
+> 주의: 조건식에서 단독 `true`는 리터럴이 아니라 키 조회입니다(비교의 오른쪽 값에서만 리터럴). 항상 참인 조건이 필요하면 조건을 생략하세요.
 
 ## 6. 데이터 설계 원칙
 

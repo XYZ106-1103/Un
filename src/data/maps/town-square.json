@@ -1,0 +1,497 @@
+{
+ "id": "town-square",
+ "name": "빨랫줄 광장",
+ "music": "town",
+ "tileset": "tiles.town",
+ "legend": {
+  "#": {
+   "tile": "wall-top",
+   "solid": true
+  },
+  "T": {
+   "tile": "knit-teal",
+   "solid": true
+  },
+  "M": {
+   "tile": "knit-mustard",
+   "solid": true
+  },
+  "R": {
+   "tile": "knit-red",
+   "solid": true
+  },
+  "w": {
+   "tile": "knit-window",
+   "solid": true
+  },
+  "v": {
+   "tile": "knit-window-b",
+   "solid": true
+  },
+  "r": {
+   "tile": "knit-red",
+   "solid": true
+  },
+  "c": {
+   "tile": "cobble-a"
+  },
+  "C": {
+   "tile": "cobble-b"
+  },
+  "o": {
+   "tile": "cobble-puddle"
+  },
+  ",": {
+   "tile": "grass-a"
+  },
+  ";": {
+   "tile": "grass-b"
+  },
+  ":": {
+   "tile": "dirt"
+  },
+  "P": {
+   "tile": "grass-a",
+   "deco": "line-post",
+   "solid": true
+  },
+  "p": {
+   "tile": "cobble-a",
+   "deco": "line-post",
+   "solid": true
+  },
+  "1": {
+   "tile": "grass-a",
+   "deco": "line-a",
+   "over": true
+  },
+  "2": {
+   "tile": "grass-a",
+   "deco": "line-b",
+   "over": true
+  },
+  "3": {
+   "tile": "grass-a",
+   "deco": "line-c",
+   "over": true
+  },
+  "4": {
+   "tile": "cobble-a",
+   "deco": "line-a",
+   "over": true
+  },
+  "5": {
+   "tile": "cobble-b",
+   "deco": "line-b",
+   "over": true
+  },
+  "6": {
+   "tile": "cobble-a",
+   "deco": "line-c",
+   "over": true
+  },
+  "b": {
+   "tile": "cobble-a",
+   "deco": "bunting",
+   "over": true
+  },
+  "F": {
+   "tile": "grass-a",
+   "deco": "fence",
+   "solid": true
+  },
+  "t": {
+   "tile": "cobble-a",
+   "deco": "tub",
+   "solid": true
+  },
+  "S": {
+   "tile": "grass-a",
+   "deco": "sign",
+   "solid": true
+  },
+  "f": {
+   "tile": "grass-a",
+   "deco": "flowerpot",
+   "solid": true
+  },
+  "e": {
+   "tile": "cobble-a",
+   "deco": "flowerpot",
+   "solid": true
+  },
+  "D": {
+   "tile": "door-red"
+  },
+  "B": {
+   "tile": "cobble-a",
+   "deco": "board",
+   "solid": true
+  },
+  "L": {
+   "tile": "cobble-a",
+   "deco": "lamp-base",
+   "solid": true
+  },
+  "q": {
+   "tile": "cobble-a",
+   "deco": "line-plain",
+   "solid": true
+  },
+  "g": {
+   "tile": "cobble-a",
+   "solid": true
+  },
+  "k": {
+   "tile": "cobble-a",
+   "deco": "basket",
+   "solid": true
+  },
+  "x": {
+   "tile": "cobble-a",
+   "deco": "postbox",
+   "solid": true
+  },
+  "Q": {
+   "tile": "cobble-a",
+   "deco": "stall-tl",
+   "over": true
+  },
+  "U": {
+   "tile": "cobble-a",
+   "deco": "stall-tr",
+   "over": true
+  },
+  "Y": {
+   "tile": "cobble-a",
+   "deco": "stall-bl",
+   "solid": true
+  },
+  "Z": {
+   "tile": "cobble-a",
+   "deco": "stall-br",
+   "solid": true
+  }
+ },
+ "layout": [
+  "##############################",
+  "#MMRRrDRTTwTTMMvMMRRrRRTTwTTM#",
+  "#bbbbbbbbbbbbbbbbbbbbbbbbbbbb#",
+  "#ecccccCcgccCcccCcgcccQUcCcce#",
+  "#CCBcccccLpqggggqpLcccYZcCCcc#",
+  "#CccCcccCCcccccccCcCccccCcccC#",
+  "#cccccccccckcccCccccCcCcccccc#",
+  "#CccccccccCcCccCCcCcccccCcCcc#",
+  "cccccccccccccccccccccccccccccc",
+  "cccxccCccccCCCcccCCccccccccccc",
+  "#cccccccccccccCccCcCccccccccc#",
+  "#ccccccccccccCcccCcccccccccCC#",
+  "#ccCccccccCcCCCcCCCccccccCccc#",
+  "#cCcp655665pccccccp666646pccc#",
+  "#CccCCcccCcCcCccccccCccccccCc#",
+  "##############################"
+ ],
+ "spawns": {
+  "from-gate": {
+   "x": 1,
+   "y": 8,
+   "facing": "right"
+  },
+  "from-lounge": {
+   "x": 6,
+   "y": 2,
+   "facing": "down"
+  },
+  "from-yard": {
+   "x": 28,
+   "y": 8,
+   "facing": "left"
+  }
+ },
+ "npcs": [
+  {
+   "id": "pip",
+   "character": "pip",
+   "x": 8,
+   "y": 8,
+   "facing": "down",
+   "behavior": "turn",
+   "script": "town.pip.talk",
+   "if": "flag:met_pip && !hollow"
+  },
+  {
+   "id": "spool",
+   "character": "spool",
+   "x": 24,
+   "y": 4,
+   "facing": "down",
+   "behavior": "idle",
+   "script": "town.spool",
+   "if": "!hollow"
+  },
+  {
+   "id": "mint",
+   "character": "sock-mint",
+   "x": 5,
+   "y": 11,
+   "facing": "right",
+   "behavior": "wander",
+   "script": "town.mint",
+   "if": "!hollow"
+  },
+  {
+   "id": "plum",
+   "character": "sock-plum",
+   "x": 21,
+   "y": 9,
+   "facing": "left",
+   "behavior": "turn",
+   "script": "town.plum",
+   "if": "!hollow"
+  },
+  {
+   "id": "lonesock",
+   "character": "lonesock",
+   "x": 14,
+   "y": 11,
+   "facing": "down",
+   "behavior": "idle",
+   "script": "town.lonesock",
+   "if": "spared:sock >= 1 && !hollow"
+  },
+  {
+   "id": "brolly",
+   "character": "brolly",
+   "x": 26,
+   "y": 6,
+   "facing": "left",
+   "behavior": "idle",
+   "script": "town.brolly",
+   "if": "flag:brolly_spared && flag:festival_lit"
+  },
+  {
+   "id": "tumble",
+   "character": "tumble",
+   "x": 14,
+   "y": 8,
+   "facing": "down",
+   "behavior": "idle",
+   "script": "town.tumble",
+   "if": "flag:tumble_spared"
+  }
+ ],
+ "objects": [
+  {
+   "id": "lamp-1",
+   "x": 9,
+   "y": 3,
+   "script": "town.lamp",
+   "solid": true,
+   "sprites": [
+    {
+     "if": "flag:festival_lit",
+     "frame": "lamp-top-on"
+    },
+    {
+     "if": "!flag:festival_lit",
+     "frame": "lamp-top-off"
+    }
+   ]
+  },
+  {
+   "id": "lamp-2",
+   "x": 18,
+   "y": 3,
+   "script": "town.lamp",
+   "solid": true,
+   "sprites": [
+    {
+     "if": "flag:festival_lit",
+     "frame": "lamp-top-on"
+    },
+    {
+     "if": "!flag:festival_lit",
+     "frame": "lamp-top-off"
+    }
+   ]
+  },
+  {
+   "id": "pin-1",
+   "x": 12,
+   "y": 4,
+   "script": "town.pin.1",
+   "solid": true,
+   "sprites": [
+    {
+     "if": "flag:pin1 == red",
+     "frame": "gl-red"
+    },
+    {
+     "if": "flag:pin1 == blue",
+     "frame": "gl-blue"
+    },
+    {
+     "if": "flag:pin1 == gold",
+     "frame": "gl-gold"
+    },
+    {
+     "if": "flag:pin1 == green",
+     "frame": "gl-green"
+    },
+    {
+     "if": "!flag:pin1",
+     "frame": "gl-empty"
+    }
+   ]
+  },
+  {
+   "id": "pin-2",
+   "x": 13,
+   "y": 4,
+   "script": "town.pin.2",
+   "solid": true,
+   "sprites": [
+    {
+     "if": "flag:pin2 == red",
+     "frame": "gl-red"
+    },
+    {
+     "if": "flag:pin2 == blue",
+     "frame": "gl-blue"
+    },
+    {
+     "if": "flag:pin2 == gold",
+     "frame": "gl-gold"
+    },
+    {
+     "if": "flag:pin2 == green",
+     "frame": "gl-green"
+    },
+    {
+     "if": "!flag:pin2",
+     "frame": "gl-empty"
+    }
+   ]
+  },
+  {
+   "id": "pin-3",
+   "x": 14,
+   "y": 4,
+   "script": "town.pin.3",
+   "solid": true,
+   "sprites": [
+    {
+     "if": "flag:pin3 == red",
+     "frame": "gl-red"
+    },
+    {
+     "if": "flag:pin3 == blue",
+     "frame": "gl-blue"
+    },
+    {
+     "if": "flag:pin3 == gold",
+     "frame": "gl-gold"
+    },
+    {
+     "if": "flag:pin3 == green",
+     "frame": "gl-green"
+    },
+    {
+     "if": "!flag:pin3",
+     "frame": "gl-empty"
+    }
+   ]
+  },
+  {
+   "id": "pin-4",
+   "x": 15,
+   "y": 4,
+   "script": "town.pin.4",
+   "solid": true,
+   "sprites": [
+    {
+     "if": "flag:pin4 == red",
+     "frame": "gl-red"
+    },
+    {
+     "if": "flag:pin4 == blue",
+     "frame": "gl-blue"
+    },
+    {
+     "if": "flag:pin4 == gold",
+     "frame": "gl-gold"
+    },
+    {
+     "if": "flag:pin4 == green",
+     "frame": "gl-green"
+    },
+    {
+     "if": "!flag:pin4",
+     "frame": "gl-empty"
+    }
+   ]
+  },
+  {
+   "id": "board",
+   "x": 3,
+   "y": 4,
+   "script": "town.board"
+  },
+  {
+   "id": "basket",
+   "x": 11,
+   "y": 6,
+   "script": "town.basket"
+  },
+  {
+   "id": "postbox",
+   "x": 3,
+   "y": 9,
+   "script": "town.postbox"
+  },
+  {
+   "id": "stall-l",
+   "x": 22,
+   "y": 4,
+   "script": "town.spool"
+  },
+  {
+   "id": "stall-r",
+   "x": 23,
+   "y": 4,
+   "script": "town.spool"
+  }
+ ],
+ "exits": [
+  {
+   "x": 0,
+   "y": 8,
+   "h": 2,
+   "to": "town-gate",
+   "spawn": "from-square"
+  },
+  {
+   "x": 29,
+   "y": 8,
+   "h": 2,
+   "to": "drying-yard",
+   "spawn": "from-square"
+  },
+  {
+   "x": 6,
+   "y": 1,
+   "to": "clack-lounge",
+   "spawn": "from-square"
+  }
+ ],
+ "triggers": [],
+ "savePoints": [
+  {
+   "id": "desk-town",
+   "x": 26,
+   "y": 10,
+   "script": "town.desk"
+  }
+ ],
+ "onEnter": "town.square.enter"
+}

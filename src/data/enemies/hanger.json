@@ -1,0 +1,203 @@
+{
+ "id": "hanger",
+ "name": "굽은 옷걸이",
+ "sprite": "enemy.hanger",
+ "hp": 20,
+ "attack": 4,
+ "defense": 2,
+ "reward": {
+  "buttons": 7
+ },
+ "encounter": "굽은 옷걸이가 삐걱거리며 길을 막는다.",
+ "check": "누군가 문을 따려고 펴서 쓴 뒤 버린 옷걸이. 모양이 엉망이다.",
+ "vars": {
+  "straight": 0,
+  "mocked": 0
+ },
+ "acts": [
+  {
+   "id": "check",
+   "label": "관찰",
+   "text": [
+    {
+     "text": "이리저리 꺾여 있다. 꽤 창피해하는 것 같다."
+    }
+   ]
+  },
+  {
+   "id": "straighten",
+   "label": "펴 주기",
+   "set": {
+    "straight": "+1"
+   },
+   "text": [
+    {
+     "if": "var:straight >= 1",
+     "text": [
+      "남은 꺾인 곳도 조심조심 폈다.",
+      "옷걸이가 반듯한 삼각형이 되었다! 삐걱… 고마워."
+     ]
+    },
+    {
+     "text": [
+      "꺾인 곳 하나를 조심조심 폈다.",
+      "옷걸이가 움찔한다. 아직 한 군데 더 꺾여 있다."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hang",
+   "label": "옷 걸어 보기",
+   "requires": "var:straight >= 2",
+   "deniedText": [
+    "이렇게 꺾여서는 아무것도 걸 수 없다."
+   ],
+   "text": [
+    {
+     "text": [
+      "우비를 벗어 걸어 보았다.",
+      "옷걸이가 자랑스럽게 우비를 들고 있다. 쓸모를 되찾았다!"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mock",
+   "label": "비웃기",
+   "set": {
+    "mocked": 1
+   },
+   "text": [
+    {
+     "text": [
+      "\"모양이 이상하네.\"",
+      "옷걸이가 화가 나서 더 꼬여 버렸다!"
+     ]
+    }
+   ]
+  }
+ ],
+ "spareWhen": "var:straight >= 2",
+ "flavor": [
+  {
+   "if": "var:straight >= 2",
+   "text": "반듯해진 옷걸이가 어깨를 편다. 어깨는 없지만."
+  },
+  {
+   "if": "var:mocked >= 1",
+   "text": "옷걸이가 잔뜩 꼬여서 씩씩댄다."
+  },
+  {
+   "text": "옷걸이가 꺾인 곳을 숨기려 애쓴다."
+  }
+ ],
+ "speech": [
+  {
+   "if": "var:straight >= 2",
+   "text": "반듯…해졌어."
+  },
+  {
+   "if": "var:mocked >= 1",
+   "text": "삐걱! 보지 마!"
+  },
+  {
+   "text": "삐걱… 이 모양 보지 마…"
+  }
+ ],
+ "patterns": [
+  {
+   "id": "hooks",
+   "if": "var:mocked < 1 && var:straight < 2"
+  },
+  {
+   "id": "zigzag",
+   "if": "var:mocked >= 1 && var:straight < 2"
+  },
+  {
+   "id": "calm",
+   "if": "var:straight >= 2"
+  }
+ ],
+ "patternDefs": {
+  "hooks": {
+   "duration": 5400,
+   "box": {
+    "w": 120,
+    "h": 84
+   },
+   "emitters": [
+    {
+     "type": "homing",
+     "from": "edges",
+     "interval": 950,
+     "turn": 70,
+     "bullet": {
+      "frame": "hook",
+      "radius": 3,
+      "speed": 46,
+      "lifetime": 3800
+     }
+    }
+   ]
+  },
+  "zigzag": {
+   "duration": 5400,
+   "box": {
+    "w": 130,
+    "h": 84
+   },
+   "emitters": [
+    {
+     "type": "linear",
+     "from": "top",
+     "angle": 90,
+     "spread": 50,
+     "amount": 3,
+     "interval": 560,
+     "bullet": {
+      "frame": "hook",
+      "radius": 3,
+      "speed": 62,
+      "spin": 180
+     }
+    },
+    {
+     "type": "homing",
+     "from": "edges",
+     "interval": 1400,
+     "turn": 90,
+     "bullet": {
+      "frame": "hook",
+      "radius": 3,
+      "speed": 50,
+      "lifetime": 3200
+     }
+    }
+   ]
+  },
+  "calm": {
+   "duration": 4000,
+   "box": {
+    "w": 110,
+    "h": 70
+   },
+   "emitters": [
+    {
+     "type": "linear",
+     "from": "left",
+     "angle": 0,
+     "interval": 900,
+     "amount": 1,
+     "bullet": {
+      "frame": "hook",
+      "radius": 3,
+      "speed": 40
+     }
+    }
+   ]
+  }
+ },
+ "sparedText": "반듯해진 옷걸이는 우비를 돌려주고, 삐걱삐걱 떠났다.",
+ "clearedText": "더 꺾일 데도 없이 구겨진 철사가 남았다."
+}
