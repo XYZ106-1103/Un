@@ -1,0 +1,30 @@
+{
+  "name": "unclaimed",
+  "private": true,
+  "version": "0.1.0",
+  "description": "UNCLAIMED (working title) - a story-driven 2D pixel RPG for the web.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run typecheck && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.node.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "node scripts/smoke-test.mjs",
+    "check": "npm run typecheck && npm run test && vite build",
+    "assets:report": "node scripts/asset-report.mjs"
+  },
+  "dependencies": {
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.1",
+    "typescript": "5.9.3",
+    "vite": "7.3.8",
+    "vitest": "4.1.12"
+  }
+}
