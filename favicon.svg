@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" shape-rendering="crispEdges">
+  <!-- The claim-tag soul (manifest entry soul.tag) -->
+  <path fill="#ffcf4a" d="M2 2h8v1H2zM1 3h9v1H1zM0 4h10v2H0zM1 6h9v1H1z"/>
+  <path fill="#f2b24c" d="M2 7h8v1H2zM9 6h1v1H9z"/>
+  <path fill="#f7f4ea" d="M3 3h1v1H3z"/>
+  <path fill="#0b0a10" d="M2 4h1v1H2z"/>
+</svg>
